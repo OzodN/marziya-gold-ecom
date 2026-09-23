@@ -1,0 +1,118 @@
+version: "1.0"
+description: "Strict file and directory ownership matrix across agent roles. No agent may write outside its designated boundaries without explicit review gate approval."
+
+roles:
+  orchestrator:
+    owns:
+      - ".ai/work/**"
+      - ".ai/orchestration/**"
+      - ".ai/workflows/**"
+      - ".ai/decisions/**"
+      - ".ai/state/**"
+      - "docs/architecture/**"
+      - "docs/adr/**"
+    read_only:
+      - "**"
+    prohibited_write:
+      - "apps/backend/src/**"
+      - "apps/frontend/src/**"
+
+  backend:
+    owns:
+      - "apps/backend/**"
+    may_modify_with_coordination:
+      - "docs/api/openapi.yaml"
+      - "database/schema-model.md"
+    read_only:
+      - ".ai/**"
+      - "docs/**"
+      - "database/**"
+      - "infra/**"
+    prohibited_write:
+      - "apps/frontend/**"
+      - ".github/workflows/**"
+      - "docs/adr/**"
+
+  frontend:
+    owns:
+      - "apps/frontend/**"
+    read_only:
+      - ".ai/**"
+      - "docs/**"
+      - "docs/api/openapi.yaml"
+      - "apps/backend/src/main/resources/db/migration/**"
+    prohibited_write:
+      - "apps/backend/**"
+      - "database/**"
+      - "infra/**"
+      - ".github/workflows/**"
+
+  database:
+    owns:
+      - "database/**"
+      - "apps/backend/src/main/resources/db/migration/**"
+    may_modify_with_coordination:
+      - "apps/backend/src/main/java/**/entity/**"
+      - "apps/backend/src/main/java/**/repository/**"
+    read_only:
+      - ".ai/**"
+      - "docs/**"
+      - "apps/backend/**"
+    prohibited_write:
+      - "apps/frontend/**"
+      - "infra/**"
+      - ".github/**"
+
+  qa:
+    owns:
+      - "apps/backend/src/test/**"
+      - "apps/frontend/e2e/**"
+      - "apps/frontend/__tests__/**"
+      - ".ai/reports/qa/**"
+    read_only:
+      - "apps/backend/src/main/**"
+      - "apps/frontend/src/**"
+      - "docs/**"
+      - "database/**"
+    prohibited_write:
+      - "apps/backend/src/main/**"
+      - "apps/frontend/src/**"
+      - "infra/**"
+
+  security:
+    owns:
+      - ".ai/reports/security/**"
+    may_modify_with_coordination:
+      - "apps/backend/src/main/java/**/security/**"
+      - "apps/frontend/src/middleware.ts"
+    read_only:
+      - "**"
+    prohibited_write:
+      - "apps/frontend/src/components/**"
+      - "database/**"
+
+  devops:
+    owns:
+      - "infra/**"
+      - ".github/**"
+      - "scripts/**"
+      - "Dockerfile*"
+      - "docker-compose*.yml"
+    read_only:
+      - "apps/**"
+      - "docs/**"
+      - ".ai/**"
+    prohibited_write:
+      - "apps/backend/src/**"
+      - "apps/frontend/src/**"
+
+  reviewer:
+    owns:
+      - ".ai/reports/reviews/**"
+    read_only:
+      - "**"
+    prohibited_write:
+      - "apps/**"
+      - "database/**"
+      - "infra/**"
+      - ".github/**"

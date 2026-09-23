@@ -1,0 +1,119 @@
+version: "1.0"
+description: "Tool access, delegation authority, and operational capabilities of project agent roles."
+
+roles:
+  orchestrator:
+    type: "lead"
+    can_define_subagents: true
+    can_invoke_subagents: true
+    can_delegate_to:
+      - "backend"
+      - "frontend"
+      - "database"
+      - "qa"
+      - "security"
+      - "devops"
+      - "reviewer"
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: true
+    required_gates:
+      - "architecture_gate"
+
+  backend:
+    type: "specialist"
+    base_subagent: "self"
+    workspace_mode: "branch"
+    can_delegate_to:
+      - "qa"
+      - "database"
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates:
+      - "unit_test_gate"
+      - "code_review_gate"
+
+  frontend:
+    type: "specialist"
+    base_subagent: "self"
+    workspace_mode: "branch"
+    can_delegate_to:
+      - "qa"
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates:
+      - "lint_gate"
+      - "code_review_gate"
+
+  database:
+    type: "specialist"
+    base_subagent: "self"
+    workspace_mode: "branch"
+    can_delegate_to: []
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates:
+      - "database_migration_gate"
+      - "code_review_gate"
+
+  qa:
+    type: "verification"
+    base_subagent: "self"
+    workspace_mode: "share"
+    can_delegate_to: []
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates:
+      - "test_pass_gate"
+
+  security:
+    type: "auditor"
+    base_subagent: "self"
+    workspace_mode: "share"
+    can_delegate_to: []
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates:
+      - "security_audit_gate"
+
+  devops:
+    type: "infrastructure"
+    base_subagent: "self"
+    workspace_mode: "branch"
+    can_delegate_to: []
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates:
+      - "devops_gate"
+
+  reviewer:
+    type: "gatekeeper"
+    base_subagent: "self"
+    workspace_mode: "share"
+    can_delegate_to: []
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates: []

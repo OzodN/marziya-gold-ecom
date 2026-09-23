@@ -1,0 +1,27 @@
+{
+  "_notice": "GENERATED FILE - DO NOT EDIT MANUALLY. Not authoritative. Regenerate via scripts/validate-ai-state.ps1",
+  "generatedAt": "2026-09-24T00:43:00Z",
+  "projectName": "marziya-gold_ecom",
+  "infrastructureStatus": "active_and_validated",
+  "technologyStack": {
+    "backend": "Java 21 / Spring Boot 4.1.1",
+    "frontend": "Next.js 15+ / React 19 / Tailwind / shadcn/ui",
+    "database": "PostgreSQL 16+ / JSONB / pg_trgm",
+    "media": "Cloudinary",
+    "deployment": "Vercel + Render + Neon Managed DB"
+  },
+  "modules": [
+    { "path": "apps/backend", "owner": "backend", "status": "ready_for_scaffolding" },
+    { "path": "apps/frontend", "owner": "frontend", "status": "ready_for_scaffolding" },
+    { "path": "database", "owner": "database", "status": "documented" },
+    { "path": "infra", "owner": "devops", "status": "configured" },
+    { "path": ".ai", "owner": "orchestrator", "status": "active" }
+  ],
+  "tasksSummary": {
+    "total": 4,
+    "in_progress": 0,
+    "ready": 2,
+    "blocked": 1,
+    "done": 1
+  }
+}

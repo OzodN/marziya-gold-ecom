@@ -1,0 +1,65 @@
+version: "1.0"
+description: "Rules and isolation protocols for running multiple AI agents safely in parallel."
+
+isolation_mechanism:
+  engine: "git-worktree"
+  skill_reference: "using-git-worktrees"
+  base_directory: ".worktrees/"
+  branch_pattern: "feat/{task_id}-{slug}"
+  worktree_path_pattern: ".worktrees/{task_id}-{slug}"
+  rules:
+    - "No two agents may ever make modifications in the same Git worktree simultaneously."
+    - "All worktrees MUST be created inside .worktrees/ and verified against .gitignore."
+    - "Main working tree remains on 'main' branch and is updated only via clean fast-forward or squash merges by the Orchestrator/Lead."
+
+concurrency_matrix:
+  # Pairs of roles and their concurrency rules
+  backend_and_frontend:
+    allowed_parallel: true
+    condition: "Both agents MUST strictly adhere to docs/api/openapi.yaml. Backend builds endpoints against contract; Frontend mocks or calls local stub. Neither edits the other's directories."
+  
+  backend_and_database:
+    allowed_parallel: false
+    condition: "SERIALIZED. Database schema/Flyway migration must complete and pass review gate before Backend agent implements persistence layer."
+  
+  frontend_and_database:
+    allowed_parallel: true
+    condition: "Frontend consumes contract (openapi.yaml), Database manages schema. No filesystem overlap."
+
+  backend_and_qa:
+    allowed_parallel: true
+    condition: "QA writes tests in src/test/ while Backend writes in src/main/, or QA works in separate worktree."
+
+  security_and_any:
+    allowed_parallel: true
+    condition: "Security performs read-only audits concurrently. Fixes are scheduled as separate tasks."
+
+  devops_and_any:
+    allowed_parallel: true
+    condition: "DevOps works exclusively inside infra/ and .github/ without touching application code."
+
+task_state_machine:
+  states:
+    - draft: "Task is being formulated by Orchestrator."
+    - ready: "Task dependencies are met, worktree can be created, ready for agent pickup."
+    - in_progress: "Agent is actively developing inside dedicated worktree."
+    - blocked: "Task is waiting on an upstream dependency or external clarification."
+    - review: "Implementation complete, handoff.md created, awaiting Reviewer gate."
+    - qa: "Code reviewed, awaiting automated/manual verification gate."
+    - done: "Merged into main, worktree cleaned up, task closed."
+    - cancelled: "Task abandoned or superseded."
+
+dependency_resolution:
+  blocking_rule: "A task cannot transition from draft to ready if any task listed in 'dependencies' has a status other than 'done'."
+  auto_unblock: "When a task transitions to 'done', the Orchestrator checks all dependent tasks and updates eligible ones to 'ready'."
+
+merge_and_integration_protocol:
+  steps:
+    1: "Agent completes work inside .worktrees/{task_id}-{slug}."
+    2: "Agent runs local verification (unit tests, linter, formatting)."
+    3: "Agent creates .ai/work/tasks/{task_id}/handoff.md."
+    4: "Task status changed to 'review'."
+    5: "Reviewer agent audits changes against code-review-checklist."
+    6: "QA agent verifies tests in separate run."
+    7: "Orchestrator merges branch into main, deletes worktree: git worktree remove .worktrees/{task_id}-{slug}."
+    8: "Task status updated to 'done'."

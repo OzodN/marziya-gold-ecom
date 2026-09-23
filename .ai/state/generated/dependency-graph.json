@@ -1,0 +1,30 @@
+{
+  "_notice": "GENERATED FILE - DO NOT EDIT MANUALLY. Not authoritative. Regenerate via scripts/validate-ai-state.ps1",
+  "generatedAt": "2026-09-24T00:43:00Z",
+  "tasks": {
+    "TASK-0001": {
+      "title": "Bootstrap AI-Native Development Infrastructure and Control Plane",
+      "status": "done",
+      "dependencies": [],
+      "blocks": []
+    },
+    "TASK-0002": {
+      "title": "Initial Flyway Schema Migration and Database Documentation",
+      "status": "ready",
+      "dependencies": ["TASK-0001"],
+      "blocks": ["TASK-0003"]
+    },
+    "TASK-0003": {
+      "title": "Spring Boot 4.1.1 Project Scaffolding and Security Skeleton",
+      "status": "blocked",
+      "dependencies": ["TASK-0002"],
+      "blocks": []
+    },
+    "TASK-0004": {
+      "title": "Next.js 15+ App Router Client Storefront & Selection Store Scaffolding",
+      "status": "ready",
+      "dependencies": ["TASK-0001"],
+      "blocks": []
+    }
+  }
+}

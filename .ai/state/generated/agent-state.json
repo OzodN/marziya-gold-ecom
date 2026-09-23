@@ -1,0 +1,15 @@
+{
+  "_notice": "GENERATED FILE - DO NOT EDIT MANUALLY. Not authoritative. Regenerate via scripts/validate-ai-state.ps1",
+  "generatedAt": "2026-09-24T00:43:00Z",
+  "activeWorktrees": [],
+  "roles": {
+    "orchestrator": { "status": "idle", "currentTask": null },
+    "backend": { "status": "idle", "currentTask": null },
+    "frontend": { "status": "idle", "currentTask": null },
+    "database": { "status": "idle", "currentTask": null },
+    "qa": { "status": "idle", "currentTask": null },
+    "security": { "status": "idle", "currentTask": null },
+    "devops": { "status": "idle", "currentTask": null },
+    "reviewer": { "status": "idle", "currentTask": null }
+  }
+}

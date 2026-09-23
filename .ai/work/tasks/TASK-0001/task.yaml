@@ -1,0 +1,32 @@
+id: "TASK-0001"
+title: "Bootstrap AI-Native Development Infrastructure and Control Plane"
+status: "done"
+owner: "orchestrator"
+contributors: []
+type: "infrastructure"
+dependencies: []
+
+affected_areas:
+  - ".ai/**"
+  - "AGENTS.md"
+  - "docs/**"
+  - "apps/**"
+  - "database/**"
+  - "infra/**"
+  - "scripts/**"
+
+branch: "main"
+worktree: "main"
+
+acceptance_criteria:
+  - "Complete AI control plane created under .ai/ with orchestration, context, stack, and workflows."
+  - "Hierarchical AGENTS.md implemented across root and submodules with local rules."
+  - "Single source of truth model documented and enforced."
+  - "Agent ownership, capabilities, concurrency, and gates defined."
+  - "Validation script created to verify repository consistency."
+  - "Zero application business logic written."
+
+required_reviews:
+  - "architecture_gate"
+
+validation_status: "passed"

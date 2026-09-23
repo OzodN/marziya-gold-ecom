@@ -1,0 +1,112 @@
+version: "1.0"
+description: "Task routing rules mapping requirements and files to responsible specialist agent roles."
+
+routes:
+  - match:
+      paths:
+        - "apps/backend/**"
+      tags:
+        - "backend"
+        - "api"
+        - "spring-boot"
+        - "java"
+    assignee: "backend"
+    skills:
+      - "backend-architect"
+      - "java-pro"
+      - "backend-dev-guidelines"
+      - "api-patterns"
+      - "junit-5-skill"
+
+  - match:
+      paths:
+        - "apps/frontend/**"
+      tags:
+        - "frontend"
+        - "nextjs"
+        - "react"
+        - "ui"
+        - "tailwind"
+    assignee: "frontend"
+    skills:
+      - "frontend-architecture"
+      - "frontend-developer"
+      - "nextjs-app-router-patterns"
+      - "react-best-practices"
+      - "typescript-expert"
+
+  - match:
+      paths:
+        - "database/**"
+        - "apps/backend/src/main/resources/db/migration/**"
+      tags:
+        - "database"
+        - "migration"
+        - "flyway"
+        - "postgresql"
+    assignee: "database"
+    skills:
+      - "database-design"
+      - "postgresql"
+      - "postgres-best-practices"
+
+  - match:
+      paths:
+        - "apps/backend/src/test/**"
+        - "apps/frontend/e2e/**"
+      tags:
+        - "qa"
+        - "testing"
+        - "playwright"
+        - "e2e"
+    assignee: "qa"
+    skills:
+      - "test-driven-development"
+      - "playwright-skill"
+      - "junit-5-skill"
+      - "e2e-testing-patterns"
+
+  - match:
+      paths:
+        - "**/security/**"
+        - "**/auth/**"
+      tags:
+        - "security"
+        - "audit"
+        - "jwt"
+    assignee: "security"
+    skills:
+      - "backend-security-coder"
+      - "frontend-security-coder"
+      - "api-security-best-practices"
+      - "auth-implementation-patterns"
+
+  - match:
+      paths:
+        - "infra/**"
+        - ".github/**"
+      tags:
+        - "devops"
+        - "ci"
+        - "cd"
+        - "deployment"
+    assignee: "devops"
+    skills:
+      - "github-actions"
+      - "deployment-procedures"
+      - "docker-expert"
+
+  - match:
+      paths:
+        - "docs/architecture/**"
+        - "docs/adr/**"
+        - ".ai/**"
+      tags:
+        - "architecture"
+        - "orchestration"
+        - "planning"
+    assignee: "orchestrator"
+    skills:
+      - "architecture"
+      - "architecture-decision-records"
+      - "concise-planning"

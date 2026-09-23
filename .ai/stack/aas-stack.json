@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "marziya-gold-agent-skill-stack",
+  "version": "1.0.0",
+  "description": "Manifest mapping globally installed Antigravity skills to project agent roles. Skills are loaded directly from the global registry (~/.gemini/antigravity-cli/skills).",
+  "globalSkillsDirectory": "~/.gemini/antigravity-cli/skills",
+  "roles": {
+    "orchestrator": [
+      "architecture",
+      "architecture-decision-records",
+      "concise-planning",
+      "git-workflow",
+      "using-git-worktrees",
+      "code-review-checklist"
+    ],
+    "backend": [
+      "backend-architect",
+      "backend-dev-guidelines",
+      "java-pro",
+      "api-design-principles",
+      "api-patterns",
+      "api-security-best-practices",
+      "auth-implementation-patterns",
+      "backend-security-coder",
+      "junit-5-skill",
+      "verification-before-completion",
+      "systematic-debugging"
+    ],
+    "frontend": [
+      "frontend-architecture",
+      "frontend-developer",
+      "frontend-design",
+      "nextjs-app-router-patterns",
+      "nextjs-best-practices",
+      "react-best-practices",
+      "react-patterns",
+      "typescript-expert",
+      "frontend-security-coder",
+      "playwright-skill",
+      "verification-before-completion",
+      "systematic-debugging"
+    ],
+    "database": [
+      "database-design",
+      "postgresql",
+      "postgres-best-practices",
+      "architecture",
+      "verification-before-completion"
+    ],
+    "qa": [
+      "test-driven-development",
+      "junit-5-skill",
+      "playwright-skill",
+      "e2e-testing-patterns",
+      "lint-and-validate",
+      "verification-before-completion",
+      "systematic-debugging"
+    ],
+    "security": [
+      "backend-security-coder",
+      "frontend-security-coder",
+      "api-security-best-practices",
+      "auth-implementation-patterns",
+      "systematic-debugging",
+      "verification-before-completion"
+    ],
+    "devops": [
+      "docker-expert",
+      "docker-compose",
+      "deployment-procedures",
+      "github-actions",
+      "git-workflow",
+      "using-git-worktrees"
+    ],
+    "reviewer": [
+      "code-review-checklist",
+      "lint-and-validate",
+      "architecture-decision-records",
+      "verification-before-completion"
+    ]
+  },
+  "verifiedInstalledSkills": [
+    "api-design-principles",
+    "api-patterns",
+    "api-security-best-practices",
+    "architecture",
+    "architecture-decision-records",
+    "auth-implementation-patterns",
+    "backend-architect",
+    "backend-dev-guidelines",
+    "backend-security-coder",
+    "code-review-checklist",
+    "concise-planning",
+    "database-design",
+    "deployment-procedures",
+    "docker-compose",
+    "docker-expert",
+    "e2e-testing-patterns",
+    "frontend-architecture",
+    "frontend-design",
+    "frontend-developer",
+    "frontend-security-coder",
+    "git-workflow",
+    "github-actions",
+    "java-pro",
+    "junit-5-skill",
+    "lint-and-validate",
+    "nextjs-app-router-patterns",
+    "nextjs-best-practices",
+    "playwright-skill",
+    "postgres-best-practices",
+    "postgresql",
+    "react-best-practices",
+    "react-patterns",
+    "systematic-debugging",
+    "test-driven-development",
+    "typescript-expert",
+    "using-git-worktrees",
+    "verification-before-completion"
+  ]
+}

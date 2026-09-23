@@ -1,0 +1,88 @@
+version: "1.0"
+description: "Explicit review gates required before work is merged into main branch or passed to downstream agents."
+
+gates:
+  architecture_gate:
+    trigger_paths:
+      - "docs/architecture/**"
+      - "docs/adr/**"
+      - ".ai/instructions/**"
+      - ".ai/orchestration/**"
+    required_reviewers:
+      - "orchestrator"
+    criteria:
+      - "ADR created in docs/adr/ if introducing new pattern or technology."
+      - "Does not violate Zero-Maintenance or turn-key constraints."
+      - "Maintains backward compatibility and single source of truth."
+
+  api_contract_gate:
+    trigger_paths:
+      - "docs/api/openapi.yaml"
+    required_reviewers:
+      - "backend"
+      - "frontend"
+      - "reviewer"
+    criteria:
+      - "Valid OpenAPI 3.0/3.1 YAML syntax."
+      - "Matches product terminology (Selection, Inquiry, no cart/payment)."
+      - "Both backend and frontend agents have acknowledged contract changes."
+
+  database_migration_gate:
+    trigger_paths:
+      - "apps/backend/src/main/resources/db/migration/**"
+      - "database/**"
+    required_reviewers:
+      - "database"
+      - "reviewer"
+    criteria:
+      - "Flyway migration filename follows V{YYYYMMDDHHMMSS}__{description}.sql convention."
+      - "Strictly backwards-compatible or handles data migration."
+      - "Includes required indexes (e.g., GIN index for JSONB, pg_trgm for search)."
+      - "Does not introduce duplicate schema definition outside Flyway."
+
+  code_review_gate:
+    trigger_paths:
+      - "apps/backend/src/main/**"
+      - "apps/frontend/src/**"
+    required_reviewers:
+      - "reviewer"
+    criteria:
+      - "Follows code-review-checklist skill."
+      - "Code follows ownership rules and does not touch unauthorized areas."
+      - "No hardcoded secrets, API keys, or credentials."
+      - "Commit messages follow Conventional Commits (feat, fix, refactor, test, docs)."
+
+  security_audit_gate:
+    trigger_paths:
+      - "apps/backend/src/main/java/**/security/**"
+      - "apps/frontend/src/middleware.ts"
+      - "**/auth/**"
+    required_reviewers:
+      - "security"
+    criteria:
+      - "JWT token is strictly stored in HttpOnly, SameSite=Strict, Secure cookies."
+      - "Rate limiting (Bucket4j) is enforced on public inquiry submission endpoint."
+      - "SQL injection prevented via parameterized queries / Spring Data JPA."
+      - "No XSS vulnerabilities in dynamic rendering of rich text or user input."
+
+  test_pass_gate:
+    trigger_paths:
+      - "apps/**"
+    required_reviewers:
+      - "qa"
+    criteria:
+      - "All unit tests pass without errors (mvn test / npm test)."
+      - "Critical user journeys covered (Selection -> Inquiry creation -> Admin status change)."
+      - "No flaky tests or skipped assertions."
+
+  devops_gate:
+    trigger_paths:
+      - "infra/**"
+      - ".github/workflows/**"
+      - "Dockerfile*"
+    required_reviewers:
+      - "devops"
+    criteria:
+      - "Zero-maintenance compliance: no bare VPS dependencies."
+      - "Secrets managed through environment variables."
+      - "CI workflows have passing syntax and appropriate timeouts."

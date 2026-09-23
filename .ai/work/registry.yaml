@@ -1,0 +1,63 @@
+version: "1.0"
+updated_at: "2026-09-24T00:40:00Z"
+description: "Master registry of all project tasks across AI agents."
+
+allowed_states:
+  - draft
+  - ready
+  - in_progress
+  - blocked
+  - review
+  - qa
+  - done
+  - cancelled
+
+active_tasks: []
+
+tasks:
+  - id: "TASK-0001"
+    title: "Bootstrap AI-Native Development Infrastructure and Control Plane"
+    status: "done"
+    owner: "orchestrator"
+    type: "infrastructure"
+    affected_areas:
+      - ".ai/**"
+      - "AGENTS.md"
+      - "docs/**"
+      - "scripts/**"
+    dependencies: []
+    created_at: "2026-09-24T00:35:00Z"
+
+  - id: "TASK-0002"
+    title: "Initial Flyway Schema Migration and Database Documentation"
+    status: "ready"
+    owner: "database"
+    type: "database"
+    affected_areas:
+      - "apps/backend/src/main/resources/db/migration/**"
+      - "database/**"
+    dependencies:
+      - "TASK-0001"
+    created_at: "2026-09-24T00:40:00Z"
+
+  - id: "TASK-0003"
+    title: "Spring Boot 4.1.1 Project Scaffolding and Security Skeleton"
+    status: "blocked"
+    owner: "backend"
+    type: "feature"
+    affected_areas:
+      - "apps/backend/**"
+    dependencies:
+      - "TASK-0002"
+    created_at: "2026-09-24T00:40:00Z"
+
+  - id: "TASK-0004"
+    title: "Next.js 15+ App Router Client Storefront & Selection Store Scaffolding"
+    status: "ready"
+    owner: "frontend"
+    type: "feature"
+    affected_areas:
+      - "apps/frontend/**"
+    dependencies:
+      - "TASK-0001"
+    created_at: "2026-09-24T00:40:00Z"

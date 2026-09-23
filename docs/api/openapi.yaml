@@ -1,0 +1,555 @@
+openapi: 3.1.0
+info:
+  title: Marziya Gold Master Jewelry Catalog API
+  version: 1.0.0
+  description: |
+    Canonical REST API contract between Backend (Spring Boot 4.1.1) and Frontend (Next.js 15+).
+    This contract is the single source of truth for all API communication.
+    No online payment, cart, or order checkout endpoints exist.
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.marziyagold.com/api/v1
+    description: Production PaaS server
+
+paths:
+  # ==========================================
+  # PUBLIC STOREFRONT ENDPOINTS
+  # ==========================================
+  /products:
+    get:
+      summary: Get paginated catalog products with filtering and fuzzy search
+      tags: [Storefront]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 12 }
+        - name: q
+          in: query
+          description: Fuzzy search term matching name or SKU via pg_trgm
+          schema: { type: string }
+        - name: categorySlug
+          in: query
+          schema: { type: string }
+        - name: stoneTypeId
+          in: query
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Paginated product list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPageResponse'
+
+  /products/{slug}:
+    get:
+      summary: Get detailed product information by slug
+      tags: [Storefront]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Detailed product object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailResponse'
+        '404':
+          description: Product not found
+
+  /products/validate-batch:
+    post:
+      summary: Silent batch validation of products in client selection
+      tags: [Storefront]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productIds]
+              properties:
+                productIds:
+                  type: array
+                  items: { type: integer }
+      responses:
+        '200':
+          description: Availability status per requested product ID
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductAvailability'
+
+  /categories:
+    get:
+      summary: List visible categories ordered by sort_order
+      tags: [Storefront]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /characteristics/filter-keys:
+    get:
+      summary: List active filterable characteristics and their available values
+      tags: [Storefront]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterGroup'
+
+  /settings/contacts:
+    get:
+      summary: Get public contact info (Telegram username, phone number)
+      tags: [Storefront]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactSettings'
+
+  /inquiries:
+    post:
+      summary: Submit custom jewelry inquiry from selection
+      tags: [Storefront]
+      description: Rate-limited by IP address (Bucket4j). Takes selection items and creates snapshot.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInquiryRequest'
+      responses:
+        '201':
+          description: Inquiry created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  status: { type: string, example: "NEW" }
+                  message: { type: string }
+        '429':
+          description: Too many requests (Rate limit exceeded)
+
+  # ==========================================
+  # ADMIN AUTHENTICATION (HttpOnly Cookie)
+  # ==========================================
+  /admin/auth/login:
+    post:
+      summary: Admin login, sets HttpOnly JWT cookie
+      tags: [Admin Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Logged in successfully, cookie set
+        '401':
+          description: Invalid credentials
+
+  /admin/auth/logout:
+    post:
+      summary: Admin logout, clears HttpOnly JWT cookie
+      tags: [Admin Auth]
+      responses:
+        '200':
+          description: Cookie cleared
+
+  /admin/auth/me:
+    get:
+      summary: Get currently authenticated admin profile
+      tags: [Admin Auth]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username: { type: string }
+                  role: { type: string }
+
+  # ==========================================
+  # ADMIN INQUIRIES & STATUS MANAGEMENT
+  # ==========================================
+  /admin/inquiries:
+    get:
+      summary: List all inquiries with filtering by status
+      tags: [Admin Inquiries]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [NEW, CONTACTED, IN_PROGRESS, COMPLETED, REJECTED]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InquirySummary'
+
+  /admin/inquiries/{id}:
+    get:
+      summary: Get detailed inquiry with historical snapshot and status audit trail
+      tags: [Admin Inquiries]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InquiryDetail'
+
+  /admin/inquiries/{id}/status:
+    put:
+      summary: Update inquiry status (Explicit save button in UI)
+      tags: [Admin Inquiries]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [NEW, CONTACTED, IN_PROGRESS, COMPLETED, REJECTED]
+      responses:
+        '200':
+          description: Status updated and history recorded
+
+  /admin/inquiries/new-count:
+    get:
+      summary: Lightweight count of NEW inquiries for 30s UI polling
+      tags: [Admin Inquiries]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newCount: { type: integer }
+
+  # ==========================================
+  # ADMIN PRODUCT MANAGEMENT
+  # ==========================================
+  /admin/products:
+    get:
+      summary: List products for admin with visibility toggle
+      tags: [Admin Products]
+    post:
+      summary: Create new product with dynamic characteristics and stones
+      tags: [Admin Products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSaveRequest'
+      responses:
+        '201':
+          description: Product created
+
+  /admin/products/{id}:
+    put:
+      summary: Update existing product
+      tags: [Admin Products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSaveRequest'
+      responses:
+        '200':
+          description: Product updated
+    delete:
+      summary: Soft-delete or archive product
+      tags: [Admin Products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Product deleted
+
+  /admin/media/upload:
+    post:
+      summary: Upload image to Cloudinary and return CDN URL and public_id
+      tags: [Admin Media]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url: { type: string }
+                  publicId: { type: string }
+
+components:
+  schemas:
+    CharacteristicEntry:
+      type: object
+      required: [name, value]
+      properties:
+        name: { type: string, example: "Проба" }
+        value: { type: string, example: "585" }
+
+    ProductImage:
+      type: object
+      properties:
+        id: { type: integer }
+        url: { type: string }
+        sortOrder: { type: integer }
+
+    ProductStone:
+      type: object
+      properties:
+        id: { type: integer }
+        stoneTypeId: { type: integer }
+        stoneTypeName: { type: string, example: "Бриллиант" }
+        sortOrder: { type: integer }
+        characteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/CharacteristicEntry'
+
+    ProductSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        sku: { type: string, example: "GLD-0052-ULX" }
+        name: { type: string, example: "Кольцо Multibrand" }
+        slug: { type: string, example: "koltso-multibrand" }
+        categoryName: { type: string }
+        mainImageUrl: { type: string }
+        isVisible: { type: boolean }
+
+    ProductDetailResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        sku: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        category:
+          $ref: '#/components/schemas/Category'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImage'
+        characteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/CharacteristicEntry'
+        stones:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductStone'
+
+    ProductPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSummary'
+        totalElements: { type: integer }
+        totalPages: { type: integer }
+        pageNumber: { type: integer }
+
+    ProductAvailability:
+      type: object
+      properties:
+        productId: { type: integer }
+        isAvailable: { type: boolean }
+        name: { type: string }
+        mainImageUrl: { type: string }
+
+    Category:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        sortOrder: { type: integer }
+
+    FilterGroup:
+      type: object
+      properties:
+        name: { type: string, example: "Металл" }
+        values:
+          type: array
+          items: { type: string, example: "Золото" }
+
+    ContactSettings:
+      type: object
+      properties:
+        telegramUsername: { type: string, example: "marziya_master" }
+        phoneNumber: { type: string, example: "+998901234567" }
+        masterBio: { type: string }
+
+    CreateInquiryRequest:
+      type: object
+      required: [clientName, clientPhone, items]
+      properties:
+        clientName: { type: string, example: "Азиз" }
+        clientPhone: { type: string, example: "+998901234567" }
+        comment: { type: string, example: "Интересует размер 17.5" }
+        items:
+          type: array
+          items:
+            type: object
+            required: [productId, quantity]
+            properties:
+              productId: { type: integer }
+              quantity: { type: integer, minimum: 1 }
+
+    ProductSnapshot:
+      type: object
+      description: Immutable JSON snapshot of product at time of inquiry submission
+      properties:
+        productId: { type: integer }
+        sku: { type: string }
+        name: { type: string }
+        mainImageUrl: { type: string }
+        characteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/CharacteristicEntry'
+        stones:
+          type: array
+          items:
+            type: object
+            properties:
+              stoneTypeName: { type: string }
+              characteristics:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharacteristicEntry'
+
+    InquiryDetail:
+      type: object
+      properties:
+        id: { type: integer }
+        clientName: { type: string }
+        clientPhone: { type: string }
+        comment: { type: string }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              quantity: { type: integer }
+              snapshot:
+                $ref: '#/components/schemas/ProductSnapshot'
+        statusHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              oldStatus: { type: string }
+              newStatus: { type: string }
+              changedBy: { type: string }
+              changedAt: { type: string, format: date-time }
+
+    InquirySummary:
+      type: object
+      properties:
+        id: { type: integer }
+        clientName: { type: string }
+        clientPhone: { type: string }
+        itemCount: { type: integer }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    ProductSaveRequest:
+      type: object
+      required: [sku, name, categoryId]
+      properties:
+        sku: { type: string }
+        name: { type: string }
+        description: { type: string }
+        categoryId: { type: integer }
+        isVisible: { type: boolean }
+        imageUrls:
+          type: array
+          items: { type: string }
+        characteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/CharacteristicEntry'
+        stones:
+          type: array
+          items:
+            type: object
+            properties:
+              stoneTypeId: { type: integer }
+              sortOrder: { type: integer }
+              characteristics:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharacteristicEntry'
