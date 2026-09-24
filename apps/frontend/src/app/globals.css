@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0d0d0f;
+  --foreground: #f4eedc;
+  --card: #151518;
+  --card-foreground: #f4eedc;
+  --popover: #151518;
+  --popover-foreground: #f4eedc;
+  --primary: #cca96c;
+  --primary-foreground: #121214;
+  --secondary: #222227;
+  --secondary-foreground: #ece0c8;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #b88e3e;
+  --accent-foreground: #ffffff;
+  --border: #2a2a30;
+  --input: #2a2a30;
+  --ring: #cca96c;
+  --radius: 0.5rem;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom subtle luxury scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #121214;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b88e3e;
+}
+
+/* Luxury accent text styles */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f6f1e7 0%, #cca96c 50%, #b88e3e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.border-gold-gradient {
+  border-image: linear-gradient(135deg, #b88e3e, #cca96c, #5d411c) 1;
+}
+
+/* Glassmorphism subtle background */
+.glass-panel {
+  background: rgba(21, 21, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(204, 169, 108, 0.15);
+}
+
+.gold-glow-hover {
+  transition: all 0.3s ease;
+}
+
+.gold-glow-hover:hover {
+  box-shadow: 0 0 25px rgba(204, 169, 108, 0.2);
+  border-color: rgba(204, 169, 108, 0.4);
+}
