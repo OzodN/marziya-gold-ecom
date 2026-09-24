@@ -1,0 +1,31 @@
+id: "TASK-0002"
+title: "Initial Flyway Schema Migration and Database Documentation"
+status: "in_progress"
+owner: "database"
+contributors: []
+type: "database"
+dependencies:
+  - "TASK-0001"
+
+affected_areas:
+  - "apps/backend/src/main/resources/db/migration/**"
+  - "database/**"
+
+branch: "feat/TASK-0002-flyway-schema"
+worktree: ".worktrees/TASK-0002-flyway-schema"
+
+acceptance_criteria:
+  - "V1__init_schema.sql created in apps/backend/src/main/resources/db/migration/."
+  - "Tables created: admin_user, category, characteristic_key, stone_type, product, product_image, product_stone, inquiry, inquiry_item, inquiry_status_history, site_setting."
+  - "PostgreSQL extensions initialized (CREATE EXTENSION IF NOT EXISTS pg_trgm)."
+  - "GIN indexes defined for JSONB characteristics (product.characteristics, product_stone.characteristics)."
+  - "GIN trgm indexes defined for product(name gin_trgm_ops, sku gin_trgm_ops)."
+  - "Foreign keys with appropriate ON DELETE RESTRICT / CASCADE / SET NULL rules matching schema-model.md."
+  - "database/schema-model.md updated if necessary and aligned as documentation with V1__init_schema.sql."
+  - "No competing .sql files in database/."
+  - "Handoff file .ai/work/tasks/TASK-0002/handoff.md generated upon completion."
+
+required_reviews:
+  - "database_migration_gate"
+
+validation_status: "in_progress"

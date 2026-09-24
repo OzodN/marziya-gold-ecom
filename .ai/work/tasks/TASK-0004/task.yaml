@@ -1,0 +1,30 @@
+id: "TASK-0004"
+title: "Next.js 15+ App Router Client Storefront & Selection Store Scaffolding"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0001"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0004-frontend-skeleton"
+worktree: ".worktrees/TASK-0004-frontend-skeleton"
+
+acceptance_criteria:
+  - "Next.js 15+ (App Router) project structure scaffolded under apps/frontend/."
+  - "TypeScript, TailwindCSS and path aliases configured."
+  - "TypeScript domain interfaces mapped from docs/api/openapi.yaml in src/types/api.ts."
+  - "Zustand Selection Store implemented with persist middleware under src/store/selection-store.ts with terminology 'Моя подборка'."
+  - "Root layout, Navigation header with selection badge, and Catalog storefront scaffolded."
+  - "Inquiry submission modal/sheet scaffolded using 'Отправить запрос'."
+  - "Clean build/lint verification without errors."
+  - "No files touched in apps/backend/ or database/."
+  - "Handoff file .ai/work/tasks/TASK-0004/handoff.md generated upon completion."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "in_progress"

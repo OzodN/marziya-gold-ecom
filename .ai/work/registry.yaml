@@ -12,7 +12,9 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks: []
+active_tasks:
+  - "TASK-0002"
+  - "TASK-0004"
 
 tasks:
   - id: "TASK-0001"
@@ -30,7 +32,7 @@ tasks:
 
   - id: "TASK-0002"
     title: "Initial Flyway Schema Migration and Database Documentation"
-    status: "ready"
+    status: "in_progress"
     owner: "database"
     type: "database"
     affected_areas:
@@ -53,7 +55,7 @@ tasks:
 
   - id: "TASK-0004"
     title: "Next.js 15+ App Router Client Storefront & Selection Store Scaffolding"
-    status: "ready"
+    status: "in_progress"
     owner: "frontend"
     type: "feature"
     affected_areas:
