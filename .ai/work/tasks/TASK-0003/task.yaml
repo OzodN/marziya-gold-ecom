@@ -1,6 +1,6 @@
 id: "TASK-0003"
 title: "Spring Boot Project Scaffolding and Security Skeleton"
-status: "in_progress"
+status: "review"
 owner: "backend"
 contributors: []
 type: "feature"
@@ -27,4 +27,4 @@ acceptance_criteria:
 required_reviews:
   - "code_review_gate"
 
-validation_status: "in_progress"
+validation_status: "passed"
