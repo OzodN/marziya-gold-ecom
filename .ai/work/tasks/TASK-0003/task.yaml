@@ -1,0 +1,30 @@
+id: "TASK-0003"
+title: "Spring Boot Project Scaffolding and Security Skeleton"
+status: "review"
+owner: "backend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0002"
+
+affected_areas:
+  - "apps/backend/**"
+
+branch: "feat/TASK-0003-backend-skeleton"
+worktree: ".worktrees/TASK-0003-backend-skeleton"
+
+acceptance_criteria:
+  - "Maven pom.xml configured under apps/backend/ with Spring Boot 3.4.x, Java 21+, Spring Data JPA, Spring Security, Validation, PostgreSQL, Flyway, Bucket4j, and JJWT."
+  - "Spring Boot application entry point com.marziyagold.MarziyaGoldApplication created."
+  - "application.yml and application.yml.example configured with PostgreSQL, hibernate.ddl-auto: validate, and Flyway enabled."
+  - "JPA Entities created matching V1__init_schema.sql (AdminUser, Category, CharacteristicKey, StoneType, Product, ProductImage, ProductStone, Inquiry, InquiryItem, InquiryStatusHistory, SiteSetting) with Hibernate 6 @JdbcTypeCode(SqlTypes.JSON) for JSONB."
+  - "Spring Security skeleton configured: stateless session, HttpOnly cookie JWT authentication filter, BCrypt password encoder, CORS for Next.js storefront, and role-based authorization matching openapi.yaml."
+  - "Bucket4j Rate Limiting service/interceptor prepared for public POST /api/v1/inquiries."
+  - "mvn clean test-compile passes with 0 errors."
+  - "No files touched in apps/frontend/ or database/."
+  - "Handoff file .ai/work/tasks/TASK-0003/handoff.md generated upon completion."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "passed"

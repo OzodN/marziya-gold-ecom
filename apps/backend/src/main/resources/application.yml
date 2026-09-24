@@ -1,0 +1,36 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: marziya-gold-backend
+  datasource:
+    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/marziya_gold}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+application:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:marziyaGoldSecretKeyMustBeAtLeast32BytesLongForHmacSha256}
+      expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+      cookie-name: access_token
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  rate-limiting:
+    inquiries:
+      capacity: 5
+      refill-tokens: 5
+      refill-duration-minutes: 1
