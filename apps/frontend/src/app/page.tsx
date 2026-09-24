@@ -127,13 +127,13 @@ export default function HomePage() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#catalog"
+            <Link
+              href="/catalog"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 px-7 py-3.5 text-sm font-semibold text-noir-950 hover:from-gold-400 hover:to-gold-300 transition-all shadow-gold"
             >
               <span>Смотреть каталог</span>
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
 
             <button
               type="button"
@@ -232,6 +232,17 @@ export default function HomePage() {
               specs={product.specs}
             />
           ))}
+        </div>
+
+        {/* Full Catalog CTA Button */}
+        <div className="mt-12 flex justify-center">
+          <Link
+            href="/catalog"
+            className="inline-flex items-center gap-2 rounded-xl border border-gold-400/40 bg-noir-900/90 px-8 py-3.5 text-sm font-semibold text-gold-200 hover:border-gold-300 hover:bg-gold-500/10 hover:text-white transition-all shadow-sm"
+          >
+            <span>Перейти в полный каталог изделий</span>
+            <ArrowRight className="h-4 w-4 text-gold-400" />
+          </Link>
         </div>
       </section>
 

@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { X, Plus, Minus, Trash2, Sparkles, Send, Gem } from "lucide-react";
 import { useSelectionStore, useIsSelectionHydrated } from "@/store/selection-store";
-import type { ProductAvailabilityDto } from "@/types/api";
+import { validateBatch } from "@/lib/api";
 
 export const SelectionSheet: React.FC = () => {
   const {
@@ -27,16 +27,10 @@ export const SelectionSheet: React.FC = () => {
     const productIds = items.map((i) => i.product.id);
     let isCancelled = false;
 
-    async function validateBatch() {
+    async function checkAvailability() {
       try {
-        const res = await fetch("/api/v1/products/validate-batch", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productIds }),
-        });
-
-        if (res.ok && !isCancelled) {
-          const data: ProductAvailabilityDto[] = await res.json();
+        const data = await validateBatch(productIds);
+        if (!isCancelled && data.length > 0) {
           markBatchAvailability(data);
         }
       } catch {
@@ -44,7 +38,7 @@ export const SelectionSheet: React.FC = () => {
       }
     }
 
-    validateBatch();
+    checkAvailability();
 
     return () => {
       isCancelled = true;

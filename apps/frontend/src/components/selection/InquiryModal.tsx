@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { X, CheckCircle2, Sparkles, Send, Loader2 } from "lucide-react";
 import { useSelectionStore } from "@/store/selection-store";
-import type { InquiryCreateRequestDto, InquiryResponseDto } from "@/types/api";
+import { submitInquiry } from "@/lib/api";
+import type { InquiryCreateRequestDto } from "@/types/api";
 
 export const InquiryModal: React.FC = () => {
   const {
@@ -50,40 +51,13 @@ export const InquiryModal: React.FC = () => {
     };
 
     try {
-      const response = await fetch("/api/v1/inquiries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        // If backend is not running locally during mock/SSR demo or returns 4xx/5xx
-        if (response.status === 429) {
-          throw new Error("Слишком много запросов. Пожалуйста, подождите немного перед повторной отправкой.");
-        }
-        // If 404 or backend unavailable, simulate successful acceptance in client mock mode
-        if (response.status === 404 || response.status >= 500) {
-          console.warn("Backend offline or endpoint returned", response.status, "handling locally");
-        } else {
-          const errData = await response.json().catch(() => null);
-          throw new Error(errData?.message || "Ошибка при отправке запроса.");
-        }
-      }
-
+      await submitInquiry(payload);
       setSubmitSuccess(true);
       clearSelection();
     } catch (err: unknown) {
-      // In local dev/mock scenarios, show success if network error occurs, or show proper error
-      if (err instanceof TypeError && err.message.includes("fetch")) {
-        // Network offline fallback
-        setSubmitSuccess(true);
-        clearSelection();
-      } else {
-        const message = err instanceof Error ? err.message : "Не удалось отправить запрос.";
-        setErrorMessage(message);
-      }
+      const message =
+        err instanceof Error ? err.message : "Не удалось отправить запрос.";
+      setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
     }

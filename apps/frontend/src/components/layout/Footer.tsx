@@ -38,22 +38,22 @@ export const Footer: React.FC = () => {
             </h3>
             <ul className="space-y-2 text-sm text-noir-400">
               <li>
-                <Link href="/#catalog" className="hover:text-gold-200 transition-colors">
+                <Link href="/catalog/koltsa" className="hover:text-gold-200 transition-colors">
                   Кольца и перстни
                 </Link>
               </li>
               <li>
-                <Link href="/#catalog" className="hover:text-gold-200 transition-colors">
+                <Link href="/catalog/sergi" className="hover:text-gold-200 transition-colors">
                   Серьги и подвески
                 </Link>
               </li>
               <li>
-                <Link href="/#catalog" className="hover:text-gold-200 transition-colors">
+                <Link href="/catalog/kolye-i-podveski" className="hover:text-gold-200 transition-colors">
                   Колье и ожерелья
                 </Link>
               </li>
               <li>
-                <Link href="/#catalog" className="hover:text-gold-200 transition-colors">
+                <Link href="/catalog/braslety" className="hover:text-gold-200 transition-colors">
                   Браслеты ручной работы
                 </Link>
               </li>

@@ -29,6 +29,22 @@ export interface CategoryDto {
   sortOrder?: number;
 }
 
+export interface StoneTypeDto {
+  id: number;
+  name: string;
+  isActive?: boolean;
+}
+
+export interface ProductFilterParams {
+  page?: number;
+  size?: number;
+  q?: string;
+  categorySlug?: string;
+  stoneTypeId?: number;
+  metal?: string;
+  probe?: string;
+}
+
 export interface ProductSummaryDto {
   id: number;
   sku: string;

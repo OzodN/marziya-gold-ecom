@@ -38,7 +38,7 @@ export const Header: React.FC = () => {
         {/* Navigation & Action Controls */}
         <nav className="flex items-center gap-4 sm:gap-6">
           <Link
-            href="/#catalog"
+            href="/catalog"
             className="hidden text-sm font-medium tracking-wide text-noir-200 hover:text-gold-300 transition-colors sm:block"
           >
             Каталог изделий
