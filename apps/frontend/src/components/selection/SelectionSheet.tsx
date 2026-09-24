@@ -51,6 +51,22 @@ export const SelectionSheet: React.FC = () => {
     };
   }, [isOpen, items.length, markBatchAvailability]);
 
+  // Закрытие шторки подборки по нажатию клавиши Escape
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeSelection();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, closeSelection]);
+
   if (!isOpen) {
     return null;
   }
@@ -58,9 +74,24 @@ export const SelectionSheet: React.FC = () => {
   const totalCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-noir-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="absolute inset-y-0 right-0 flex max-w-full pl-10">
-        <div className="relative w-screen max-w-md border-l border-gold-500/20 bg-noir-900 text-noir-100 shadow-2xl">
+    <div
+      className="fixed inset-0 z-50 overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Моя подборка"
+    >
+      {/* Затемненная область фона (бэкдроп) */}
+      <div
+        className="fixed inset-0 bg-noir-950/70 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+        onClick={closeSelection}
+        aria-hidden="true"
+      />
+
+      <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
+        <div
+          className="relative w-screen max-w-md border-l border-gold-500/20 bg-noir-900 text-noir-100 shadow-2xl pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-noir-800 px-6 py-5">
             <div className="flex items-center gap-2">
