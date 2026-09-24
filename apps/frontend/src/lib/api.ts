@@ -1,10 +1,12 @@
 import type {
   CategoryDto,
+  ContactSettingsDto,
   FilterGroupDto,
   InquiryCreateRequestDto,
   InquiryResponseDto,
   PageResponseProductSummaryDto,
   ProductAvailabilityDto,
+  ProductDetailDto,
   ProductFilterParams,
   ProductSummaryDto,
   StoneTypeDto,
@@ -304,6 +306,559 @@ export const DEMO_PRODUCTS: DemoProductItem[] = [
   },
 ];
 
+export const DEMO_PRODUCT_DETAILS: ProductDetailDto[] = [
+  {
+    id: 1,
+    sku: "MG-R-001",
+    name: "Кольцо «Сияние Востока» с бриллиантом",
+    slug: "koltso-siyanie-vostoka-s-brilliantom",
+    description:
+      "Эксклюзивное авторское кольцо ручной работы из желтого золота с центральным чистейшим бриллиантом классической огранки. Идеальный баланс строгой геометрии и утонченной роскоши восточных ювелирных традиций.",
+    category: { id: 1, name: "Кольца", slug: "koltsa", sortOrder: 1 },
+    categoryName: "Кольца",
+    categorySlug: "koltsa",
+    isVisible: true,
+    images: [
+      {
+        id: 1,
+        url: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 2,
+        url: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+      {
+        id: 3,
+        url: "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 2,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Желтое золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "4.85 г" },
+      { name: "Размер", value: "17.5" },
+      { name: "Покрытие", value: "Зеркальная полировка" },
+    ],
+    stones: [
+      {
+        id: 1,
+        stoneTypeId: 1,
+        stoneTypeName: "Бриллиант",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "1 шт." },
+          { name: "Вес", value: "0.50 ct" },
+          { name: "Огранка", value: "Круглая (57 граней)" },
+          { name: "Цвет / Чистота", value: "3/4 (F/VS1)" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 2,
+    sku: "MG-E-002",
+    name: "Серьги «Бухарская роза» с изумрудами",
+    slug: "sergi-buharskaya-roza-s-izumrudami",
+    description:
+      "Изящные серьги ручной работы с натуральными колумбийскими изумрудами насыщенного травянисто-зеленого оттенка в обрамлении золотых лепестков. Удобный и надежный английский замок гарантирует идеальную посадку.",
+    category: { id: 2, name: "Серьги", slug: "sergi", sortOrder: 2 },
+    categoryName: "Серьги",
+    categorySlug: "sergi",
+    isVisible: true,
+    images: [
+      {
+        id: 4,
+        url: "https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 5,
+        url: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Белое золото" },
+      { name: "Проба", value: "750" },
+      { name: "Вес изделия", value: "6.20 г" },
+      { name: "Тип замка", value: "Английский" },
+    ],
+    stones: [
+      {
+        id: 2,
+        stoneTypeId: 3,
+        stoneTypeName: "Изумруд",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "2 шт." },
+          { name: "Вес", value: "1.20 ct" },
+          { name: "Происхождение", value: "Колумбия" },
+          { name: "Огранка", value: "Изумрудная (Octagon)" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 3,
+    sku: "MG-B-003",
+    name: "Браслет «Царица Самарканда»",
+    slug: "braslet-tsaritsa-samarkanda",
+    description:
+      "Массивный жесткий браслет с авторской гравировкой, тончайшей филигранью и россыпью сапфиров глубокого синего цвета. Воплощение величия и царственной утонченности древнего Востока.",
+    category: { id: 3, name: "Браслеты", slug: "braslety", sortOrder: 3 },
+    categoryName: "Браслеты",
+    categorySlug: "braslety",
+    isVisible: true,
+    images: [
+      {
+        id: 6,
+        url: "https://images.unsplash.com/photo-1611591475155-42646b5a371c?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 7,
+        url: "https://images.unsplash.com/photo-1611591475155-4284ec28d351?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Красное золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "14.50 г" },
+      { name: "Размер", value: "18.0" },
+      { name: "Конструкция", value: "Шарнирный замок с фиксатором" },
+    ],
+    stones: [
+      {
+        id: 3,
+        stoneTypeId: 2,
+        stoneTypeName: "Сапфир",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "12 шт." },
+          { name: "Вес", value: "2.40 ct" },
+          { name: "Огранка", value: "Круг / Маркиз" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 4,
+    sku: "MG-P-004",
+    name: "Подвеска «Звезда Улугбека» с рубином",
+    slug: "podveska-zvezda-ulugbeka-s-rubinom",
+    description:
+      "Кулон тончайшей ювелирной работы, вдохновленный созвездиями и восточной астрономией, с природным бирманским рубином. Тонкие ажурные линии золота обрамляют пламенеющий камень.",
+    category: { id: 4, name: "Колье и подвески", slug: "kolye-i-podveski", sortOrder: 4 },
+    categoryName: "Колье и подвески",
+    categorySlug: "kolye-i-podveski",
+    isVisible: true,
+    images: [
+      {
+        id: 8,
+        url: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 9,
+        url: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Желтое золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "3.90 г" },
+      { name: "Покрытие", value: "Алмазная грань" },
+    ],
+    stones: [
+      {
+        id: 4,
+        stoneTypeId: 4,
+        stoneTypeName: "Рубин",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "1 шт." },
+          { name: "Вес", value: "0.85 ct" },
+          { name: "Происхождение", value: "Бирма" },
+          { name: "Огранка", value: "Овал" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 5,
+    sku: "MG-R-005",
+    name: "Кольцо «Амир» с черным ониксом",
+    slug: "koltso-amir-s-chernym-oniksom",
+    description:
+      "Статусная печатка ручной работы с контрастной геометрией, полированным природным ониксом и акцентными дорожками бриллиантов. Подлинный мужской характер и монументальная строгость.",
+    category: { id: 1, name: "Кольца", slug: "koltsa", sortOrder: 1 },
+    categoryName: "Кольца",
+    categorySlug: "koltsa",
+    isVisible: true,
+    images: [
+      {
+        id: 10,
+        url: "https://images.unsplash.com/photo-1598560917505-59a3ad559071?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 11,
+        url: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Белое золото" },
+      { name: "Проба", value: "750" },
+      { name: "Вес изделия", value: "9.10 г" },
+      { name: "Размер", value: "20.0" },
+    ],
+    stones: [
+      {
+        id: 5,
+        stoneTypeId: 1,
+        stoneTypeName: "Бриллиант",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "8 шт." },
+          { name: "Вес", value: "0.24 ct" },
+          { name: "Огранка", value: "Круглая (57 граней)" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 6,
+    sku: "MG-E-006",
+    name: "Серьги «Жемчужная симфония»",
+    slug: "sergi-zhemchuzhnaya-simfoniya",
+    description:
+      "Вечерние длинные серьги с барочным морским жемчугом редкой каплевидной формы и кристаллами чистейших топазов. Невесомое движение и перелив перламутра при каждом шаге.",
+    category: { id: 2, name: "Серьги", slug: "sergi", sortOrder: 2 },
+    categoryName: "Серьги",
+    categorySlug: "sergi",
+    isVisible: true,
+    images: [
+      {
+        id: 12,
+        url: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 13,
+        url: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Желтое золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "5.40 г" },
+    ],
+    stones: [
+      {
+        id: 6,
+        stoneTypeId: 5,
+        stoneTypeName: "Жемчуг",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "2 шт." },
+          { name: "Тип", value: "Морской барочный жемчуг" },
+        ],
+      },
+      {
+        id: 7,
+        stoneTypeId: 6,
+        stoneTypeName: "Топаз",
+        sortOrder: 1,
+        characteristics: [
+          { name: "Количество", value: "4 шт." },
+          { name: "Вес", value: "0.60 ct" },
+          { name: "Огранка", value: "Бриолет" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 7,
+    sku: "MG-BR-007",
+    name: "Брошь «Павлин Самарканда»",
+    slug: "brosh-pavlin-samarkanda",
+    description:
+      "Коллекционная брошь ручной работы в виде царственного павлина, усыпанного сапфирами и изумрудами. Шедевр ювелирной пластики, тончайшей гравировки и миниатюрной скульптуры.",
+    category: { id: 5, name: "Броши", slug: "broshi", sortOrder: 5 },
+    categoryName: "Броши",
+    categorySlug: "broshi",
+    isVisible: true,
+    images: [
+      {
+        id: 14,
+        url: "https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 15,
+        url: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Желтое золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "8.70 г" },
+    ],
+    stones: [
+      {
+        id: 8,
+        stoneTypeId: 2,
+        stoneTypeName: "Сапфир",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "14 шт." },
+          { name: "Вес", value: "1.80 ct" },
+        ],
+      },
+      {
+        id: 9,
+        stoneTypeId: 3,
+        stoneTypeName: "Изумруд",
+        sortOrder: 1,
+        characteristics: [
+          { name: "Количество", value: "6 шт." },
+          { name: "Вес", value: "0.90 ct" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 8,
+    sku: "MG-P-008",
+    name: "Колье «Тайна Востока» с сапфирами",
+    slug: "kolye-tayna-vostoka-s-sapfirami",
+    description:
+      "Величественное колье из белого золота с природными сапфирами королевского оттенка Royal Blue и россыпью сверкающих бриллиантов. Гармония геометрии и благородных камней.",
+    category: { id: 4, name: "Колье и подвески", slug: "kolye-i-podveski", sortOrder: 4 },
+    categoryName: "Колье и подвески",
+    categorySlug: "kolye-i-podveski",
+    isVisible: true,
+    images: [
+      {
+        id: 16,
+        url: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 17,
+        url: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Белое золото" },
+      { name: "Проба", value: "750" },
+      { name: "Вес изделия", value: "18.30 г" },
+      { name: "Длина", value: "45 см" },
+    ],
+    stones: [
+      {
+        id: 10,
+        stoneTypeId: 2,
+        stoneTypeName: "Сапфир",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "7 шт." },
+          { name: "Вес", value: "3.10 ct" },
+          { name: "Цвет", value: "Royal Blue" },
+        ],
+      },
+      {
+        id: 11,
+        stoneTypeId: 1,
+        stoneTypeName: "Бриллиант",
+        sortOrder: 1,
+        characteristics: [
+          { name: "Количество", value: "22 шт." },
+          { name: "Вес", value: "0.65 ct" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 9,
+    sku: "MG-R-009",
+    name: "Кольцо «Шахерезада» с топазом",
+    slug: "koltso-shaherezada-s-topazom",
+    description:
+      "Изысканное кольцо с крупным природным голубым топазом оттенка Swiss Blue в резной оправе из желтого золота, напоминающей восточный орнамент гирих.",
+    category: { id: 1, name: "Кольца", slug: "koltsa", sortOrder: 1 },
+    categoryName: "Кольца",
+    categorySlug: "koltsa",
+    isVisible: true,
+    images: [
+      {
+        id: 18,
+        url: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 19,
+        url: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Желтое золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "5.10 г" },
+      { name: "Размер", value: "17.0" },
+    ],
+    stones: [
+      {
+        id: 12,
+        stoneTypeId: 6,
+        stoneTypeName: "Топаз",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "1 шт." },
+          { name: "Вес", value: "1.80 ct" },
+          { name: "Оттенок", value: "Swiss Blue" },
+          { name: "Огранка", value: "Кушон" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 10,
+    sku: "MG-B-010",
+    name: "Браслет «Золотой Шелковый Путь»",
+    slug: "braslet-zolotoy-shelkovyy-put",
+    description:
+      "Плетеный браслет авторского плетения из желтого золота с инкрустацией бриллиантовыми заклепками. Мягко ложится на запястье, подчеркивая статус и вкус владельца.",
+    category: { id: 3, name: "Браслеты", slug: "braslety", sortOrder: 3 },
+    categoryName: "Браслеты",
+    categorySlug: "braslety",
+    isVisible: true,
+    images: [
+      {
+        id: 20,
+        url: "https://images.unsplash.com/photo-1611591475155-4284ec28d351?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 21,
+        url: "https://images.unsplash.com/photo-1611591475155-42646b5a371c?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Желтое золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "11.20 г" },
+      { name: "Размер", value: "19.0" },
+    ],
+    stones: [
+      {
+        id: 13,
+        stoneTypeId: 1,
+        stoneTypeName: "Бриллиант",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "6 шт." },
+          { name: "Вес", value: "0.35 ct" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 11,
+    sku: "MG-E-011",
+    name: "Серьги «Восточный Ореол»",
+    slug: "sergi-vostochnyy-oreol",
+    description:
+      "Круглые серьги-конго с россыпью огненных бирманских рубинов в красном золоте. Тончайшая закрепка камней паве создает сплошное пламенное сияние.",
+    category: { id: 2, name: "Серьги", slug: "sergi", sortOrder: 2 },
+    categoryName: "Серьги",
+    categorySlug: "sergi",
+    isVisible: true,
+    images: [
+      {
+        id: 22,
+        url: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 23,
+        url: "https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Красное золото" },
+      { name: "Проба", value: "585" },
+      { name: "Вес изделия", value: "4.70 г" },
+    ],
+    stones: [
+      {
+        id: 14,
+        stoneTypeId: 4,
+        stoneTypeName: "Рубин",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "16 шт." },
+          { name: "Вес", value: "1.10 ct" },
+        ],
+      },
+    ],
+  },
+  {
+    id: 12,
+    sku: "MG-BR-012",
+    name: "Брошь «Финист» с жемчугом",
+    slug: "brosh-finist-s-zhemchugom",
+    description:
+      "Авторская брошь из белого золота в виде распахнутого птичьего крыла с крупной барочной жемчужиной. Истинное произведение искусства для лацкана пальто или вечернего платья.",
+    category: { id: 5, name: "Броши", slug: "broshi", sortOrder: 5 },
+    categoryName: "Броши",
+    categorySlug: "broshi",
+    isVisible: true,
+    images: [
+      {
+        id: 24,
+        url: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 0,
+      },
+      {
+        id: 25,
+        url: "https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=1200&q=85",
+        sortOrder: 1,
+      },
+    ],
+    characteristics: [
+      { name: "Металл", value: "Белое золото" },
+      { name: "Проба", value: "750" },
+      { name: "Вес изделия", value: "7.90 г" },
+    ],
+    stones: [
+      {
+        id: 15,
+        stoneTypeId: 5,
+        stoneTypeName: "Жемчуг",
+        sortOrder: 0,
+        characteristics: [
+          { name: "Количество", value: "1 шт." },
+          { name: "Тип", value: "Барочный пресноводный жемчуг" },
+          { name: "Размер жемчужины", value: "14 мм" },
+        ],
+      },
+    ],
+  },
+];
+
 // Helper to filter demo items in fallback mode
 function filterDemoProducts(params: ProductFilterParams = {}): PageResponseProductSummaryDto {
   const {
@@ -583,3 +1138,80 @@ export async function submitInquiry(
     message: "Заявка успешно принята мастером Marziya Gold",
   };
 }
+
+/**
+ * Get detailed product information by slug with seamless seed fallback
+ */
+export async function getProductBySlug(
+  slug: string
+): Promise<ProductDetailDto | null> {
+  const baseUrl = getApiBaseUrl();
+  const url = `${baseUrl}/products/${encodeURIComponent(slug)}`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+      },
+      next: { revalidate: 30 },
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data: ProductDetailDto = await res.json();
+      return data;
+    }
+
+    if (res.status === 404) {
+      const fallback = DEMO_PRODUCT_DETAILS.find((p) => p.slug === slug);
+      if (fallback) return fallback;
+      return null;
+    }
+  } catch (err) {
+    console.info(`[API] Backend unavailable for getProductBySlug(${slug}), using fallback data.`);
+  }
+
+  const fallback = DEMO_PRODUCT_DETAILS.find((p) => p.slug === slug);
+  return fallback || null;
+}
+
+/**
+ * Get public master contact settings with fallback
+ */
+export async function getContactSettings(): Promise<ContactSettingsDto> {
+  const baseUrl = getApiBaseUrl();
+  const url = `${baseUrl}/settings/contacts`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+      next: { revalidate: 300 },
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data: ContactSettingsDto = await res.json();
+      return data;
+    }
+  } catch (err) {
+    console.info("[API] Backend unavailable for getContactSettings, using fallback.");
+  }
+
+  return {
+    telegramUsername: "marziyagold",
+    phoneNumber: "+998901234567",
+    masterBio:
+      "Авторская ювелирная мастерская Marziya Gold. Создание уникальных драгоценных украшений ручной работы в единственном экземпляре.",
+  };
+}
+

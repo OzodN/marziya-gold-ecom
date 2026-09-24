@@ -62,9 +62,13 @@ export interface ProductDetailDto {
   slug: string;
   description?: string;
   category?: CategoryDto;
+  categoryName?: string;
+  categorySlug?: string;
   images?: ProductImageDto[];
   characteristics?: CharacteristicEntryDto[];
   stones?: ProductStoneDto[];
+  createdAt?: string;
+  isVisible?: boolean;
 }
 
 export interface PageResponseProductSummaryDto {
