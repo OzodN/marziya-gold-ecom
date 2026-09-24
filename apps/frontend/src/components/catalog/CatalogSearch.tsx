@@ -51,7 +51,7 @@ export const CatalogSearch: React.FC<CatalogSearchProps> = ({
         onChange={(e) => setInternalValue(e.target.value)}
         placeholder={placeholder}
         aria-label="Поиск по каталогу"
-        className="w-full rounded-xl border border-noir-700/80 bg-noir-900/90 py-2.5 pl-10 pr-10 text-sm text-white placeholder-noir-400 transition-all duration-200 focus:border-gold-400 focus:bg-noir-900 focus:outline-none focus:ring-1 focus:ring-gold-400/60"
+        className="w-full rounded-xl border border-noir-700/80 bg-noir-900/90 py-2.5 pl-10 pr-11 text-sm text-white placeholder-noir-400 transition-all duration-200 focus:border-gold-400 focus:bg-noir-900 focus:outline-none focus:ring-1 focus:ring-gold-400/60"
       />
 
       {internalValue && (
@@ -59,9 +59,9 @@ export const CatalogSearch: React.FC<CatalogSearchProps> = ({
           type="button"
           onClick={handleClear}
           aria-label="Очистить поиск"
-          className="absolute right-3 rounded-full p-1 text-noir-400 transition-colors hover:bg-noir-800 hover:text-white"
+          className="absolute right-1.5 flex h-9 w-9 items-center justify-center rounded-full text-noir-400 transition-colors hover:bg-noir-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
         >
-          <X className="h-3.5 w-3.5" />
+          <X className="h-4 w-4" />
         </button>
       )}
     </div>

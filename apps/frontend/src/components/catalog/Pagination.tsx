@@ -92,7 +92,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(pageNumber - 1)}
           disabled={pageNumber <= 0}
           aria-label="Предыдущая страница"
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-noir-700/80 bg-noir-900/90 text-noir-300 transition-all hover:border-gold-500/50 hover:text-gold-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-noir-700 disabled:hover:text-noir-300"
+          className="flex h-11 w-11 min-w-[44px] items-center justify-center rounded-xl border border-noir-700/80 bg-noir-900/90 text-noir-300 transition-all hover:border-gold-500/50 hover:text-gold-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-noir-700 disabled:hover:text-noir-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -103,7 +103,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             return (
               <span
                 key={`ellipsis-${idx}`}
-                className="flex h-9 w-7 items-center justify-center text-xs text-noir-500"
+                className="flex h-11 w-7 items-center justify-center text-xs text-noir-500"
               >
                 …
               </span>
@@ -118,7 +118,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               onClick={() => onPageChange(p)}
               aria-current={isCurrent ? "page" : undefined}
               aria-label={`Страница ${p + 1}`}
-              className={`flex h-9 min-w-9 items-center justify-center rounded-xl px-2.5 text-xs font-medium transition-all ${
+              className={`flex h-11 min-w-[44px] items-center justify-center rounded-xl px-3 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${
                 isCurrent
                   ? "bg-gold-500 font-bold text-noir-950 shadow-gold"
                   : "border border-noir-700/80 bg-noir-900/90 text-noir-300 hover:border-gold-500/50 hover:text-gold-200"
@@ -135,7 +135,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(pageNumber + 1)}
           disabled={pageNumber >= totalPages - 1}
           aria-label="Следующая страница"
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-noir-700/80 bg-noir-900/90 text-noir-300 transition-all hover:border-gold-500/50 hover:text-gold-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-noir-700 disabled:hover:text-noir-300"
+          className="flex h-11 w-11 min-w-[44px] items-center justify-center rounded-xl border border-noir-700/80 bg-noir-900/90 text-noir-300 transition-all hover:border-gold-500/50 hover:text-gold-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-noir-700 disabled:hover:text-noir-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
