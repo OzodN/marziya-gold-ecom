@@ -75,6 +75,11 @@
 - `sort_order` (INT NOT NULL DEFAULT 0)
 - `characteristics` (JSONB NOT NULL DEFAULT '[]') — массив `{"name": "...", "value": "..."}`
 
+**Индексы:**
+- `CREATE INDEX idx_product_stone_characteristics ON product_stone USING gin (characteristics);`
+- `CREATE INDEX idx_product_stone_product ON product_stone (product_id);`
+- `CREATE INDEX idx_product_stone_stone_type ON product_stone (stone_type_id);`
+
 ### 2.8. `inquiry`
 - `id` (BIGSERIAL PK)
 - `client_name` (VARCHAR(100) NOT NULL)
