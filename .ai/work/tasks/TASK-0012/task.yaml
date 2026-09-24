@@ -1,0 +1,31 @@
+id: "TASK-0012"
+title: "Admin Authentication & Inquiries Management REST API"
+status: "in_progress"
+owner: "backend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0006"
+
+affected_areas:
+  - "apps/backend/**"
+
+branch: "feat/TASK-0012-admin-api"
+worktree: ".worktrees/TASK-0012-admin-api"
+
+acceptance_criteria:
+  - "Implement AdminAuthService & AdminAuthController: POST /api/v1/admin/auth/login, POST /api/v1/admin/auth/logout, GET /api/v1/admin/auth/me."
+  - "Login sets secure HttpOnly cookie containing JWT token with SameSite=Strict."
+  - "Logout clears the HttpOnly auth cookie."
+  - "Implement AdminInquiryService & AdminInquiryController: GET /api/v1/admin/inquiries with pagination, status filtering, and created_at sorting."
+  - "Implement GET /api/v1/admin/inquiries/new-count returning number of NEW inquiries for 30s polling."
+  - "Implement GET /api/v1/admin/inquiries/{id} returning client details, full JSON snapshot of items, and status change audit timeline."
+  - "Implement PUT /api/v1/admin/inquiries/{id}/status for manual status transitions with audit record in inquiry_status_history."
+  - "Ensure all /api/v1/admin/** endpoints (except login) require ROLE_ADMIN authorization via JwtAuthenticationFilter."
+  - "Unit and slice tests written and passing (mvn test)."
+  - "Handoff generated at .ai/work/tasks/TASK-0012/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "pending"

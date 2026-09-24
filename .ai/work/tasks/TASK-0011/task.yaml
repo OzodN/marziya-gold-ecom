@@ -1,0 +1,34 @@
+id: "TASK-0011"
+title: "Detailed Product Page, Image Gallery, Direct Master Contacts & SEO"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0010"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0011-product-detail"
+worktree: ".worktrees/TASK-0011-product-detail"
+
+acceptance_criteria:
+  - "Create full dynamic product detail page at apps/frontend/src/app/product/[slug]/page.tsx."
+  - "Implement generateStaticParams() for seed jewelry items (SSG pre-rendering)."
+  - "Implement dynamic SEO metadata (title, description, OpenGraph) and Schema.org Product JSON-LD structured data."
+  - "Implement interactive photo gallery: large hero photo preview, thumbnails list, zoom modal on click, and mobile touch swipe gestures."
+  - "Display dynamic characteristics table (Металл, Проба, Вес изделия, Размер) and stone composition cards (Камни, Каратность, Огранка)."
+  - "Implement quantity counter [-] N [+] and 'В подборку' button with dynamic state feedback ('В подборке', 'Добавить еще')."
+  - "Implement mobile sticky bottom action bar appearing on scroll on viewports <640px."
+  - "Implement direct master communication block: [Написать в Telegram] (tg://resolve or web telegram) and [Позвонить мастеру] (tel:)."
+  - "Ensure touch targets >= 44x44px and focus-visible:ring-2 focus-visible:ring-gold-400."
+  - "Strictly maintain approved terminology ('Моя подборка', 'В подборку', 'Отправить запрос')."
+  - "npm run build passes with 0 errors."
+  - "Handoff generated at .ai/work/tasks/TASK-0011/handoff.md."
+
+required_reviews:
+  - "ux_review_gate"
+  - "code_review_gate"
+
+validation_status: "pending"

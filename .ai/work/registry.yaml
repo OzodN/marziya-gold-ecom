@@ -12,7 +12,9 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks: []
+active_tasks:
+  - "TASK-0011"
+  - "TASK-0012"
 
 tasks:
   - id: "TASK-0001"
@@ -117,3 +119,25 @@ tasks:
     dependencies:
       - "TASK-0009"
     created_at: "2026-09-24T19:50:00Z"
+
+  - id: "TASK-0011"
+    title: "Detailed Product Page, Image Gallery, Direct Master Contacts & SEO"
+    status: "in_progress"
+    owner: "frontend"
+    type: "feature"
+    affected_areas:
+      - "apps/frontend/**"
+    dependencies:
+      - "TASK-0010"
+    created_at: "2026-09-24T20:30:00Z"
+
+  - id: "TASK-0012"
+    title: "Admin Authentication & Inquiries Management REST API"
+    status: "in_progress"
+    owner: "backend"
+    type: "feature"
+    affected_areas:
+      - "apps/backend/**"
+    dependencies:
+      - "TASK-0006"
+    created_at: "2026-09-24T20:30:00Z"
