@@ -1,0 +1,32 @@
+id: "TASK-0006"
+title: "Storefront Public REST API, Inquiry Processing & Rate Limiting"
+status: "in_progress"
+owner: "backend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0003"
+  - "TASK-0008"
+
+affected_areas:
+  - "apps/backend/**"
+
+branch: "feat/TASK-0006-backend-api"
+worktree: ".worktrees/TASK-0006-backend-api"
+
+acceptance_criteria:
+  - "Implement DTOs matching docs/api/openapi.yaml for Products, Categories, Characteristics, Availability, Inquiries, Contacts."
+  - "Implement ProductService with pagination (Pageable), category filtering, stone type filtering, and pg_trgm fuzzy search on name and SKU."
+  - "Implement ProductController: GET /api/v1/products, GET /api/v1/products/{slug}, POST /api/v1/products/validate-batch."
+  - "Implement CategoryController: GET /api/v1/categories (ordered by sort_order, only is_visible=true)."
+  - "Implement CharacteristicController: GET /api/v1/characteristics/filter-keys."
+  - "Implement InquiryService & InquiryController: POST /api/v1/inquiries with Bucket4j IP rate limiting, immutable JSONB product_snapshot, initial status NEW, and status history entry."
+  - "Implement SettingsController: GET /api/v1/settings/contacts (phone, telegram, master info)."
+  - "Global exception handling returning RFC 7807 / standard error responses."
+  - "Clean build: mvn test-compile passes with 0 errors."
+  - "Handoff file generated at .ai/work/tasks/TASK-0006/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "pending"

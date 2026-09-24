@@ -1,0 +1,32 @@
+id: "TASK-0009"
+title: "Catalog Page, Category Filters and Search Storefront"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0004"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0009-frontend-catalog"
+worktree: ".worktrees/TASK-0009-frontend-catalog"
+
+acceptance_criteria:
+  - "Create full catalog page at apps/frontend/src/app/catalog/page.tsx."
+  - "Create category-specific catalog route at apps/frontend/src/app/catalog/[categorySlug]/page.tsx."
+  - "Implement search bar with debounced query (?q=...) updating search parameters."
+  - "Implement category filter chips/navigation and stone type / characteristic filters."
+  - "Implement responsive filters: desktop sidebar column and mobile bottom sheet / drawer."
+  - "Implement product grid rendering ProductCard with integration into Selection Store ('В подборку')."
+  - "Implement pagination controls (page navigation, previous/next)."
+  - "Implement API service/fetcher in src/lib/api.ts for fetching products, categories, filter-keys."
+  - "Strictly maintain approved terminology ('Моя подборка', 'В подборку', 'Отправить запрос')."
+  - "npm run build passes with 0 errors."
+  - "Handoff file generated at .ai/work/tasks/TASK-0009/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "pending"
