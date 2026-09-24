@@ -1,0 +1,29 @@
+id: "TASK-0005"
+title: "Selection Sheet Backdrop and Keyboard Close Interaction"
+status: "done"
+owner: "frontend"
+contributors: []
+type: "fix"
+dependencies:
+  - "TASK-0004"
+
+affected_areas:
+  - "apps/frontend/src/components/selection/SelectionSheet.tsx"
+
+branch: "feat/TASK-0005-selection-sheet-backdrop"
+worktree: ".worktrees/TASK-0005-selection-sheet-backdrop"
+
+acceptance_criteria:
+  - "Clicking on the darkened backdrop area outside the SelectionSheet side drawer triggers closeSelection()."
+  - "Clicks within the drawer container do not trigger closeSelection() (stopPropagation / pointer-events properly configured)."
+  - "Pressing the Escape key while SelectionSheet is open triggers closeSelection()."
+  - "Accessibility attributes (aria-hidden, aria-modal, aria-label) properly preserved or enhanced."
+  - "Approved terminology strictly maintained ('Моя подборка', 'В подборку', 'Отправить запрос')."
+  - "apps/frontend builds cleanly (npm run build) with 0 errors."
+  - "No files outside apps/frontend/ modified."
+  - "Handoff file .ai/work/tasks/TASK-0005/handoff.md generated upon completion."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "passed"
