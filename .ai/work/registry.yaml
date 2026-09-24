@@ -12,8 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0010"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -110,7 +109,7 @@ tasks:
 
   - id: "TASK-0010"
     title: "Comprehensive UX/UI Remediation across Storefront Components"
-    status: "in_progress"
+    status: "done"
     owner: "frontend"
     type: "fix"
     affected_areas:
