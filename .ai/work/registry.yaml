@@ -12,8 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0006"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -87,7 +86,7 @@ tasks:
 
   - id: "TASK-0006"
     title: "Storefront Public REST API, Inquiry Processing & Rate Limiting"
-    status: "in_progress"
+    status: "done"
     owner: "backend"
     type: "feature"
     affected_areas:

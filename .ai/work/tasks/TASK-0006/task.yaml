@@ -1,6 +1,6 @@
 id: "TASK-0006"
 title: "Storefront Public REST API, Inquiry Processing & Rate Limiting"
-status: "completed"
+status: "done"
 owner: "backend"
 contributors: []
 type: "feature"
