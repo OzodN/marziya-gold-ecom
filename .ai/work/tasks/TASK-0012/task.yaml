@@ -28,4 +28,4 @@ acceptance_criteria:
 required_reviews:
   - "code_review_gate"
 
-validation_status: "pending"
+validation_status: "passed"
