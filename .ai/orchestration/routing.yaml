@@ -110,3 +110,18 @@ routes:
       - "architecture"
       - "architecture-decision-records"
       - "concise-planning"
+
+  - match:
+      paths:
+        - "docs/design/**"
+        - ".ai/reports/ux-reviews/**"
+      tags:
+        - "ux"
+        - "ui"
+        - "design"
+        - "review"
+    assignee: "ux-reviewer"
+    skills:
+      - "frontend-design"
+      - "code-review-checklist"
+      - "lint-and-validate"

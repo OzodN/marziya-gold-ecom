@@ -27,6 +27,13 @@
 - Команда проверки: `...`
 - Результат: [Passed / Warnings]
 
+### 6.1. UX/UI Self-Check (Обязательно для Frontend-задач)
+- [ ] Соответствие `docs/design/ux-criteria.md` проверено
+- [ ] 6 состояний (default, hover, loading skeleton, empty, error, disabled) реализованы
+- [ ] Mobile-first: touch targets >= 44x44px, sticky CTA, viewport 375px
+- [ ] Терминология: строго "Моя подборка", "В подборку", "Отправить запрос"
+- [ ] Доступность: Escape закрывает диалоги, focus trap, aria-labels
+
 ## 7. Следующие шаги
 - [ ] [Действие для следующего агента]
 

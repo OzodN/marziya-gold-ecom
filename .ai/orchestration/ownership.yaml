@@ -116,3 +116,17 @@ roles:
       - "database/**"
       - "infra/**"
       - ".github/**"
+
+  ux-reviewer:
+    owns:
+      - ".ai/reports/ux-reviews/**"
+      - "docs/design/**"
+    read_only:
+      - "apps/frontend/**"
+      - "docs/**"
+      - ".ai/**"
+    prohibited_write:
+      - "apps/**"
+      - "database/**"
+      - "infra/**"
+      - ".github/**"

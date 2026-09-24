@@ -77,6 +77,13 @@
       "lint-and-validate",
       "architecture-decision-records",
       "verification-before-completion"
+    ],
+    "ux-reviewer": [
+      "frontend-design",
+      "code-review-checklist",
+      "lint-and-validate",
+      "verification-before-completion",
+      "systematic-debugging"
     ]
   },
   "verifiedInstalledSkills": [

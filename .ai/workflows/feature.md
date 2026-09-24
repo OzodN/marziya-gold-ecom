@@ -33,9 +33,10 @@
 - Агент запускает локальные тесты и проверки: `verification-before-completion`.
 
 ## 7. Хендофф и передача на ревью (Handoff & Review Gate)
-- Агент формирует `.ai/work/tasks/TASK-XXXX/handoff.md`.
+- Агент формирует `.ai/work/tasks/TASK-XXXX/handoff.md` (для фронтенда обязателен блок UX Self-Check).
 - Статус задачи переводится в `review`.
 - Агент `reviewer` проверяет изменения согласно `.ai/orchestration/gates.yaml` (`code_review_gate`).
+- Для задач, затрагивающих `apps/frontend/`, агент `ux-reviewer` параллельно проводит аудит на соответствие `docs/design/ux-criteria.md` (`ux_review_gate`) и оформляет `.ai/reports/ux-reviews/TASK-XXXX-ux-review.md`.
 
 ## 8. Тестирование QA (QA Gate)
 - Агент `qa` запускает E2E или интеграционные тесты (`test_pass_gate`).

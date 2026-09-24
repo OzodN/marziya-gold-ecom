@@ -14,6 +14,7 @@ roles:
       - "security"
       - "devops"
       - "reviewer"
+      - "ux-reviewer"
     tools_enabled:
       read_tools: true
       write_tools: true
@@ -107,6 +108,18 @@ roles:
       - "devops_gate"
 
   reviewer:
+    type: "gatekeeper"
+    base_subagent: "self"
+    workspace_mode: "share"
+    can_delegate_to: []
+    tools_enabled:
+      read_tools: true
+      write_tools: true
+      command_tools: true
+      subagent_tools: false
+    required_gates: []
+
+  ux-reviewer:
     type: "gatekeeper"
     base_subagent: "self"
     workspace_mode: "share"

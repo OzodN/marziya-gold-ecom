@@ -32,7 +32,7 @@ for file in "AGENTS.md" "apps/backend/AGENTS.md" "apps/frontend/AGENTS.md" "data
 done
 
 # 2. Canonical sources of truth
-for file in "docs/architecture/product-architecture.md" "docs/adr/README.md" "docs/adr/0001-baseline-architecture-decisions.md" "docs/api/openapi.yaml" "database/schema-model.md" ".ai/instructions/source-of-truth.md"; do
+for file in "docs/architecture/product-architecture.md" "docs/adr/README.md" "docs/adr/0001-baseline-architecture-decisions.md" "docs/api/openapi.yaml" "database/schema-model.md" "docs/design/ux-criteria.md" ".ai/instructions/source-of-truth.md"; do
   if [ -f "$file" ]; then
     pass "Canonical file exists: $file"
   else
@@ -49,7 +49,7 @@ else
 fi
 
 # 4. Agent profiles
-for agent in orchestrator backend frontend database qa security devops reviewer; do
+for agent in orchestrator backend frontend database qa security devops reviewer ux-reviewer; do
   if [ -f ".ai/agents/${agent}.yaml" ]; then
     pass "Agent profile exists: .ai/agents/${agent}.yaml"
   else

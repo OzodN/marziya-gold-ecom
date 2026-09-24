@@ -52,6 +52,7 @@ $CanonicalFiles = @(
     "docs/adr/0001-baseline-architecture-decisions.md",
     "docs/api/openapi.yaml",
     "database/schema-model.md",
+    "docs/design/ux-criteria.md",
     ".ai/instructions/source-of-truth.md"
 )
 
@@ -99,7 +100,7 @@ if (Test-Path $StackManifestPath) {
 
 # 4. Validate Agent Profiles & Ownership
 Write-Host "`n4. Validating Agent Roles & Orchestration..." -ForegroundColor Yellow
-$RequiredAgents = @("orchestrator", "backend", "frontend", "database", "qa", "security", "devops", "reviewer")
+$RequiredAgents = @("orchestrator", "backend", "frontend", "database", "qa", "security", "devops", "reviewer", "ux-reviewer")
 
 foreach ($agent in $RequiredAgents) {
     $agentFile = ".ai/agents/$agent.yaml"

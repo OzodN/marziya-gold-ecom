@@ -59,7 +59,7 @@ merge_and_integration_protocol:
     2: "Agent runs local verification (unit tests, linter, formatting)."
     3: "Agent creates .ai/work/tasks/{task_id}/handoff.md."
     4: "Task status changed to 'review'."
-    5: "Reviewer agent audits changes against code-review-checklist."
+    5: "Reviewer agent audits code against code-review-checklist (code_review_gate); for frontend tasks, UX-Reviewer concurrently audits against docs/design/ux-criteria.md (ux_review_gate)."
     6: "QA agent verifies tests in separate run."
     7: "Orchestrator merges branch into main, deletes worktree: git worktree remove .worktrees/{task_id}-{slug}."
     8: "Task status updated to 'done'."

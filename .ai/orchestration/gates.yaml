@@ -52,6 +52,20 @@ gates:
       - "No hardcoded secrets, API keys, or credentials."
       - "Commit messages follow Conventional Commits (feat, fix, refactor, test, docs)."
 
+  ux_review_gate:
+    trigger_paths:
+      - "apps/frontend/src/**"
+      - "apps/frontend/public/**"
+    required_reviewers:
+      - "ux-reviewer"
+    criteria:
+      - "Complies with docs/design/ux-criteria.md (Luxury Minimalist aesthetic)."
+      - "All interactive states handled: loading skeleton, empty selection, inline field errors, disabled styling."
+      - "Mobile touch targets (>= 44x44px), sticky CTA bar, and drawer ergonomics verified down to 375px viewport."
+      - "Strict terminology enforcement: 'Моя подборка', 'В подборку', 'Отправить запрос'."
+      - "Accessibility: Escape key dismisses modals/drawers, focus traps intact, explicit aria-labels on icon buttons."
+
+
   security_audit_gate:
     trigger_paths:
       - "apps/backend/src/main/java/**/security/**"

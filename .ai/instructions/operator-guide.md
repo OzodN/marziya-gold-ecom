@@ -30,12 +30,15 @@ git worktree add .worktrees/TASK-0002-initial-schema -b feat/TASK-0002-initial-s
 ```
 Агент работает исключительно внутри `.worktrees/TASK-0002-initial-schema` и правит только разрешенные в `ownership.yaml` файлы.
 
-### Шаг 4: Приемка и проверка артефактов (Handoff)
+### Шаг 4: Приемка и проверка артефактов (Handoff & Review)
 По завершении работы агент обязан:
 1. Запустить локальные тесты / компиляцию.
-2. Создать `.ai/work/tasks/TASK-0002/handoff.md`.
+2. Создать `.ai/work/tasks/TASK-XXXX/handoff.md` (для фронтенда — с блоком UX/UI Self-Check).
 3. Закоммитить код в свою ветку по стандарту Conventional Commits.
 4. Перевести статус задачи в `review`.
+5. Запустить аудит:
+   - Для всех задач: агент `reviewer` (`code_review_gate`).
+   - Для фронтенд-задач: дополнительно агент `ux-reviewer` (`ux_review_gate` по `docs/design/ux-criteria.md`).
 
 ### Шаг 5: Запуск валидации репозитория
 Вы (или агент-ревьюер) запускаете скрипт проверки целостности:
