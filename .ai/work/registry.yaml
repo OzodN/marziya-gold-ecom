@@ -1,5 +1,5 @@
 version: "1.0"
-updated_at: "2026-09-24T00:40:00Z"
+updated_at: "2026-09-24T15:30:00Z"
 description: "Master registry of all project tasks across AI agents."
 
 allowed_states:
@@ -12,9 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0002"
-  - "TASK-0004"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -32,7 +30,7 @@ tasks:
 
   - id: "TASK-0002"
     title: "Initial Flyway Schema Migration and Database Documentation"
-    status: "review"
+    status: "done"
     owner: "database"
     type: "database"
     affected_areas:
@@ -44,7 +42,7 @@ tasks:
 
   - id: "TASK-0003"
     title: "Spring Boot 4.1.1 Project Scaffolding and Security Skeleton"
-    status: "blocked"
+    status: "ready"
     owner: "backend"
     type: "feature"
     affected_areas:
@@ -55,7 +53,7 @@ tasks:
 
   - id: "TASK-0004"
     title: "Next.js 15+ App Router Client Storefront & Selection Store Scaffolding"
-    status: "in_progress"
+    status: "done"
     owner: "frontend"
     type: "feature"
     affected_areas:

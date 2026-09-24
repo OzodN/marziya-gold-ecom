@@ -1,6 +1,6 @@
 id: "TASK-0002"
 title: "Initial Flyway Schema Migration and Database Documentation"
-status: "review"
+status: "done"
 owner: "database"
 contributors: []
 type: "database"

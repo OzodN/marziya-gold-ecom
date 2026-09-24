@@ -1,6 +1,6 @@
 id: "TASK-0004"
 title: "Next.js 15+ App Router Client Storefront & Selection Store Scaffolding"
-status: "in_progress"
+status: "done"
 owner: "frontend"
 contributors: []
 type: "feature"
@@ -27,4 +27,4 @@ acceptance_criteria:
 required_reviews:
   - "code_review_gate"
 
-validation_status: "in_progress"
+validation_status: "passed"
