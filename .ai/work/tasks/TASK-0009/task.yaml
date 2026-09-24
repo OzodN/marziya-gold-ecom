@@ -1,6 +1,6 @@
 id: "TASK-0009"
 title: "Catalog Page, Category Filters and Search Storefront"
-status: "in_progress"
+status: "done"
 owner: "frontend"
 contributors: []
 type: "feature"
@@ -29,4 +29,4 @@ acceptance_criteria:
 required_reviews:
   - "code_review_gate"
 
-validation_status: "pending"
+validation_status: "passed"

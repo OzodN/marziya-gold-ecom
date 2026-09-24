@@ -14,7 +14,6 @@ allowed_states:
 
 active_tasks:
   - "TASK-0006"
-  - "TASK-0009"
 
 tasks:
   - id: "TASK-0001"
@@ -100,7 +99,7 @@ tasks:
 
   - id: "TASK-0009"
     title: "Catalog Page, Category Filters and Search Storefront"
-    status: "in_progress"
+    status: "done"
     owner: "frontend"
     type: "feature"
     affected_areas:
