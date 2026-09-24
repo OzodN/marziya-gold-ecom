@@ -2,7 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { Gem, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { Sparkles } from "lucide-react";
 import { useSelectionStore, useSelectionCount } from "@/store/selection-store";
 
 export const Header: React.FC = () => {
@@ -14,8 +15,15 @@ export const Header: React.FC = () => {
       <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo & Title */}
         <Link href="/" className="group flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-gold-400/40 bg-gold-950/40 text-gold-400 transition-transform group-hover:scale-105">
-            <Gem className="h-5 w-5 text-gold-300" />
+          <div className="relative flex h-11 w-11 items-center justify-center transition-transform group-hover:scale-105">
+            <Image
+              src="/images/icon-gold.png"
+              alt="Marziya Gold"
+              width={44}
+              height={44}
+              priority
+              className="h-full w-full object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
+            />
           </div>
           <div className="flex flex-col">
             <span className="font-serif text-xl sm:text-2xl font-semibold tracking-wider text-gold-200 group-hover:text-gold-100 transition-colors uppercase">

@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { Gem, Send, Phone, MapPin } from "lucide-react";
+import Image from "next/image";
+import { Send, Phone, MapPin } from "lucide-react";
 
 export const Footer: React.FC = () => {
   return (
@@ -10,8 +11,14 @@ export const Footer: React.FC = () => {
           {/* Brand info */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gold-400/40 bg-gold-950/40 text-gold-400">
-                <Gem className="h-5 w-5 text-gold-300" />
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
+                <Image
+                  src="/images/icon-gold.png"
+                  alt="Marziya Gold"
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-contain drop-shadow-[0_0_6px_rgba(212,175,55,0.35)]"
+                />
               </div>
               <span className="font-serif text-xl font-semibold tracking-wider text-gold-200 uppercase">
                 Marziya Gold
