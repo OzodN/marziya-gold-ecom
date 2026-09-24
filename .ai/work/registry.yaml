@@ -12,8 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0012"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -132,7 +131,7 @@ tasks:
 
   - id: "TASK-0012"
     title: "Admin Authentication & Inquiries Management REST API"
-    status: "in_progress"
+    status: "done"
     owner: "backend"
     type: "feature"
     affected_areas:

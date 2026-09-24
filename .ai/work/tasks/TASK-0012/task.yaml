@@ -1,6 +1,6 @@
 id: "TASK-0012"
 title: "Admin Authentication & Inquiries Management REST API"
-status: "in_progress"
+status: "done"
 owner: "backend"
 contributors: []
 type: "feature"
