@@ -1,0 +1,34 @@
+id: "TASK-0010"
+title: "Comprehensive UX/UI Remediation across Storefront Components"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "fix"
+dependencies:
+  - "TASK-0009"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0010-ux-remediation"
+worktree: ".worktrees/TASK-0010-ux-remediation"
+
+acceptance_criteria:
+  - "InquiryModal: Add Escape key close listener and clickable backdrop overlay (onClick={handleClose})."
+  - "InquiryModal: Add role='dialog', aria-modal='true', and aria-labelledby."
+  - "InquiryModal: Implement inline input validation for clientName and clientPhone with red border highlights and localized messages under fields."
+  - "ProductCard: Wrap product image and title in Link href='/product/[slug]' with focus/hover styling."
+  - "Touch Targets: Ensure interactive buttons (quantity +/-, delete Trash2, close X, search clear X, pagination buttons, add-to-selection) meet minimum touch target >= 44x44px."
+  - "CatalogView: Implement explicit Error State with 'Не удалось загрузить каталог' and 'Повторить попытку' button instead of falling back to false empty state."
+  - "SelectionSheet: Optimize mobile layout on screens <640px to eliminate cramped left margin."
+  - "Header: Ensure mobile navigation link to /catalog is readily accessible."
+  - "Accessibility: Add visible focus-visible:ring-2 focus-visible:ring-gold-400 across buttons, links, and chips."
+  - "Maintain strict terminology: 'Моя подборка', 'В подборку', 'Отправить запрос'."
+  - "npm run build passes with 0 errors."
+  - "Handoff generated at .ai/work/tasks/TASK-0010/handoff.md."
+
+required_reviews:
+  - "ux_review_gate"
+  - "code_review_gate"
+
+validation_status: "pending"
