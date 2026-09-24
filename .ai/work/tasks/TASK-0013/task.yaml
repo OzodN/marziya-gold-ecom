@@ -1,0 +1,29 @@
+id: "TASK-0013"
+title: "Product Detail Page UX Remediation (DEF-09 to DEF-13)"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "fix"
+dependencies:
+  - "TASK-0011"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0013-product-ux-remediation"
+worktree: ".worktrees/TASK-0013-product-ux-remediation"
+
+acceptance_criteria:
+  - "DEF-09: Update StickyActionBar visibility condition so it appears when user scrolls past the hero (e.g. scrollY > 240) and is hidden ONLY when the main 'В подборку' button is currently in viewport (rect.top < window.innerHeight && rect.bottom > 0)."
+  - "DEF-10: Make ProductGallery lightbox backdrop clickable (onClick={() => setIsLightboxOpen(false)}) to dismiss full-screen view, with e.stopPropagation() on image container."
+  - "DEF-11: Implement focus trap / Tab loop inside ProductGallery lightbox."
+  - "DEF-12: Wire dynamic master contacts from getContactSettings() into ProductInfo with fallback."
+  - "DEF-13: Expand touch target area for gallery pagination dots to >= 44x44px."
+  - "Maintain 100% strict terminology ('Моя подборка', 'В подборку', 'Отправить запрос')."
+  - "npm run build passes with 0 errors."
+  - "Handoff generated at .ai/work/tasks/TASK-0013/handoff.md."
+
+required_reviews:
+  - "ux_review_gate"
+
+validation_status: "pending"

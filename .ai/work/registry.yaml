@@ -12,7 +12,8 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks: []
+active_tasks:
+  - "TASK-0013"
 
 tasks:
   - id: "TASK-0001"
@@ -139,3 +140,14 @@ tasks:
     dependencies:
       - "TASK-0006"
     created_at: "2026-09-24T20:30:00Z"
+
+  - id: "TASK-0013"
+    title: "Product Detail Page UX Remediation (DEF-09 to DEF-13)"
+    status: "in_progress"
+    owner: "frontend"
+    type: "fix"
+    affected_areas:
+      - "apps/frontend/**"
+    dependencies:
+      - "TASK-0011"
+    created_at: "2026-09-24T20:58:00Z"
