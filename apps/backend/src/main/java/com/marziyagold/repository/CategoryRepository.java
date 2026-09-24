@@ -14,5 +14,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findByIsVisibleTrueOrderBySortOrderAsc();
 
+    List<Category> findAllByIsVisibleTrueOrderBySortOrderAsc();
+
     boolean existsBySlug(String slug);
 }

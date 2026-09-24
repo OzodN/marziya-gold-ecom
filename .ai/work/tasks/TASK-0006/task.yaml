@@ -1,6 +1,6 @@
 id: "TASK-0006"
 title: "Storefront Public REST API, Inquiry Processing & Rate Limiting"
-status: "in_progress"
+status: "completed"
 owner: "backend"
 contributors: []
 type: "feature"
@@ -29,4 +29,4 @@ acceptance_criteria:
 required_reviews:
   - "code_review_gate"
 
-validation_status: "pending"
+validation_status: "passed"
