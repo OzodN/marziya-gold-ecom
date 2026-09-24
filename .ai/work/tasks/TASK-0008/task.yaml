@@ -1,0 +1,29 @@
+id: "TASK-0008"
+title: "Initial Reference and Demo Seed Data Migration"
+status: "done"
+owner: "database"
+contributors:
+  - "orchestrator"
+type: "database"
+dependencies:
+  - "TASK-0002"
+
+affected_areas:
+  - "apps/backend/src/main/resources/db/migration/V2__seed_initial_data.sql"
+
+branch: "main"
+worktree: "main"
+
+acceptance_criteria:
+  - "Flyway migration V2__seed_initial_data.sql created."
+  - "Default administrator account seeded with BCrypt hash (admin/admin123)."
+  - "Core jewelry categories seeded (Кольца, Серьги, Браслеты, Колье и подвески, Броши)."
+  - "Characteristic keys seeded (Металл, Проба, Вес изделия, Размер, Покрытие) with is_filterable flags."
+  - "Stone types seeded (Бриллиант, Сапфир, Изумруд, Рубин, Жемчуг, Топаз)."
+  - "Realistic sample jewelry products seeded with dynamic JSONB characteristics, images, and stone composition."
+  - "Site settings seeded (contact_phone, contact_telegram, master_name, about_text)."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "passed"
