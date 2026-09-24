@@ -113,7 +113,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
           <button
             type="button"
             onClick={() => handleCategorySelect("all")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all ${
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${
               !values.categorySlug || values.categorySlug === "all"
                 ? "bg-gold-500 font-semibold text-noir-950 shadow-gold"
                 : "border border-noir-700/80 bg-noir-900/60 text-noir-300 hover:border-gold-500/40 hover:text-gold-200"
@@ -128,7 +128,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategorySelect(cat.slug)}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all ${
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${
                   isSelected
                     ? "bg-gold-500 font-semibold text-noir-950 shadow-gold"
                     : "border border-noir-700/80 bg-noir-900/60 text-noir-300 hover:border-gold-500/40 hover:text-gold-200"
@@ -155,7 +155,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
                 key={stone.id}
                 type="button"
                 onClick={() => handleStoneTypeSelect(stone.id)}
-                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${
                   isSelected
                     ? "border border-gold-400/80 bg-gold-500/25 text-gold-200 font-semibold shadow-sm"
                     : "border border-noir-700/80 bg-noir-900/60 text-noir-300 hover:border-gold-500/40 hover:text-gold-200"
@@ -183,7 +183,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
                 key={metal}
                 type="button"
                 onClick={() => handleMetalSelect(metal)}
-                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${
                   isSelected
                     ? "border border-gold-400/80 bg-gold-500/25 text-gold-200 font-semibold shadow-sm"
                     : "border border-noir-700/80 bg-noir-900/60 text-noir-300 hover:border-gold-500/40 hover:text-gold-200"
@@ -211,7 +211,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
                 key={probe}
                 type="button"
                 onClick={() => handleProbeSelect(probe)}
-                className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${
                   isSelected
                     ? "border border-gold-400/80 bg-gold-500/25 text-gold-200 font-semibold shadow-sm"
                     : "border border-noir-700/80 bg-noir-900/60 text-noir-300 hover:border-gold-500/40 hover:text-gold-200"
@@ -231,7 +231,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
           <button
             type="button"
             onClick={onReset}
-            className="flex items-center gap-2 text-xs font-medium text-noir-400 hover:text-gold-300 transition-colors"
+            className="flex items-center gap-2 text-xs font-medium text-noir-400 hover:text-gold-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded-lg p-1"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             <span>Сбросить все фильтры ({activeCount})</span>
@@ -335,7 +335,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="rounded-full p-2 text-noir-400 hover:bg-noir-800 hover:text-white transition-colors"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-noir-400 hover:bg-noir-800 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
                 aria-label="Закрыть фильтры"
               >
                 <X className="h-5 w-5" />
@@ -355,7 +355,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
                   onClick={() => {
                     onReset();
                   }}
-                  className="rounded-xl border border-noir-700 py-3 px-4 text-xs font-semibold text-noir-300 hover:text-white transition-colors"
+                  className="rounded-xl border border-noir-700 min-h-[44px] py-3 px-4 text-xs font-semibold text-noir-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
                 >
                   Сбросить
                 </button>
@@ -364,7 +364,7 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="flex-1 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 py-3 text-xs font-semibold uppercase tracking-wider text-noir-950 shadow-gold"
+                className="flex-1 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 min-h-[44px] py-3 text-xs font-semibold uppercase tracking-wider text-noir-950 shadow-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               >
                 Применить фильтры
               </button>

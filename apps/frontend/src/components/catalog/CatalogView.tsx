@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Sparkles, Gem, ArrowLeft, RefreshCw } from "lucide-react";
+import { Sparkles, Gem, ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { CatalogFilters, type FilterValues } from "@/components/catalog/CatalogFilters";
 import { CatalogSearch } from "@/components/catalog/CatalogSearch";
@@ -62,6 +62,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
 
   // Loading & Data states
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
   const [data, setData] = useState<PageResponseProductSummaryDto | null>(null);
 
   // Load categories list
@@ -93,6 +94,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
   // Fetch products whenever filters, search, or page changes
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
+    setHasError(false);
     try {
       const response = await getProducts({
         page: pageNumber,
@@ -109,6 +111,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
       setData(response);
     } catch (err) {
       console.error("Failed to load products", err);
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
@@ -319,12 +322,33 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
             )}
           </div>
 
-          {/* Grid or Skeleton Loading */}
+          {/* Grid, Loading, Error, or Empty State */}
           {isLoading ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, idx) => (
                 <ProductCardSkeleton key={`skeleton-${idx}`} />
               ))}
+            </div>
+          ) : hasError ? (
+            /* Error State */
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-red-500/30 bg-noir-900/40 px-6 py-20 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-500/20 bg-noir-800 text-red-400 mb-4">
+                <AlertCircle className="h-8 w-8 stroke-[1.5]" />
+              </div>
+              <h3 className="font-serif text-xl font-medium text-white mb-2">
+                Не удалось загрузить каталог изделий
+              </h3>
+              <p className="text-xs text-noir-400 max-w-md leading-relaxed mb-6">
+                Произошла ошибка при соединении с сервером. Пожалуйста, проверьте подключение к сети и повторите попытку.
+              </p>
+              <button
+                type="button"
+                onClick={() => fetchProducts()}
+                className="flex items-center gap-2 rounded-xl bg-gold-500 px-6 py-3 min-h-[44px] text-xs font-semibold uppercase tracking-wider text-noir-950 hover:bg-gold-400 transition-colors shadow-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Повторить попытку</span>
+              </button>
             </div>
           ) : !data || data.content.length === 0 ? (
             /* Empty State */
@@ -343,7 +367,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="rounded-xl border border-gold-400/40 bg-noir-800/80 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-gold-200 hover:border-gold-300 hover:bg-gold-500/10 transition-colors shadow-sm"
+                className="rounded-xl border border-gold-400/40 bg-noir-800/80 px-5 py-2.5 min-h-[44px] text-xs font-semibold uppercase tracking-wider text-gold-200 hover:border-gold-300 hover:bg-gold-500/10 transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               >
                 Сбросить все фильтры
               </button>

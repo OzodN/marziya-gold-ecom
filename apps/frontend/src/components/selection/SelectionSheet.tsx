@@ -81,13 +81,13 @@ export const SelectionSheet: React.FC = () => {
         aria-hidden="true"
       />
 
-      <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
+      <div className="fixed inset-y-0 right-0 flex w-full max-w-full pl-0 sm:pl-10 pointer-events-none justify-end">
         <div
-          className="relative w-screen max-w-md border-l border-gold-500/20 bg-noir-900 text-noir-100 shadow-2xl pointer-events-auto"
+          className="relative w-full sm:max-w-md border-l border-gold-500/20 bg-noir-900 text-noir-100 shadow-2xl pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-noir-800 px-6 py-5">
+          <div className="flex items-center justify-between border-b border-noir-800 px-6 py-4 sm:py-5">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-gold-400" />
               <h2 className="font-serif text-lg font-semibold tracking-wide text-gold-200 uppercase">
@@ -102,7 +102,7 @@ export const SelectionSheet: React.FC = () => {
             <button
               type="button"
               onClick={closeSelection}
-              className="rounded-full p-2 text-noir-400 hover:bg-noir-800 hover:text-white transition-colors"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-noir-400 hover:bg-noir-800 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               aria-label="Закрыть подборку"
             >
               <X className="h-5 w-5" />
@@ -127,7 +127,7 @@ export const SelectionSheet: React.FC = () => {
                 <button
                   type="button"
                   onClick={closeSelection}
-                  className="rounded-xl border border-gold-400/30 px-5 py-2.5 text-xs font-medium text-gold-300 hover:bg-gold-500/10 transition-colors"
+                  className="min-h-[44px] rounded-xl border border-gold-400/30 px-5 py-2.5 text-xs font-medium text-gold-300 hover:bg-gold-500/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
                 >
                   Перейти к изделиям
                 </button>
@@ -168,11 +168,11 @@ export const SelectionSheet: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => removeFromSelection(product.id)}
-                            className="text-noir-400 hover:text-red-400 transition-colors p-1"
+                            className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-noir-400 hover:bg-noir-800 hover:text-red-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
                             title="Удалить из подборки"
                             aria-label={`Удалить ${product.name} из подборки`}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                         <p className="text-[11px] font-mono text-gold-400/80 mt-0.5">
@@ -196,7 +196,7 @@ export const SelectionSheet: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => updateQuantity(product.id, quantity - 1)}
-                            className="p-1 text-noir-400 hover:text-white transition-colors"
+                            className="flex h-9 w-9 items-center justify-center rounded-l-lg text-noir-400 hover:bg-noir-700 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
                             aria-label="Уменьшить количество"
                           >
                             <Minus className="h-3.5 w-3.5" />
@@ -207,7 +207,7 @@ export const SelectionSheet: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => updateQuantity(product.id, quantity + 1)}
-                            className="p-1 text-noir-400 hover:text-white transition-colors"
+                            className="flex h-9 w-9 items-center justify-center rounded-r-lg text-noir-400 hover:bg-noir-700 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
                             aria-label="Увеличить количество"
                           >
                             <Plus className="h-3.5 w-3.5" />
@@ -227,7 +227,7 @@ export const SelectionSheet: React.FC = () => {
               <button
                 type="button"
                 onClick={openInquiryModal}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 py-3 text-sm font-semibold text-noir-950 hover:from-gold-400 hover:to-gold-300 transition-all shadow-gold"
+                className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 py-3 px-4 text-sm font-semibold text-noir-950 hover:from-gold-400 hover:to-gold-300 transition-all shadow-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               >
                 <Send className="h-4 w-4" />
                 <span>Отправить запрос</span>
@@ -236,7 +236,7 @@ export const SelectionSheet: React.FC = () => {
               <button
                 type="button"
                 onClick={clearSelection}
-                className="w-full text-center text-xs text-noir-400 hover:text-red-400 transition-colors py-1"
+                className="flex w-full min-h-[44px] items-center justify-center text-center text-xs text-noir-400 hover:text-red-400 transition-colors py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               >
                 Очистить подборку
               </button>

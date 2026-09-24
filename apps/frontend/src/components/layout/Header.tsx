@@ -14,7 +14,10 @@ export const Header: React.FC = () => {
     <header className="sticky top-0 z-40 w-full border-b border-gold-500/20 bg-noir-950/85 backdrop-blur-md transition-all">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo & Title */}
-        <Link href="/" className="group flex items-center gap-3">
+        <Link
+          href="/"
+          className="group flex items-center gap-3 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+        >
           <div className="relative flex h-11 w-11 items-center justify-center transition-transform group-hover:scale-105">
             <Image
               src="/images/icon-gold.png"
@@ -36,22 +39,23 @@ export const Header: React.FC = () => {
         </Link>
 
         {/* Navigation & Action Controls */}
-        <nav className="flex items-center gap-4 sm:gap-6">
+        <nav className="flex items-center gap-2 sm:gap-6">
           <Link
             href="/catalog"
-            className="hidden text-sm font-medium tracking-wide text-noir-200 hover:text-gold-300 transition-colors sm:block"
+            className="text-xs sm:text-sm font-medium tracking-wide text-noir-200 hover:text-gold-300 transition-colors rounded-lg px-2.5 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
           >
-            Каталог изделий
+            <span className="sm:hidden">Каталог</span>
+            <span className="hidden sm:inline">Каталог изделий</span>
           </Link>
           <Link
             href="/#about"
-            className="hidden text-sm font-medium tracking-wide text-noir-200 hover:text-gold-300 transition-colors md:block"
+            className="hidden text-sm font-medium tracking-wide text-noir-200 hover:text-gold-300 transition-colors md:block rounded-lg px-2.5 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
           >
             О мастере
           </Link>
           <Link
             href="/#contacts"
-            className="hidden text-sm font-medium tracking-wide text-noir-200 hover:text-gold-300 transition-colors sm:block"
+            className="hidden text-sm font-medium tracking-wide text-noir-200 hover:text-gold-300 transition-colors sm:block rounded-lg px-2.5 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
           >
             Контакты
           </Link>
@@ -60,7 +64,7 @@ export const Header: React.FC = () => {
           <button
             type="button"
             onClick={openSelection}
-            className="relative flex items-center gap-2 rounded-full border border-gold-400/40 bg-gradient-to-r from-gold-500/10 to-gold-400/20 px-4 py-2 text-sm font-medium text-gold-200 hover:border-gold-300 hover:text-white transition-all shadow-sm hover:shadow-gold"
+            className="relative flex min-h-[44px] items-center gap-2 rounded-full border border-gold-400/40 bg-gradient-to-r from-gold-500/10 to-gold-400/20 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gold-200 hover:border-gold-300 hover:text-white transition-all shadow-sm hover:shadow-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
             aria-label="Открыть мою подборку"
           >
             <Sparkles className="h-4 w-4 text-gold-400" />

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Check, Plus, Gem, Sparkles } from "lucide-react";
 import { useSelectionStore, useIsSelectionHydrated } from "@/store/selection-store";
 import type { ProductSummaryDto } from "@/types/api";
@@ -29,36 +30,41 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, specs }) => {
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-noir-700/80 bg-noir-900/90 transition-all duration-300 hover:border-gold-500/50 hover:shadow-card hover:-translate-y-1">
       {/* Product Image */}
-      <div className="relative aspect-square w-full overflow-hidden bg-noir-800">
-        {product.mainImageUrl ? (
-          <Image
-            src={product.mainImageUrl}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-b from-noir-800 to-noir-900 text-gold-500/30">
-            <Gem className="h-16 w-16 stroke-[1.2]" />
-          </div>
-        )}
+      <Link
+        href={`/product/${product.slug}`}
+        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+      >
+        <div className="relative aspect-square w-full overflow-hidden bg-noir-800">
+          {product.mainImageUrl ? (
+            <Image
+              src={product.mainImageUrl}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-b from-noir-800 to-noir-900 text-gold-500/30">
+              <Gem className="h-16 w-16 stroke-[1.2]" />
+            </div>
+          )}
 
-        {/* Subtle Category Pill */}
-        {product.categoryName && (
-          <div className="absolute left-3 top-3 rounded-full border border-noir-700/60 bg-noir-950/80 px-3 py-1 text-[11px] font-medium tracking-wide text-gold-300 backdrop-blur-md">
-            {product.categoryName}
-          </div>
-        )}
+          {/* Subtle Category Pill */}
+          {product.categoryName && (
+            <div className="absolute left-3 top-3 rounded-full border border-noir-700/60 bg-noir-950/80 px-3 py-1 text-[11px] font-medium tracking-wide text-gold-300 backdrop-blur-md">
+              {product.categoryName}
+            </div>
+          )}
 
-        {/* In-Selection Badge */}
-        {isInSelection && (
-          <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-gold-500/90 px-2.5 py-1 text-[11px] font-semibold text-noir-950 shadow-sm backdrop-blur-md">
-            <Check className="h-3 w-3 stroke-[2.5]" />
-            <span>В подборке</span>
-          </div>
-        )}
-      </div>
+          {/* In-Selection Badge */}
+          {isInSelection && (
+            <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-gold-500/90 px-2.5 py-1 text-[11px] font-semibold text-noir-950 shadow-sm backdrop-blur-md">
+              <Check className="h-3 w-3 stroke-[2.5]" />
+              <span>В подборке</span>
+            </div>
+          )}
+        </div>
+      </Link>
 
       {/* Product Details */}
       <div className="flex flex-1 flex-col justify-between p-5 space-y-4">
@@ -66,9 +72,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, specs }) => {
           <span className="font-mono text-[11px] tracking-wider text-gold-400/80 uppercase">
             {product.sku}
           </span>
-          <h3 className="font-serif text-lg font-medium text-white transition-colors group-hover:text-gold-200 line-clamp-1">
-            {product.name}
-          </h3>
+          <Link
+            href={`/product/${product.slug}`}
+            className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded"
+          >
+            <h3 className="font-serif text-lg font-medium text-white transition-colors group-hover:text-gold-200 line-clamp-1 hover:underline">
+              {product.name}
+            </h3>
+          </Link>
 
           {/* Specs / Characteristics Preview */}
           {specs && specs.length > 0 && (
@@ -90,7 +101,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, specs }) => {
           <button
             type="button"
             onClick={handleAddToSelection}
-            className={`flex w-full items-center justify-center gap-2 rounded-xl py-2.5 px-4 text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
+            className={`flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl py-2.5 px-4 text-xs font-semibold uppercase tracking-wider transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${
               isInSelection || justAdded
                 ? "border border-gold-400/50 bg-gold-500/20 text-gold-200 hover:bg-gold-500/30"
                 : "border border-gold-500/30 bg-noir-800/80 text-gold-300 hover:border-gold-400 hover:bg-gold-500/10 hover:text-white"
