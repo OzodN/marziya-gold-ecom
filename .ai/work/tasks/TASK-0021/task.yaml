@@ -1,0 +1,29 @@
+id: "TASK-0021"
+title: "Remove Demo Auth Backdoor and Enforce Real Backend Authentication"
+status: "done"
+owner: "frontend"
+contributors: []
+type: "fix"
+dependencies:
+  - "TASK-0019"
+
+affected_areas:
+  - "apps/frontend/src/lib/admin-api.ts"
+
+branch: "fix/TASK-0021-remove-demo-auth-backdoor"
+worktree: ".worktrees/TASK-0021-remove-demo-auth-backdoor"
+
+acceptance_criteria:
+  - "Completely remove validDemoLogins, validDemoPasswords, and DEMO_MASTER_USER from apps/frontend/src/lib/admin-api.ts."
+  - "Remove password hint '(Для демо используйте: master / master123)'."
+  - "Remove DEMO_SESSION_KEY and fake sessionStorage session bypass."
+  - "adminLogin strictly calls POST /api/v1/admin/auth/login. On 401, throw 'Неверный логин или пароль мастера'. On network/connection error, throw 'Сервер авторизации недоступен. Пожалуйста, убедитесь, что бэкенд запущен.'"
+  - "getAdminMe strictly checks GET /api/v1/admin/auth/me and returns null when unauthenticated or backend unreachable."
+  - "adminLogout calls POST /api/v1/admin/auth/logout without sessionStorage demo keys."
+  - "apps/frontend build passes cleanly (npm run build)."
+  - "Handoff generated at .ai/work/tasks/TASK-0021/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "passed"
