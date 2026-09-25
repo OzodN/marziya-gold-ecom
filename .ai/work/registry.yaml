@@ -12,9 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0016"
-  - "TASK-0019"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -178,7 +176,7 @@ tasks:
 
   - id: "TASK-0016"
     title: "Admin Product Management REST API (CRUD, Visibility, Dynamic Characteristics & Stones)"
-    status: "in_progress"
+    status: "done"
     owner: "backend"
     type: "feature"
     affected_areas:
@@ -189,7 +187,7 @@ tasks:
 
   - id: "TASK-0019"
     title: "Admin Panel Scaffolding, Master Authentication and Inquiries Polling Dashboard"
-    status: "in_progress"
+    status: "done"
     owner: "frontend"
     type: "feature"
     affected_areas:
