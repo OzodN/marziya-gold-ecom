@@ -1,0 +1,34 @@
+id: "TASK-0022"
+title: "Fullstack Remediation: Public Stone Types API and Dynamic Live Data Integration"
+status: "done"
+owner: "fullstack"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0021"
+
+affected_areas:
+  - "docs/api/openapi.yaml"
+  - "apps/backend/**"
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0022-live-data-integration"
+worktree: ".worktrees/TASK-0022-live-data-integration"
+
+acceptance_criteria:
+  - "Add public GET /stone-types endpoint definition in docs/api/openapi.yaml."
+  - "Implement public StoneTypeService and StoneTypeController in apps/backend returning active stone types ordered by name."
+  - "Allow public GET /api/v1/stone-types in SecurityConfig."
+  - "Add StoneTypeControllerTest with 100% slice test passing."
+  - "Add getStoneTypes() function in apps/frontend/src/lib/api.ts with graceful offline fallback."
+  - "Update apps/frontend/src/app/page.tsx to fetch showcase products dynamically (getProducts) and categories (getCategories), removing hardcoded INITIAL_SHOWCASE_PRODUCTS and hardcoded CATEGORIES."
+  - "Update apps/frontend/src/components/catalog/CatalogView.tsx to fetch stone types dynamically via getStoneTypes(), replacing hardcoded useState(DEMO_STONE_TYPES)."
+  - "Update apps/frontend/src/app/catalog/[categorySlug]/page.tsx to resolve category via API."
+  - "All backend tests pass cleanly (mvn test)."
+  - "apps/frontend build passes cleanly (npm run build)."
+  - "Handoff generated at .ai/work/tasks/TASK-0022/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "passed"
