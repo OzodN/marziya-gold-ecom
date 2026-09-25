@@ -1,0 +1,28 @@
+id: "TASK-0015"
+title: "Interactive Lightbox Multi-level Zoom, Pan & Wheel Inspection"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "fix"
+dependencies:
+  - "TASK-0014"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0015-interactive-zoom"
+worktree: ".worktrees/TASK-0015-interactive-zoom"
+
+acceptance_criteria:
+  - "Fix zoom activation in Lightbox using inline hardware-accelerated transform (scale and translate) rather than unsupported Tailwind scale classes."
+  - "Support click-to-zoom toggle between 1x and 2.2x."
+  - "Support mouse drag pan when zoomed in (scale > 1) to inspect fine jewelry details across the image."
+  - "Support mouse wheel zoom in/out between 1x and 3.5x."
+  - "Provide dedicated Zoom Controls in top bar: [-] zoom out, zoom percentage indicator, [+] zoom in, and [Сбросить]."
+  - "Reset zoom and pan position when switching photos or closing the lightbox."
+  - "npm run build passes with 0 errors."
+
+required_reviews:
+  - "ux_review_gate"
+
+validation_status: "pending"
