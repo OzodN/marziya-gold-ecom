@@ -1,0 +1,31 @@
+id: "TASK-0014"
+title: "Product Detail & Catalog Interactions: Portal Lightbox, Mouse Drag Swipe, In-Card Image Swipe & Back Button"
+status: "in_progress"
+owner: "fullstack"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0013"
+
+affected_areas:
+  - "apps/backend/**"
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0014-product-interactions"
+worktree: ".worktrees/TASK-0014-product-interactions"
+
+acceptance_criteria:
+  - "Port Lightbox into document.body using createPortal so it completely covers the bespoke callout banner and entire page without any z-index or stacking context bleed-through."
+  - "Add a prominent, fixed floating close [X] button (min-h-[44px] min-w-[44px]) in the top-right corner of the zoom/lightbox mode."
+  - "Add desktop mouse drag / swipe support to ProductGallery so dragging horizontally switches photos with grab/grabbing cursor feedback."
+  - "Support mouse drag and touch swiping across multiple product images directly within ProductCard in the catalog without navigating away, with no arrow buttons and minimal pagination indicators."
+  - "Add a dedicated 'Back to catalog' arrow button on the product detail page visible on both desktop and mobile."
+  - "Support multiple imageUrls in backend ProductSummaryDto and frontend ProductSummaryDto."
+  - "Strict terminology enforced: 0 prohibited words ('Корзина', 'Cart', 'Купить', 'Checkout')."
+  - "mvn test passes with 0 errors (51+ tests)."
+  - "npm run build passes with 0 errors."
+
+required_reviews:
+  - "ux_review_gate"
+
+validation_status: "pending"
