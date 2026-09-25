@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -15,17 +15,35 @@ import {
   Hammer,
 } from "lucide-react";
 import { useSelectionStore, useIsSelectionHydrated } from "@/store/selection-store";
-import type { ProductDetailDto, ProductSummaryDto } from "@/types/api";
+import { getContactSettings } from "@/lib/api";
+import type { ContactSettingsDto, ProductDetailDto, ProductSummaryDto } from "@/types/api";
 
 interface ProductInfoProps {
   product: ProductDetailDto;
+  contacts?: ContactSettingsDto;
 }
 
-export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+export const ProductInfo: React.FC<ProductInfoProps> = ({ product, contacts: initialContacts }) => {
   const { addToSelection, hasItem, openSelection } = useSelectionStore();
   const isHydrated = useIsSelectionHydrated();
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const [contacts, setContacts] = useState<ContactSettingsDto | undefined>(initialContacts);
+
+  useEffect(() => {
+    if (initialContacts) {
+      setContacts(initialContacts);
+    } else {
+      getContactSettings().then(setContacts).catch(() => {});
+    }
+  }, [initialContacts]);
+
+  const telegramHandle = (contacts?.telegramUsername || "marziyagold").replace(/^@/, "");
+  const telegramUrl = `https://t.me/${telegramHandle}`;
+
+  const phoneNumber = contacts?.phoneNumber || "+998901234567";
+  const phoneClean = phoneNumber.replace(/[^0-9+]/g, "");
+  const phoneUrl = `tel:${phoneClean}`;
 
   const isInSelection = isHydrated && hasItem(product.id);
 
@@ -316,10 +334,11 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {/* Telegram button */}
           <a
-            href="https://t.me/marziyagold"
+            href={telegramUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex min-h-[44px] items-center justify-center gap-2.5 rounded-xl border border-gold-500/30 bg-gold-500/10 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-gold-300 transition-all duration-200 hover:border-gold-400 hover:bg-gold-500/20 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+            aria-label={`Написать мастеру в Telegram: @${telegramHandle}`}
           >
             <Send className="h-4 w-4 text-gold-400" />
             <span>Написать в Telegram</span>
@@ -327,8 +346,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
 
           {/* Call button */}
           <a
-            href="tel:+998901234567"
+            href={phoneUrl}
             className="flex min-h-[44px] items-center justify-center gap-2.5 rounded-xl border border-noir-700 bg-noir-800/80 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-noir-200 transition-all duration-200 hover:border-gold-500/40 hover:bg-noir-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+            aria-label={`Позвонить мастеру: ${phoneNumber}`}
           >
             <Phone className="h-4 w-4 text-gold-400" />
             <span>Позвонить мастеру</span>

@@ -22,16 +22,18 @@ export const StickyActionBar: React.FC<StickyActionBarProps> = ({ product }) => 
 
   useEffect(() => {
     const handleScroll = () => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const scrolledPastTop = scrollY > 240;
+
       const mainBtn = document.getElementById("main-add-to-selection-button");
-      if (!mainBtn) return;
+      if (!mainBtn) {
+        setIsVisible(scrolledPastTop);
+        return;
+      }
 
       const rect = mainBtn.getBoundingClientRect();
-      // Show sticky bar when the main button scrolls out above the viewport
-      if (rect.bottom < 0) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      const isMainButtonVisible = rect.top < window.innerHeight && rect.bottom > 0;
+      setIsVisible(scrolledPastTop && !isMainButtonVisible);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -70,7 +72,7 @@ export const StickyActionBar: React.FC<StickyActionBarProps> = ({ product }) => 
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-40 sm:hidden border-t border-gold-500/25 bg-noir-950/95 backdrop-blur-lg px-3 py-2.5 shadow-2xl transition-all duration-300 ease-in-out ${
+      className={`fixed bottom-0 left-0 right-0 z-40 sm:hidden border-t border-gold-500/25 bg-noir-950/95 backdrop-blur-lg px-3 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] shadow-2xl transition-all duration-300 ease-in-out ${
         isVisible
           ? "translate-y-0 opacity-100 pointer-events-auto"
           : "translate-y-full opacity-0 pointer-events-none"

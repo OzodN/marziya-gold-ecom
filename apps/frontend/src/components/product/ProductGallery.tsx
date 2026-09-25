@@ -25,6 +25,11 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
   const touchEndXRef = useRef<number | null>(null);
   const touchEndYRef = useRef<number | null>(null);
 
+  // Focus trap references for Lightbox
+  const lightboxRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
+
   const galleryImages = images.length > 0
     ? images
     : [{ url: "", sortOrder: 0 }];
@@ -98,27 +103,91 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
     touchEndYRef.current = null;
   };
 
-  // Keyboard navigation & lock body scroll for Lightbox
+  // Keyboard navigation, Focus Trap & lock body scroll for Lightbox
   useEffect(() => {
     if (!isLightboxOpen) return;
+
+    // Save previously focused element to restore upon closing
+    previousActiveElementRef.current = document.activeElement as HTMLElement | null;
+
+    // Focus close button on open
+    const focusTimer = setTimeout(() => {
+      if (closeButtonRef.current) {
+        closeButtonRef.current.focus();
+      }
+    }, 50);
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        e.preventDefault();
         setIsLightboxOpen(false);
-      } else if (e.key === "ArrowRight") {
+        return;
+      }
+
+      if (e.key === "ArrowRight") {
         goToNext();
-      } else if (e.key === "ArrowLeft") {
+        return;
+      }
+
+      if (e.key === "ArrowLeft") {
         goToPrev();
+        return;
+      }
+
+      if (e.key === "Tab") {
+        if (!lightboxRef.current) return;
+
+        const focusableElements = Array.from(
+          lightboxRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        );
+
+        if (focusableElements.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (
+            document.activeElement === firstElement ||
+            !lightboxRef.current.contains(document.activeElement)
+          ) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (
+            document.activeElement === lastElement ||
+            !lightboxRef.current.contains(document.activeElement)
+          ) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
+
     return () => {
+      clearTimeout(focusTimer);
       document.body.style.overflow = originalOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+
+      // Return focus to previously active element
+      if (
+        previousActiveElementRef.current &&
+        typeof previousActiveElementRef.current.focus === "function"
+      ) {
+        previousActiveElementRef.current.focus();
+      }
     };
   }, [isLightboxOpen, goToNext, goToPrev]);
 
@@ -218,7 +287,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
                   e.stopPropagation();
                   selectImage(idx);
                 }}
-                className="flex h-11 min-w-[28px] items-center justify-center px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded-full"
+                className="flex h-11 min-h-[44px] min-w-[44px] items-center justify-center px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded-full"
                 aria-label={`Перейти к фотографии ${idx + 1}`}
               >
                 <span
@@ -270,6 +339,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
       {/* Fullscreen Lightbox Modal */}
       {isLightboxOpen && currentImage?.url && (
         <div
+          ref={lightboxRef}
           className="fixed inset-0 z-50 flex flex-col bg-noir-950/95 backdrop-blur-xl animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
@@ -277,9 +347,13 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onClick={() => setIsLightboxOpen(false)}
         >
           {/* Top Bar with Counter and Close Button */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-noir-800/80 bg-noir-950/60">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center justify-between px-6 py-4 border-b border-noir-800/80 bg-noir-950/60"
+          >
             <div className="flex items-center gap-3">
               <span className="font-serif text-sm font-medium tracking-wide text-gold-200">
                 {productName}
@@ -302,6 +376,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
               </button>
 
               <button
+                ref={closeButtonRef}
                 type="button"
                 onClick={() => setIsLightboxOpen(false)}
                 className="flex h-11 w-11 items-center justify-center rounded-xl border border-noir-800 bg-noir-900 text-noir-300 transition-colors hover:border-gold-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
@@ -312,13 +387,19 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
             </div>
           </div>
 
-          {/* Main Fullscreen Viewer Area */}
-          <div className="relative flex flex-1 items-center justify-center p-4 sm:p-8 overflow-hidden">
+          {/* Main Fullscreen Viewer Area - backdrop click closes lightbox */}
+          <div
+            onClick={() => setIsLightboxOpen(false)}
+            className="relative flex flex-1 items-center justify-center p-4 sm:p-8 overflow-hidden cursor-pointer"
+          >
             <div
-              className={`relative max-h-full max-w-full aspect-square w-full sm:w-auto h-[70vh] transition-transform duration-300 cursor-pointer ${
+              className={`relative max-h-full max-w-full aspect-square w-full sm:w-auto h-[70vh] transition-transform duration-300 ${
                 lightboxScale > 1 ? "scale-175 cursor-zoom-out" : "cursor-zoom-in"
               }`}
-              onClick={() => setLightboxScale((s) => (s === 1 ? 1.75 : 1))}
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxScale((s) => (s === 1 ? 1.75 : 1));
+              }}
             >
               <Image
                 src={currentImage.url}
@@ -362,7 +443,10 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
 
           {/* Lightbox Bottom Thumbnails Bar */}
           {totalImages > 1 && (
-            <div className="flex items-center justify-center gap-2 overflow-x-auto border-t border-noir-800/80 bg-noir-950/60 p-4">
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center justify-center gap-2 overflow-x-auto border-t border-noir-800/80 bg-noir-950/60 p-4"
+            >
               {galleryImages.map((img, idx) => (
                 <button
                   key={idx}

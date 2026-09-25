@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProductBySlug, DEMO_PRODUCT_DETAILS } from "@/lib/api";
+import { getProductBySlug, getContactSettings, DEMO_PRODUCT_DETAILS } from "@/lib/api";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
 import { StickyActionBar } from "@/components/product/StickyActionBar";
@@ -73,7 +73,10 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const [product, contacts] = await Promise.all([
+    getProductBySlug(slug),
+    getContactSettings(),
+  ]);
 
   if (!product) {
     notFound();
@@ -127,7 +130,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
             {/* Right Column: Detailed Product Info, Characteristics, Counter & Contacts */}
             <div className="lg:col-span-5">
-              <ProductInfo product={product} />
+              <ProductInfo product={product} contacts={contacts} />
             </div>
           </div>
         </div>
