@@ -17,6 +17,7 @@ import {
   Calendar,
   User,
   Filter,
+  AlertCircle,
 } from "lucide-react";
 import { getAdminInquiries } from "@/lib/admin-api";
 import { useAdminStore } from "@/store/admin-store";
@@ -48,6 +49,7 @@ export default function AdminInquiriesPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -55,6 +57,7 @@ export default function AdminInquiriesPage() {
   const loadInquiries = useCallback(
     async (targetPage: number, targetTab: FilterTab) => {
       setIsLoading(true);
+      setErrorMessage(null);
       try {
         const res = await getAdminInquiries(targetPage, pageSize, targetTab);
         setInquiries(res.items);
@@ -62,6 +65,9 @@ export default function AdminInquiriesPage() {
         setTotalPages(res.totalPages);
       } catch (error) {
         console.error("Ошибка загрузки списка заявок:", error);
+        setErrorMessage(
+          "Не удалось загрузить список заявок с сервера. Проверьте соединение с базой данных."
+        );
       } finally {
         setIsLoading(false);
       }
@@ -128,13 +134,13 @@ export default function AdminInquiriesPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-gold-400 uppercase">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Управление заказами мастерской</span>
+            <span>Управление заявками мастерской</span>
           </div>
           <h1 className="mt-1 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Заявки клиентов
           </h1>
           <p className="mt-1 text-xs text-noir-400 sm:text-sm">
-            Обращения и сформированные подборки изделий от покупателей
+            Обращения и сформированные подборки изделий от клиентов
           </p>
         </div>
 
@@ -211,7 +217,7 @@ export default function AdminInquiriesPage() {
                 type="button"
                 onClick={() => setSearchQuery("")}
                 aria-label="Очистить поиск"
-                className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[36px] min-w-[36px] items-center justify-center rounded-lg text-noir-400 hover:text-white"
+                className="absolute right-1 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-noir-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -250,6 +256,27 @@ export default function AdminInquiriesPage() {
               </div>
             ))}
           </div>
+        </div>
+      ) : errorMessage ? (
+        /* Error State (DEF-16) */
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-red-500/30 bg-red-950/20 px-6 py-14 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/20 bg-red-900/30 text-red-400 shadow-inner">
+            <AlertCircle className="h-8 w-8" />
+          </div>
+          <h3 className="mt-4 font-serif text-lg font-semibold text-white">
+            Ошибка синхронизации данных
+          </h3>
+          <p className="mt-1 max-w-md text-xs text-red-200/80 leading-relaxed">
+            {errorMessage}
+          </p>
+          <button
+            type="button"
+            onClick={() => loadInquiries(page, activeTab)}
+            className="mt-6 flex min-h-[44px] items-center gap-2 rounded-xl border border-gold-500/30 bg-gold-500/10 px-5 py-2.5 text-xs font-semibold text-gold-300 transition-colors hover:bg-gold-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+          >
+            <RefreshCw className="h-4 w-4" />
+            <span>Повторить попытку</span>
+          </button>
         </div>
       ) : filteredInquiries.length === 0 ? (
         /* Empty State */

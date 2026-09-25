@@ -236,9 +236,10 @@ export default function InquiryDetailPage({
           <button
             type="button"
             onClick={() => setSaveSuccessMessage(null)}
-            className="text-emerald-400 hover:text-white"
+            aria-label="Закрыть уведомление об успехе"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-emerald-400 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
           >
-            ✕
+            <span className="text-base font-bold">✕</span>
           </button>
         </div>
       )}
@@ -252,9 +253,10 @@ export default function InquiryDetailPage({
           <button
             type="button"
             onClick={() => setErrorMessage(null)}
-            className="text-red-400 hover:text-white"
+            aria-label="Закрыть сообщение об ошибке"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-red-400 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
           >
-            ✕
+            <span className="text-base font-bold">✕</span>
           </button>
         </div>
       )}

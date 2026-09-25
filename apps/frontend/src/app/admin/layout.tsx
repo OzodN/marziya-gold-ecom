@@ -79,6 +79,20 @@ export default function AdminLayout({
     setMobileMenuOpen(false);
   }, [pathname]);
 
+  // Close mobile drawer on Escape key (DEF-15)
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
   // If on login route, bypass admin shell completely
   if (isLoginPage) {
     return <>{children}</>;
@@ -351,12 +365,13 @@ export default function AdminLayout({
               </span>
             </Link>
 
-            {/* Quick Link to Storefront on Mobile/Desktop */}
+            {/* Quick Link to Storefront on Mobile/Desktop (DEF-20) */}
             <Link
               href="/catalog"
               target="_blank"
               rel="noopener noreferrer"
-              title="Открыть открытую витрину каталога"
+              title="Открыть витрину каталога"
+              aria-label="Открыть витрину каталога в новой вкладке"
               className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-noir-800 bg-noir-900/60 text-noir-400 hover:border-gold-500/40 hover:text-gold-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
             >
               <ExternalLink className="h-4 w-4" />
@@ -371,10 +386,15 @@ export default function AdminLayout({
       </div>
 
       {/* ========================================================
-          MOBILE NAVIGATION DRAWER (Slide-over)
+          MOBILE NAVIGATION DRAWER (Slide-over, DEF-15)
          ======================================================== */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Навигация панели мастера"
+          className="fixed inset-0 z-50 lg:hidden"
+        >
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"

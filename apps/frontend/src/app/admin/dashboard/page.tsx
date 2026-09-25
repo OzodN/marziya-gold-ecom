@@ -193,9 +193,9 @@ export default function AdminDashboardPage() {
               href="/catalog"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-noir-700 bg-noir-900/80 px-4 py-2.5 text-xs sm:text-sm font-medium text-noir-200 transition-colors hover:border-gold-500/40 hover:text-gold-200"
+              className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-noir-700 bg-noir-900/80 px-4 py-2.5 text-xs sm:text-sm font-medium text-noir-200 transition-colors hover:border-gold-500/40 hover:text-gold-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
             >
-              <span>Открыть витрину магазина</span>
+              <span>Открыть витрину каталога</span>
               <ExternalLink className="h-4 w-4 text-noir-400" />
             </Link>
           </div>
