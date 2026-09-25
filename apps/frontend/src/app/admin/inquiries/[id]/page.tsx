@@ -168,6 +168,29 @@ export default function InquiryDetailPage({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasChanges]);
 
+  // Audit history sorted reverse-chronologically (newest/actual status at the very top)
+  const sortedHistory = useMemo(() => {
+    if (!inquiry) return [];
+    const list = [...(inquiry.statusHistory || inquiry.history || [])];
+    if (list.length === 0) {
+      return [
+        {
+          id: 0,
+          oldStatus: null,
+          newStatus: inquiry.status,
+          changedBy: "Система",
+          changedAt: inquiry.createdAt || new Date().toISOString(),
+        },
+      ];
+    }
+    return list.sort((a, b) => {
+      const timeDiff =
+        new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime();
+      if (timeDiff !== 0) return timeDiff;
+      return (b.id ?? 0) - (a.id ?? 0);
+    });
+  }, [inquiry]);
+
   // Copy phone number helper
   const handleCopyPhone = () => {
     if (!inquiry?.clientPhone) return;
@@ -247,28 +270,6 @@ export default function InquiryDetailPage({
   if (!inquiry) return null;
 
   const currentMeta = STATUS_META[inquiry.status] || STATUS_META.NEW;
-
-  // Audit history sorted reverse-chronologically (newest/actual status at the very top)
-  const sortedHistory = useMemo(() => {
-    const list = [...(inquiry.statusHistory || inquiry.history || [])];
-    if (list.length === 0) {
-      return [
-        {
-          id: 0,
-          oldStatus: null,
-          newStatus: inquiry.status,
-          changedBy: "Система",
-          changedAt: inquiry.createdAt || new Date().toISOString(),
-        },
-      ];
-    }
-    return list.sort((a, b) => {
-      const timeDiff =
-        new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime();
-      if (timeDiff !== 0) return timeDiff;
-      return (b.id ?? 0) - (a.id ?? 0);
-    });
-  }, [inquiry]);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-12">
