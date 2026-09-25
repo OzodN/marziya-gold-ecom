@@ -3,7 +3,16 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Maximize2, X, Gem, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  X,
+  Gem,
+  Plus,
+  Minus,
+  RotateCcw,
+} from "lucide-react";
 import type { ProductImageDto } from "@/types/api";
 
 interface ProductGalleryProps {
@@ -18,6 +27,8 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxScale, setLightboxScale] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -25,7 +36,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
     setMounted(true);
   }, []);
 
-  // Touch swipe tracking references
+  // Touch swipe tracking references (Main gallery)
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
@@ -38,12 +49,16 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
   const hasDraggedRef = useRef(false);
   const [isGrabbing, setIsGrabbing] = useState(false);
 
-  // Lightbox mouse drag tracking
+  // Lightbox swipe & pan tracking
   const lbDraggingRef = useRef(false);
   const lbStartXRef = useRef(0);
   const lbStartYRef = useRef(0);
   const lbHasDraggedRef = useRef(false);
   const [isLbGrabbing, setIsLbGrabbing] = useState(false);
+
+  const isPanningRef = useRef(false);
+  const panStartRef = useRef({ x: 0, y: 0 });
+  const hasPanMovedRef = useRef(false);
 
   // Focus trap references for Lightbox
   const lightboxRef = useRef<HTMLDivElement | null>(null);
@@ -57,32 +72,41 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
   const totalImages = galleryImages.length;
   const currentImage = galleryImages[activeIndex];
 
+  // Reset zoom & pan helper
+  const resetZoom = useCallback(() => {
+    setLightboxScale(1);
+    setPan({ x: 0, y: 0 });
+    setIsPanning(false);
+    isPanningRef.current = false;
+    hasPanMovedRef.current = false;
+  }, []);
+
   // Navigation callbacks
   const goToNext = useCallback(() => {
     if (totalImages <= 1) return;
     setIsTransitioning(true);
     setActiveIndex((prev) => (prev + 1) % totalImages);
-    setLightboxScale(1);
+    resetZoom();
     setTimeout(() => setIsTransitioning(false), 250);
-  }, [totalImages]);
+  }, [totalImages, resetZoom]);
 
   const goToPrev = useCallback(() => {
     if (totalImages <= 1) return;
     setIsTransitioning(true);
     setActiveIndex((prev) => (prev - 1 + totalImages) % totalImages);
-    setLightboxScale(1);
+    resetZoom();
     setTimeout(() => setIsTransitioning(false), 250);
-  }, [totalImages]);
+  }, [totalImages, resetZoom]);
 
   const selectImage = useCallback((index: number) => {
     if (index === activeIndex) return;
     setIsTransitioning(true);
     setActiveIndex(index);
-    setLightboxScale(1);
+    resetZoom();
     setTimeout(() => setIsTransitioning(false), 250);
-  }, [activeIndex]);
+  }, [activeIndex, resetZoom]);
 
-  // Touch swipe handlers
+  // Touch swipe handlers (Main Gallery)
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
@@ -108,7 +132,6 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
     const deltaX = touchStartXRef.current - touchEndXRef.current;
     const deltaY = touchStartYRef.current - touchEndYRef.current;
 
-    // Trigger swipe if horizontal displacement is greater than vertical and exceeds threshold
     if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX > 0) {
         goToNext();
@@ -166,39 +189,122 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
     }
   };
 
-  // Mouse drag handlers for Lightbox (when scale is 1x)
+  // Zoom manipulation handlers in Lightbox
+  const handleZoomIn = () => {
+    setLightboxScale((prev) => {
+      const next = Math.min(3.5, Math.round((prev + 0.4) * 10) / 10);
+      return next;
+    });
+  };
+
+  const handleZoomOut = () => {
+    setLightboxScale((prev) => {
+      const next = Math.max(1, Math.round((prev - 0.4) * 10) / 10);
+      if (next <= 1) {
+        setPan({ x: 0, y: 0 });
+      }
+      return next;
+    });
+  };
+
+  // Mouse wheel zoom in Lightbox
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+    const delta = e.deltaY < 0 ? 0.25 : -0.25;
+    setLightboxScale((prev) => {
+      const next = Math.min(3.5, Math.max(1, Math.round((prev + delta) * 10) / 10));
+      if (next <= 1) {
+        setPan({ x: 0, y: 0 });
+      }
+      return next;
+    });
+  };
+
+  // Lightbox unified mouse drag (Pan when scale > 1, Swipe when scale === 1)
   const handleLbMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0 || lightboxScale > 1) return;
-    lbDraggingRef.current = true;
-    lbStartXRef.current = e.clientX;
-    lbStartYRef.current = e.clientY;
-    lbHasDraggedRef.current = false;
-    setIsLbGrabbing(true);
+    if (e.button !== 0) return;
+    if (lightboxScale > 1) {
+      isPanningRef.current = true;
+      setIsPanning(true);
+      hasPanMovedRef.current = false;
+      panStartRef.current = {
+        x: e.clientX - pan.x,
+        y: e.clientY - pan.y,
+      };
+    } else {
+      lbDraggingRef.current = true;
+      lbStartXRef.current = e.clientX;
+      lbStartYRef.current = e.clientY;
+      lbHasDraggedRef.current = false;
+      setIsLbGrabbing(true);
+    }
   };
 
   const handleLbMouseMove = (e: React.MouseEvent) => {
-    if (!lbDraggingRef.current) return;
-    const deltaX = e.clientX - lbStartXRef.current;
-    const deltaY = e.clientY - lbStartYRef.current;
-    if (Math.abs(deltaX) > 8 || Math.abs(deltaY) > 8) {
-      lbHasDraggedRef.current = true;
+    if (lightboxScale > 1 && isPanningRef.current) {
+      const newX = e.clientX - panStartRef.current.x;
+      const newY = e.clientY - panStartRef.current.y;
+      const dist = Math.hypot(
+        e.clientX - (panStartRef.current.x + pan.x),
+        e.clientY - (panStartRef.current.y + pan.y)
+      );
+      if (dist > 6) {
+        hasPanMovedRef.current = true;
+      }
+      const boundX = window.innerWidth * 0.45 * (lightboxScale - 1);
+      const boundY = window.innerHeight * 0.45 * (lightboxScale - 1);
+      const clampedX = Math.max(-boundX, Math.min(boundX, newX));
+      const clampedY = Math.max(-boundY, Math.min(boundY, newY));
+      setPan({ x: clampedX, y: clampedY });
+    } else if (lightboxScale === 1 && lbDraggingRef.current) {
+      const deltaX = e.clientX - lbStartXRef.current;
+      const deltaY = e.clientY - lbStartYRef.current;
+      if (Math.abs(deltaX) > 8 || Math.abs(deltaY) > 8) {
+        lbHasDraggedRef.current = true;
+      }
     }
   };
 
   const handleLbMouseUp = (e: React.MouseEvent) => {
-    if (!lbDraggingRef.current) return;
+    if (lightboxScale > 1) {
+      isPanningRef.current = false;
+      setIsPanning(false);
+    } else if (lbDraggingRef.current) {
+      lbDraggingRef.current = false;
+      setIsLbGrabbing(false);
+      const deltaX = e.clientX - lbStartXRef.current;
+      const deltaY = e.clientY - lbStartYRef.current;
+      if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX < 0) {
+          goToNext();
+        } else {
+          goToPrev();
+        }
+      }
+    }
+  };
+
+  const handleLbMouseLeave = () => {
+    isPanningRef.current = false;
+    setIsPanning(false);
     lbDraggingRef.current = false;
     setIsLbGrabbing(false);
+  };
 
-    const deltaX = e.clientX - lbStartXRef.current;
-    const deltaY = e.clientY - lbStartYRef.current;
+  // Click on the image inside Lightbox to toggle zoom
+  const handleImageClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasPanMovedRef.current || lbHasDraggedRef.current) {
+      hasPanMovedRef.current = false;
+      lbHasDraggedRef.current = false;
+      return;
+    }
 
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX < 0) {
-        goToNext();
-      } else {
-        goToPrev();
-      }
+    if (lightboxScale > 1) {
+      resetZoom();
+    } else {
+      setLightboxScale(2.2);
+      setPan({ x: 0, y: 0 });
     }
   };
 
@@ -206,10 +312,9 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
   useEffect(() => {
     if (!isLightboxOpen) return;
 
-    // Save previously focused element to restore upon closing
+    resetZoom();
     previousActiveElementRef.current = document.activeElement as HTMLElement | null;
 
-    // Focus close button on open
     const focusTimer = setTimeout(() => {
       if (closeButtonRef.current) {
         closeButtonRef.current.focus();
@@ -223,6 +328,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
       if (e.key === "Escape") {
         e.preventDefault();
         setIsLightboxOpen(false);
+        resetZoom();
         return;
       }
 
@@ -280,7 +386,6 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
       document.body.style.overflow = originalOverflow;
       window.removeEventListener("keydown", handleKeyDown);
 
-      // Return focus to previously active element
       if (
         previousActiveElementRef.current &&
         typeof previousActiveElementRef.current.focus === "function"
@@ -288,7 +393,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
         previousActiveElementRef.current.focus();
       }
     };
-  }, [isLightboxOpen, goToNext, goToPrev]);
+  }, [isLightboxOpen, goToNext, goToPrev, resetZoom]);
 
   // Fullscreen Lightbox Modal content
   const lightboxModal = isLightboxOpen && currentImage?.url && (
@@ -301,7 +406,10 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onClick={() => setIsLightboxOpen(false)}
+      onClick={() => {
+        setIsLightboxOpen(false);
+        resetZoom();
+      }}
     >
       {/* Prominent Always-Visible Floating Close [X] Button */}
       <button
@@ -310,18 +418,19 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
         onClick={(e) => {
           e.stopPropagation();
           setIsLightboxOpen(false);
+          resetZoom();
         }}
-        className="fixed top-4 right-4 z-[120] flex h-12 w-12 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-gold-500/60 bg-noir-900/90 text-gold-300 shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-gold-400 hover:bg-noir-800 hover:text-white hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+        className="fixed top-4 right-4 z-[130] flex h-12 w-12 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-gold-500/60 bg-noir-900/90 text-gold-300 shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-gold-400 hover:bg-noir-800 hover:text-white hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
         aria-label="Закрыть полноэкранный режим"
         title="Закрыть (Escape)"
       >
         <X className="h-6 w-6 stroke-[2.2]" />
       </button>
 
-      {/* Top Bar with Title, Counter and Zoom Control */}
+      {/* Top Bar with Title, Counter and Interactive Zoom Controls */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex items-center justify-between px-6 py-4 pr-20 border-b border-noir-800/80 bg-noir-950/70"
+        className="flex items-center justify-between px-6 py-3.5 pr-20 border-b border-noir-800/80 bg-noir-950/70"
       >
         <div className="flex items-center gap-3 min-w-0">
           <span className="font-serif text-sm font-medium tracking-wide text-gold-200 truncate">
@@ -334,47 +443,82 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
           )}
         </div>
 
+        {/* Zoom Controls: [ - ] 100% [ + ] [ Сбросить ] */}
         <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
-            onClick={() => setLightboxScale((s) => (s === 1 ? 1.75 : 1))}
-            className="flex h-11 items-center gap-1.5 rounded-xl border border-noir-800 bg-noir-900 px-3 text-gold-300 transition-colors hover:border-gold-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
-            aria-label={lightboxScale === 1 ? "Приблизить фото" : "Отдалить фото"}
+            onClick={handleZoomOut}
+            disabled={lightboxScale <= 1}
+            className="flex h-10 w-10 min-h-[40px] min-w-[40px] items-center justify-center rounded-lg border border-noir-800 bg-noir-900 text-gold-300 transition-colors hover:border-gold-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+            aria-label="Уменьшить масштаб"
+            title="Отдалить"
           >
-            {lightboxScale === 1 ? (
-              <>
-                <ZoomIn className="h-4 w-4" />
-                <span className="text-xs hidden sm:inline">Приблизить</span>
-              </>
-            ) : (
-              <>
-                <ZoomOut className="h-4 w-4 text-gold-400" />
-                <span className="text-xs hidden sm:inline">Сбросить</span>
-              </>
-            )}
+            <Minus className="h-4 w-4" />
           </button>
+
+          <span
+            className="min-w-[48px] text-center font-mono text-xs font-semibold text-gold-300 select-none"
+            aria-label={`Текущий масштаб: ${Math.round(lightboxScale * 100)}%`}
+          >
+            {Math.round(lightboxScale * 100)}%
+          </span>
+
+          <button
+            type="button"
+            onClick={handleZoomIn}
+            disabled={lightboxScale >= 3.5}
+            className="flex h-10 w-10 min-h-[40px] min-w-[40px] items-center justify-center rounded-lg border border-noir-800 bg-noir-900 text-gold-300 transition-colors hover:border-gold-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+            aria-label="Увеличить масштаб"
+            title="Приблизить"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+
+          {lightboxScale > 1 && (
+            <button
+              type="button"
+              onClick={resetZoom}
+              className="ml-1 flex h-10 items-center gap-1.5 rounded-lg border border-gold-500/40 bg-gold-500/10 px-3 text-xs font-medium text-gold-300 transition-colors hover:border-gold-400 hover:bg-gold-500/20 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+              aria-label="Сбросить масштаб к 100%"
+              title="Сбросить масштаб"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-gold-400" />
+              <span className="hidden sm:inline">100%</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Main Fullscreen Viewer Area - backdrop click closes lightbox */}
+      {/* Main Fullscreen Viewer Area with Hardware-Accelerated Zoom & Pan */}
       <div
-        onClick={() => setIsLightboxOpen(false)}
+        onClick={() => {
+          setIsLightboxOpen(false);
+          resetZoom();
+        }}
+        onWheel={handleWheel}
         onMouseDown={handleLbMouseDown}
         onMouseMove={handleLbMouseMove}
         onMouseUp={handleLbMouseUp}
+        onMouseLeave={handleLbMouseLeave}
         className={`relative flex flex-1 items-center justify-center p-4 sm:p-8 overflow-hidden ${
-          lightboxScale === 1 ? (isLbGrabbing ? "cursor-grabbing" : "cursor-grab") : ""
+          lightboxScale === 1
+            ? isLbGrabbing ? "cursor-grabbing" : "cursor-grab"
+            : isPanning ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
         <div
-          className={`relative max-h-full max-w-full aspect-square w-full sm:w-auto h-[70vh] transition-transform duration-300 ${
-            lightboxScale > 1 ? "scale-175 cursor-zoom-out" : "cursor-zoom-in"
+          className={`relative max-h-full max-w-full aspect-square w-full sm:w-auto h-[72vh] select-none ${
+            lightboxScale > 1
+              ? isPanning ? "cursor-grabbing" : "cursor-grab"
+              : "cursor-zoom-in"
           }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (lbHasDraggedRef.current) return;
-            setLightboxScale((s) => (s === 1 ? 1.75 : 1));
+          style={{
+            transform: `scale(${lightboxScale}) translate3d(${pan.x / lightboxScale}px, ${pan.y / lightboxScale}px, 0)`,
+            transition: isPanning ? "none" : "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
+            transformOrigin: "center center",
+            willChange: "transform",
           }}
+          onClick={handleImageClick}
         >
           <Image
             src={currentImage.url}
@@ -383,10 +527,11 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
             className="object-contain pointer-events-none"
             sizes="100vw"
             priority
+            quality={95}
           />
         </div>
 
-        {/* Prev / Next navigation inside Lightbox */}
+        {/* Prev / Next navigation inside Lightbox (available when scale === 1) */}
         {totalImages > 1 && (
           <>
             <button
@@ -395,7 +540,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
                 e.stopPropagation();
                 goToPrev();
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full border border-noir-700 bg-noir-900/90 text-gold-300 shadow-xl backdrop-blur-md transition-all hover:border-gold-400 hover:bg-noir-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+              className="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-noir-700 bg-noir-900/90 text-gold-300 shadow-xl backdrop-blur-md transition-all hover:border-gold-400 hover:bg-noir-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               aria-label="Предыдущее изображение"
             >
               <ChevronLeft className="h-6 w-6" />
@@ -407,7 +552,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({
                 e.stopPropagation();
                 goToNext();
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full border border-noir-700 bg-noir-900/90 text-gold-300 shadow-xl backdrop-blur-md transition-all hover:border-gold-400 hover:bg-noir-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+              className="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-noir-700 bg-noir-900/90 text-gold-300 shadow-xl backdrop-blur-md transition-all hover:border-gold-400 hover:bg-noir-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               aria-label="Следующее изображение"
             >
               <ChevronRight className="h-6 w-6" />
