@@ -1,0 +1,31 @@
+id: "TASK-0020"
+title: "Admin Inquiries Management UI with Historical Snapshot and Status Audit"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0019"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0020-admin-inquiries-ui"
+worktree: ".worktrees/TASK-0020-admin-inquiries-ui"
+
+acceptance_criteria:
+  - "Implement inquiries list view at /admin/inquiries with status filter tabs (ALL, NEW, CONTACTED, IN_PROGRESS, COMPLETED, REJECTED), pagination, and search by client name/phone."
+  - "Inquiries list displays client name, phone (tel: link), item count, status badge, created date, and action button."
+  - "Implement detailed inquiry view at /admin/inquiries/[id] displaying full client contact info, comment, and complete immutable product snapshots (photos, names, SKUs, characteristics, stones, quantities)."
+  - "Implement explicit manual status update control: status dropdown + explicit 'Сохранить изменения' button. Status update sends PUT /api/v1/admin/inquiries/{id}/status."
+  - "Display full historical status audit trail timeline on /admin/inquiries/[id] showing old_status -> new_status, changed_by, and timestamp."
+  - "Update admin-api.ts with getAdminInquiries, getAdminInquiryById, and updateAdminInquiryStatus (credentials: include)."
+  - "Strictly adhere to luxury minimalist aesthetic (docs/design/ux-criteria.md) and approved terminology."
+  - "apps/frontend build passes without errors (npm run build)."
+  - "Handoff generated at .ai/work/tasks/TASK-0020/handoff.md with dedicated UX Self-Check section."
+
+required_reviews:
+  - "code_review_gate"
+  - "ux_review_gate"
+
+validation_status: "in_progress"

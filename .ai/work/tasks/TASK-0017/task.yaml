@@ -1,0 +1,29 @@
+id: "TASK-0017"
+title: "Admin Reference Dictionaries and Site Settings REST API"
+status: "in_progress"
+owner: "backend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0016"
+
+affected_areas:
+  - "apps/backend/**"
+
+branch: "feat/TASK-0017-admin-dictionaries"
+worktree: ".worktrees/TASK-0017-admin-dictionaries"
+
+acceptance_criteria:
+  - "Implement AdminCategoryController (/api/v1/admin/categories) with CRUD operations (GET all categories with isVisible/sortOrder, POST create, PUT update, DELETE delete)."
+  - "Implement AdminCharacteristicKeyController (/api/v1/admin/characteristic-keys) with CRUD operations (GET all keys, POST create, DELETE delete)."
+  - "Implement AdminStoneTypeController (/api/v1/admin/stone-types) with CRUD operations (GET all types, POST create, DELETE delete)."
+  - "Implement AdminSettingsController (/api/v1/admin/settings) with PUT to update contact settings (phone, telegramUsername, aboutMaster) and GET to retrieve all site settings."
+  - "All /api/v1/admin/** endpoints require ROLE_ADMIN authorization via JwtAuthenticationFilter."
+  - "Update docs/api/openapi.yaml with admin categories, characteristic-keys, stone-types, and settings endpoints and schemas."
+  - "Unit and MockMvc slice tests written and passing (mvn clean test)."
+  - "Handoff generated at .ai/work/tasks/TASK-0017/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "in_progress"
