@@ -12,6 +12,7 @@ import { ProductCardSkeleton } from "@/components/catalog/ProductCardSkeleton";
 import {
   getProducts,
   getCategories,
+  getStoneTypes,
   DEMO_STONE_TYPES,
   DEMO_CATEGORIES,
 } from "@/lib/api";
@@ -37,7 +38,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
 
   // Categories & Stone types
   const [categories, setCategories] = useState<CategoryDto[]>(DEMO_CATEGORIES);
-  const [stoneTypes] = useState<StoneTypeDto[]>(DEMO_STONE_TYPES);
+  const [stoneTypes, setStoneTypes] = useState<StoneTypeDto[]>(DEMO_STONE_TYPES);
 
   // Search and Filter states initialized from URL params or props
   const [searchQuery, setSearchQuery] = useState<string>(
@@ -65,17 +66,25 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
   const [hasError, setHasError] = useState<boolean>(false);
   const [data, setData] = useState<PageResponseProductSummaryDto | null>(null);
 
-  // Load categories list
+  // Load categories and stone types list
   useEffect(() => {
     let isCancelled = false;
     async function loadMeta() {
       try {
-        const catList = await getCategories();
-        if (!isCancelled && catList.length > 0) {
-          setCategories(catList);
+        const [catList, stoneList] = await Promise.all([
+          getCategories(),
+          getStoneTypes(),
+        ]);
+        if (!isCancelled) {
+          if (catList && catList.length > 0) {
+            setCategories(catList);
+          }
+          if (stoneList && stoneList.length > 0) {
+            setStoneTypes(stoneList);
+          }
         }
       } catch {
-        // Fallback to DEMO_CATEGORIES
+        // Fallback to DEMO_CATEGORIES & DEMO_STONE_TYPES
       }
     }
     loadMeta();
