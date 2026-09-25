@@ -5,6 +5,7 @@ import { getProductBySlug, getContactSettings, DEMO_PRODUCT_DETAILS } from "@/li
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
 import { StickyActionBar } from "@/components/product/StickyActionBar";
+import { BackButton } from "@/components/product/BackButton";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -118,7 +119,20 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       />
 
       <div className="min-h-screen bg-noir-950 pb-24 sm:pb-16">
-        <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-10 lg:px-8 max-w-7xl">
+        <div className="container mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 max-w-7xl">
+          {/* Back to Catalog Arrow Button */}
+          <div className="mb-4 flex items-center gap-3">
+            <BackButton
+              fallbackUrl={
+                product.category?.slug
+                  ? `/catalog/${product.category.slug}`
+                  : product.categorySlug
+                  ? `/catalog/${product.categorySlug}`
+                  : "/catalog"
+              }
+            />
+          </div>
+
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14 items-start">
             {/* Left Column: Interactive Product Gallery */}
             <div className="lg:col-span-7 lg:sticky lg:top-28">

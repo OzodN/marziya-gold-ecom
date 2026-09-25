@@ -910,16 +910,24 @@ function filterDemoProducts(params: ProductFilterParams = {}): PageResponseProdu
   const totalPages = Math.max(1, Math.ceil(totalElements / size));
   const validPage = Math.min(Math.max(0, page), totalPages - 1);
   const start = validPage * size;
-  const content = filtered.slice(start, start + size).map((item) => ({
-    id: item.id,
-    sku: item.sku,
-    name: item.name,
-    slug: item.slug,
-    categoryName: item.categoryName,
-    mainImageUrl: item.mainImageUrl,
-    isVisible: item.isVisible,
-    specs: item.specs,
-  }));
+  const content = filtered.slice(start, start + size).map((item) => {
+    const detail = DEMO_PRODUCT_DETAILS.find((d) => d.id === item.id);
+    const detailImages = detail?.images?.map((img) => img.url).filter(Boolean) || [];
+    const allImages = detailImages.length > 0 ? detailImages : (item.mainImageUrl ? [item.mainImageUrl] : []);
+
+    return {
+      id: item.id,
+      sku: item.sku,
+      name: item.name,
+      slug: item.slug,
+      categoryName: item.categoryName,
+      mainImageUrl: item.mainImageUrl,
+      imageUrls: allImages,
+      images: allImages,
+      isVisible: item.isVisible,
+      specs: item.specs,
+    };
+  });
 
   return {
     content,

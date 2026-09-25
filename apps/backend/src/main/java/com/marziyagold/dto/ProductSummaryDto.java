@@ -20,6 +20,8 @@ public class ProductSummaryDto {
     private String categoryName;
     private String categorySlug;
     private String mainImageUrl;
+    @Builder.Default
+    private List<String> imageUrls = new ArrayList<>();
     private Boolean isVisible;
     @Builder.Default
     private List<CharacteristicEntryDto> characteristics = new ArrayList<>();

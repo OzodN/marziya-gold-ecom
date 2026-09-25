@@ -382,6 +382,9 @@ components:
         slug: { type: string, example: "koltso-multibrand" }
         categoryName: { type: string }
         mainImageUrl: { type: string }
+        imageUrls:
+          type: array
+          items: { type: string }
         isVisible: { type: boolean }
 
     ProductDetailResponse:

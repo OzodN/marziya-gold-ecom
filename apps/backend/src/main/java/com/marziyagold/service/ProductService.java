@@ -95,6 +95,10 @@ public class ProductService {
                 ? product.getImages().get(0).getUrl()
                 : null;
 
+        List<String> imageUrls = (product.getImages() != null)
+                ? product.getImages().stream().map(ProductImage::getUrl).toList()
+                : Collections.emptyList();
+
         String categoryName = product.getCategory() != null ? product.getCategory().getName() : null;
         String categorySlug = product.getCategory() != null ? product.getCategory().getSlug() : null;
 
@@ -106,6 +110,7 @@ public class ProductService {
                 .categoryName(categoryName)
                 .categorySlug(categorySlug)
                 .mainImageUrl(mainImageUrl)
+                .imageUrls(imageUrls)
                 .isVisible(product.getIsVisible())
                 .characteristics(mapCharacteristics(product.getCharacteristics()))
                 .build();

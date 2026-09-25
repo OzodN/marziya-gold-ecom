@@ -52,6 +52,8 @@ export interface ProductSummaryDto {
   slug: string;
   categoryName?: string;
   mainImageUrl?: string;
+  imageUrls?: string[];
+  images?: string[];
   isVisible: boolean;
 }
 
