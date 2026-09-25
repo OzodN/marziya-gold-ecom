@@ -1,6 +1,6 @@
 id: "TASK-0013"
 title: "Product Detail Page UX Remediation (DEF-09 to DEF-13)"
-status: "in_progress"
+status: "done"
 owner: "frontend"
 contributors: []
 type: "fix"
@@ -26,4 +26,5 @@ acceptance_criteria:
 required_reviews:
   - "ux_review_gate"
 
-validation_status: "pending"
+validation_status: "passed"
+completed_at: "2026-09-25T15:00:00Z"
