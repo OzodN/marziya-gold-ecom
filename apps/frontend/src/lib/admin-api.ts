@@ -20,14 +20,6 @@ const getApiBaseUrl = (): string => {
   );
 };
 
-const DEMO_MASTER_USER: AdminUserDto = {
-  id: 1,
-  username: "master",
-  role: "ROLE_ADMIN",
-  createdAt: "2026-09-01T10:00:00Z",
-};
-
-const DEMO_SESSION_KEY = "mg_demo_admin_session";
 const DEMO_INQUIRIES_STORAGE_KEY = "mg_demo_admin_inquiries";
 
 const INITIAL_DEMO_INQUIRIES: InquiryDetailDto[] = [
@@ -478,8 +470,8 @@ function updateDemoInquiryStatus(
 
 /**
  * Authenticates master with HttpOnly cookie session.
- * On real backend, sets secure HttpOnly JWT cookie mg_admin_token.
- * Supports offline demo fallback if backend server is unreachable.
+ * Strictly calls backend POST /api/v1/admin/auth/login.
+ * On success, backend sets secure HttpOnly JWT cookie (mg_admin_token).
  */
 export async function adminLogin(
   credentials: AdminLoginRequestDto
@@ -487,11 +479,12 @@ export async function adminLogin(
   const baseUrl = getApiBaseUrl();
   const url = `${baseUrl}/admin/auth/login`;
 
+  let res: Response;
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-    const res = await fetch(url, {
+    res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -503,55 +496,30 @@ export async function adminLogin(
     });
 
     clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const user: AdminUserDto = await res.json();
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(user));
-      }
-      return user;
+  } catch (err: unknown) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error("Превышено время ожидания ответа сервера авторизации.");
     }
-
-    if (res.status === 401) {
-      throw new Error("Неверный логин или пароль мастера");
-    }
-
-    const errData = await res.json().catch(() => null);
-    throw new Error(errData?.message || `Ошибка авторизации (${res.status})`);
-  } catch (error: unknown) {
-    if (error instanceof Error && error.message.includes("Неверный логин")) {
-      throw error;
-    }
-
-    // Backend is unreachable - fallback to offline demo check
-    console.info(
-      "[Admin API] Backend unreachable, checking demo credentials fallback..."
-    );
-    const validDemoLogins = ["master", "admin"];
-    const validDemoPasswords = ["master123", "admin123", "master", "admin"];
-
-    if (
-      validDemoLogins.includes(credentials.username.trim().toLowerCase()) &&
-      validDemoPasswords.includes(credentials.password)
-    ) {
-      const user = {
-        ...DEMO_MASTER_USER,
-        username: credentials.username.trim(),
-      };
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(user));
-      }
-      return user;
-    }
-
     throw new Error(
-      "Неверный логин или пароль мастера. (Для демо используйте: master / master123)"
+      "Сервер авторизации недоступен. Пожалуйста, убедитесь, что бэкенд запущен."
     );
   }
+
+  if (res.ok) {
+    const user: AdminUserDto = await res.json();
+    return user;
+  }
+
+  if (res.status === 401) {
+    throw new Error("Неверный логин или пароль мастера");
+  }
+
+  const errData = await res.json().catch(() => null);
+  throw new Error(errData?.message || `Ошибка авторизации (${res.status})`);
 }
 
 /**
- * Terminate master session and clear HttpOnly cookie.
+ * Terminate master session and clear HttpOnly cookie on backend.
  */
 export async function adminLogout(): Promise<void> {
   const baseUrl = getApiBaseUrl();
@@ -566,16 +534,13 @@ export async function adminLogout(): Promise<void> {
       credentials: "include",
     });
   } catch {
-    console.info("[Admin API] Backend logout offline fallback");
-  } finally {
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem(DEMO_SESSION_KEY);
-    }
+    console.warn("[Admin API] Не удалось связаться с сервером при выходе.");
   }
 }
 
 /**
  * Fetch authenticated master profile. Returns null if unauthenticated.
+ * Strictly validates active HttpOnly cookie session against backend GET /api/v1/admin/auth/me.
  */
 export async function getAdminMe(): Promise<AdminUserDto | null> {
   const baseUrl = getApiBaseUrl();
@@ -583,7 +548,7 @@ export async function getAdminMe(): Promise<AdminUserDto | null> {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
 
     const res = await fetch(url, {
       method: "GET",
@@ -598,33 +563,13 @@ export async function getAdminMe(): Promise<AdminUserDto | null> {
 
     if (res.ok) {
       const user: AdminUserDto = await res.json();
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(user));
-      }
       return user;
     }
 
-    if (res.status === 401 || res.status === 403) {
-      if (typeof window !== "undefined") {
-        sessionStorage.removeItem(DEMO_SESSION_KEY);
-      }
-      return null;
-    }
+    return null;
   } catch {
-    // Check if offline demo session is stored
-    if (typeof window !== "undefined") {
-      const stored = sessionStorage.getItem(DEMO_SESSION_KEY);
-      if (stored) {
-        try {
-          return JSON.parse(stored) as AdminUserDto;
-        } catch {
-          return null;
-        }
-      }
-    }
+    return null;
   }
-
-  return null;
 }
 
 /**
