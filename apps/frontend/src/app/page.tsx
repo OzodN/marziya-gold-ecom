@@ -1,107 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight, ShieldCheck, Award, HeartHandshake } from "lucide-react";
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { ProductCardSkeleton } from "@/components/catalog/ProductCardSkeleton";
 import { useSelectionStore } from "@/store/selection-store";
+import { getProducts, getCategories } from "@/lib/api";
 import type { ProductSummaryDto } from "@/types/api";
-
-const INITIAL_SHOWCASE_PRODUCTS: (ProductSummaryDto & {
-  specs: { label: string; value: string }[];
-})[] = [
-  {
-    id: 1,
-    sku: "MRZ-RNG-001",
-    name: "Кольцо «Созвездие Граната»",
-    slug: "koltso-sozvezdie-granata",
-    categoryName: "Кольца",
-    mainImageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80",
-    isVisible: true,
-    specs: [
-      { label: "Металл", value: "Золото 585°" },
-      { label: "Вставка", value: "Природный гранат" },
-    ],
-  },
-  {
-    id: 2,
-    sku: "MRZ-EAR-002",
-    name: "Серьги «Капли Росы»",
-    slug: "sergi-kapli-rosy",
-    categoryName: "Серьги",
-    mainImageUrl: "https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=800&q=80",
-    isVisible: true,
-    specs: [
-      { label: "Металл", value: "Белое золото 750°" },
-      { label: "Вставка", value: "Бриллианты 0.45 ct" },
-    ],
-  },
-  {
-    id: 3,
-    sku: "MRZ-NCK-003",
-    name: "Колье «Восточный Рассвет»",
-    slug: "kole-vostochnyy-rassvet",
-    categoryName: "Колье",
-    mainImageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80",
-    isVisible: true,
-    specs: [
-      { label: "Металл", value: "Золото 585°" },
-      { label: "Вставка", value: "Сапфиры" },
-    ],
-  },
-  {
-    id: 4,
-    sku: "MRZ-BRC-004",
-    name: "Браслет «Царское Плетение»",
-    slug: "braslet-tsarskoe-pletenie",
-    categoryName: "Браслеты",
-    mainImageUrl: "https://images.unsplash.com/photo-1611591475155-4284ec28d351?auto=format&fit=crop&w=800&q=80",
-    isVisible: true,
-    specs: [
-      { label: "Металл", value: "Золото 585°" },
-      { label: "Вес", value: "18.4 г" },
-    ],
-  },
-  {
-    id: 5,
-    sku: "MRZ-RNG-005",
-    name: "Перстень «Изумрудный Оазис»",
-    slug: "persten-izumrudnyy-oazis",
-    categoryName: "Кольца",
-    mainImageUrl: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=800&q=80",
-    isVisible: true,
-    specs: [
-      { label: "Металл", value: "Желтое золото 750°" },
-      { label: "Вставка", value: "Колумбийский изумруд" },
-    ],
-  },
-  {
-    id: 6,
-    sku: "MRZ-EAR-006",
-    name: "Серьги «Сияние Вечности»",
-    slug: "sergi-siyanie-vechnosti",
-    categoryName: "Серьги",
-    mainImageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
-    isVisible: true,
-    specs: [
-      { label: "Металл", value: "Комбинированное золото" },
-      { label: "Вставка", value: "Бриллиант и сапфир" },
-    ],
-  },
-];
-
-const CATEGORIES = ["Все изделия", "Кольца", "Серьги", "Колье", "Браслеты"];
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("Все изделия");
+  const [categories, setCategories] = useState<string[]>(["Все изделия"]);
+  const [products, setProducts] = useState<ProductSummaryDto[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const openSelection = useSelectionStore((s) => s.openSelection);
+
+  useEffect(() => {
+    let isCancelled = false;
+    async function loadHomeData() {
+      setIsLoading(true);
+      try {
+        const [catList, prodPage] = await Promise.all([
+          getCategories(),
+          getProducts({ size: 12 }),
+        ]);
+
+        if (!isCancelled) {
+          if (catList && catList.length > 0) {
+            setCategories(["Все изделия", ...catList.map((c) => c.name)]);
+          }
+          if (prodPage && prodPage.content) {
+            setProducts(prodPage.content);
+          }
+        }
+      } catch {
+        // Fallback handled in API client
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadHomeData();
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const filteredProducts =
     selectedCategory === "Все изделия"
-      ? INITIAL_SHOWCASE_PRODUCTS
-      : INITIAL_SHOWCASE_PRODUCTS.filter(
-          (p) => p.categoryName === selectedCategory
-        );
+      ? products
+      : products.filter((p) => p.categoryName === selectedCategory);
 
   return (
     <div className="flex flex-col space-y-24 pb-20">
@@ -206,7 +157,7 @@ export default function HomePage() {
 
           {/* Category Filter Tabs */}
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <button
                 key={category}
                 type="button"
@@ -224,15 +175,28 @@ export default function HomePage() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              specs={product.specs}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 text-center rounded-2xl border border-noir-800 bg-noir-900/40 p-8">
+            <Sparkles className="h-10 w-10 text-gold-400 mb-3 opacity-60" />
+            <p className="font-serif text-lg text-white">В данной категории пока нет изделий</p>
+            <p className="text-xs text-noir-400 mt-1">Ознакомьтесь с другими категориями или посмотрите полный каталог</p>
+          </div>
+        )}
 
         {/* Full Catalog CTA Button */}
         <div className="mt-12 flex justify-center">

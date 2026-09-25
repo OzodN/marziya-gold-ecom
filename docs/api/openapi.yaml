@@ -102,6 +102,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/Category'
 
+  /stone-types:
+    get:
+      summary: List active stone types for catalog filters
+      tags: [Storefront]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StoneType'
+
   /characteristics/filter-keys:
     get:
       summary: List active filterable characteristics and their available values

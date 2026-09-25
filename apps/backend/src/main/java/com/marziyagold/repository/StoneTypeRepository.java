@@ -12,6 +12,8 @@ public interface StoneTypeRepository extends JpaRepository<StoneType, Long> {
 
     List<StoneType> findByIsActiveTrue();
 
+    List<StoneType> findByIsActiveTrueOrderByIdAsc();
+
     List<StoneType> findAllByOrderByIdAsc();
 
     Optional<StoneType> findByName(String name);

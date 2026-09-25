@@ -2,14 +2,16 @@ import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { CatalogView } from "@/components/catalog/CatalogView";
 import { ProductCardSkeleton } from "@/components/catalog/ProductCardSkeleton";
-import { DEMO_CATEGORIES } from "@/lib/api";
+import { getCategories, DEMO_CATEGORIES } from "@/lib/api";
 
 interface CategoryPageProps {
   params: Promise<{ categorySlug: string }>;
 }
 
-export function generateStaticParams() {
-  return DEMO_CATEGORIES.map((cat) => ({
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  const list = categories.length > 0 ? categories : DEMO_CATEGORIES;
+  return list.map((cat) => ({
     categorySlug: cat.slug,
   }));
 }
@@ -18,7 +20,10 @@ export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
   const { categorySlug } = await params;
-  const category = DEMO_CATEGORIES.find((c) => c.slug === categorySlug);
+  const categories = await getCategories();
+  const category =
+    categories.find((c) => c.slug === categorySlug) ||
+    DEMO_CATEGORIES.find((c) => c.slug === categorySlug);
   const name = category?.name || "Ювелирные изделия";
 
   return {

@@ -1020,6 +1020,38 @@ export async function getCategories(): Promise<CategoryDto[]> {
 }
 
 /**
+ * List active stone types for catalog filters
+ */
+export async function getStoneTypes(): Promise<StoneTypeDto[]> {
+  const baseUrl = getApiBaseUrl();
+  const url = `${baseUrl}/stone-types`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+      next: { revalidate: 60 },
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data: StoneTypeDto[] = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err) {
+    console.info("[API] Backend unavailable for getStoneTypes, using demo stone types.");
+  }
+
+  return DEMO_STONE_TYPES;
+}
+
+/**
  * List active filterable characteristics and their available values
  */
 export async function getFilterKeys(): Promise<FilterGroupDto[]> {
