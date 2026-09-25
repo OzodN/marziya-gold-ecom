@@ -278,6 +278,29 @@ paths:
     get:
       summary: List products for admin with visibility toggle
       tags: [Admin Products]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: categoryId
+          in: query
+          schema: { type: integer }
+        - name: isVisible
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Paginated product list for admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPageResponse'
     post:
       summary: Create new product with dynamic characteristics and stones
       tags: [Admin Products]
@@ -290,8 +313,29 @@ paths:
       responses:
         '201':
           description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailResponse'
 
   /admin/products/{id}:
+    get:
+      summary: Get complete product details by ID for admin editor
+      tags: [Admin Products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Complete product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailResponse'
+        '404':
+          description: Product not found
     put:
       summary: Update existing product
       tags: [Admin Products]
@@ -309,6 +353,10 @@ paths:
       responses:
         '200':
           description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailResponse'
     delete:
       summary: Soft-delete or archive product
       tags: [Admin Products]
@@ -320,6 +368,29 @@ paths:
       responses:
         '204':
           description: Product deleted
+
+  /admin/products/{id}/visibility:
+    patch:
+      summary: Instant toggle for product visibility
+      tags: [Admin Products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVisibilityUpdateRequest'
+      responses:
+        '200':
+          description: Product visibility updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailResponse'
 
   /admin/media/upload:
     post:
@@ -556,3 +627,9 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/CharacteristicEntry'
+
+    ProductVisibilityUpdateRequest:
+      type: object
+      required: [isVisible]
+      properties:
+        isVisible: { type: boolean }

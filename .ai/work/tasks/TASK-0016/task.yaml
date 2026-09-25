@@ -1,6 +1,6 @@
 id: "TASK-0016"
 title: "Admin Product Management REST API (CRUD, Visibility, Dynamic Characteristics & Stones)"
-status: "in_progress"
+status: "ready_for_review"
 owner: "backend"
 contributors: []
 type: "feature"
@@ -27,4 +27,4 @@ acceptance_criteria:
 required_reviews:
   - "code_review_gate"
 
-validation_status: "in_progress"
+validation_status: "passed"

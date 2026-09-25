@@ -33,6 +33,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     boolean existsBySlug(String slug);
 
+    boolean existsBySkuAndIdNot(String sku, Long id);
+
+    boolean existsBySlugAndIdNot(String slug, Long id);
+
     @Query("SELECT DISTINCT p FROM Product p " +
            "LEFT JOIN p.stones s " +
            "WHERE p.isVisible = true " +
@@ -42,6 +46,17 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     Page<Product> findFiltered(
             @Param("categorySlug") String categorySlug,
             @Param("stoneTypeId") Long stoneTypeId,
+            @Param("q") String q,
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Product p " +
+           "WHERE (:isVisible IS NULL OR p.isVisible = :isVisible) " +
+           "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
+           "AND (:q IS NULL OR :q = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :q, '%')))")
+    Page<Product> findAdminFiltered(
+            @Param("categoryId") Long categoryId,
+            @Param("isVisible") Boolean isVisible,
             @Param("q") String q,
             Pageable pageable
     );
