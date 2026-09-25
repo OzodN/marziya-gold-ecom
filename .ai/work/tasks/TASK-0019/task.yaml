@@ -1,0 +1,32 @@
+id: "TASK-0019"
+title: "Admin Panel Scaffolding, Master Authentication and Inquiries Polling Dashboard"
+status: "in_progress"
+owner: "frontend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0012"
+
+affected_areas:
+  - "apps/frontend/**"
+
+branch: "feat/TASK-0019-admin-login-dashboard"
+worktree: ".worktrees/TASK-0019-admin-login-dashboard"
+
+acceptance_criteria:
+  - "Implement master authentication page at /admin/login with elegant luxury minimalist UI (username & password inputs, loading state, error alert)."
+  - "Login calls POST /api/v1/admin/auth/login with credentials: include, redirects on success to /admin/dashboard."
+  - "Implement /admin/layout.tsx with master sidebar/header navigation (Dashboard, Inquiries, Products, Categories, Settings, Logout button)."
+  - "Implement /admin/dashboard with key metrics cards (New Inquiries, Quick catalog link, System/Storefront status)."
+  - "Implement 30-second background polling of GET /api/v1/admin/inquiries/new-count updating the inquiry badge count in the navigation and dashboard."
+  - "Implement master logout calling POST /api/v1/admin/auth/logout and redirecting to /admin/login."
+  - "Enforce route guard redirecting unauthenticated users visiting /admin/* to /admin/login."
+  - "Adhere strictly to luxury minimalist aesthetic (docs/design/ux-criteria.md) and approved terminology."
+  - "apps/frontend build passes without errors (npm run build)."
+  - "Handoff generated at .ai/work/tasks/TASK-0019/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+  - "ux_review_gate"
+
+validation_status: "in_progress"

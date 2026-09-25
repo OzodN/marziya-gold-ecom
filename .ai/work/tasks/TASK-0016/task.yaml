@@ -1,0 +1,30 @@
+id: "TASK-0016"
+title: "Admin Product Management REST API (CRUD, Visibility, Dynamic Characteristics & Stones)"
+status: "in_progress"
+owner: "backend"
+contributors: []
+type: "feature"
+dependencies:
+  - "TASK-0012"
+
+affected_areas:
+  - "apps/backend/**"
+
+branch: "feat/TASK-0016-admin-products"
+worktree: ".worktrees/TASK-0016-admin-products"
+
+acceptance_criteria:
+  - "Implement GET /api/v1/admin/products with pagination, sorting by createdAt DESC, query search (q for SKU/name), categoryId filter, and optional isVisible filter."
+  - "Implement POST /api/v1/admin/products creating a new product with sku, name, description, categoryId, isVisible, characteristics (JSONB), and stones (stoneTypeId, sortOrder, characteristics JSONB)."
+  - "Implement GET /api/v1/admin/products/{id} returning complete product details including dynamic characteristics and stones for the single-page editor."
+  - "Implement PUT /api/v1/admin/products/{id} updating product details, characteristics, and stones transactionally."
+  - "Implement DELETE /api/v1/admin/products/{id} soft-deleting or deleting product cleanly."
+  - "Implement PATCH /api/v1/admin/products/{id}/visibility for instant catalog visibility toggle."
+  - "All /api/v1/admin/products/** endpoints require ROLE_ADMIN authorization via JwtAuthenticationFilter."
+  - "Unit and slice tests written and passing (mvn clean test)."
+  - "Handoff generated at .ai/work/tasks/TASK-0016/handoff.md."
+
+required_reviews:
+  - "code_review_gate"
+
+validation_status: "in_progress"
