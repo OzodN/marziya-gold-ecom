@@ -1,6 +1,6 @@
 id: "TASK-0020"
 title: "Admin Inquiries Management UI with Historical Snapshot and Status Audit"
-status: "in_progress"
+status: "review"
 owner: "frontend"
 contributors: []
 type: "feature"
@@ -28,4 +28,4 @@ required_reviews:
   - "code_review_gate"
   - "ux_review_gate"
 
-validation_status: "in_progress"
+validation_status: "passed"

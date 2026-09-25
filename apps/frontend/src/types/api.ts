@@ -124,7 +124,7 @@ export type InquiryStatus =
   | "REJECTED";
 
 export interface ProductSnapshotDto {
-  productId: number;
+  productId?: number;
   sku: string;
   name: string;
   mainImageUrl?: string;
@@ -142,26 +142,44 @@ export interface InquirySummaryDto {
   itemCount: number;
   status: InquiryStatus;
   createdAt: string;
+  updatedAt?: string;
+}
+
+export interface InquiryStatusHistoryDto {
+  id?: number;
+  oldStatus?: InquiryStatus | string | null;
+  newStatus: InquiryStatus | string;
+  changedBy?: string | null;
+  changedAt: string;
+}
+
+export interface InquiryItemDetailDto {
+  id: number;
+  productId?: number;
+  quantity: number;
+  snapshot?: ProductSnapshotDto;
+  productSnapshot?: ProductSnapshotDto;
 }
 
 export interface InquiryDetailDto {
   id: number;
   clientName: string;
   clientPhone: string;
-  comment?: string;
+  comment?: string | null;
   status: InquiryStatus;
   createdAt: string;
-  items: {
-    id: number;
-    quantity: number;
-    snapshot: ProductSnapshotDto;
-  }[];
-  statusHistory: {
-    oldStatus?: string;
-    newStatus: string;
-    changedBy?: string;
-    changedAt: string;
-  }[];
+  updatedAt?: string;
+  items: InquiryItemDetailDto[];
+  statusHistory?: InquiryStatusHistoryDto[];
+  history?: InquiryStatusHistoryDto[];
+}
+
+export interface AdminInquiriesResponse {
+  items: InquirySummaryDto[];
+  totalCount: number;
+  totalPages: number;
+  pageNumber: number;
+  pageSize: number;
 }
 
 export interface ProductSaveRequestDto {
