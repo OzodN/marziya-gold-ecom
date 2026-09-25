@@ -1,6 +1,6 @@
 id: "TASK-0014"
 title: "Product Detail & Catalog Interactions: Portal Lightbox, Mouse Drag Swipe, In-Card Image Swipe & Back Button"
-status: "in_progress"
+status: "done"
 owner: "fullstack"
 contributors: []
 type: "feature"
@@ -28,4 +28,5 @@ acceptance_criteria:
 required_reviews:
   - "ux_review_gate"
 
-validation_status: "pending"
+validation_status: "passed"
+completed_at: "2026-09-25T11:00:00Z"

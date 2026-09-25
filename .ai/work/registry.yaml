@@ -12,8 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0014"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -154,7 +153,7 @@ tasks:
 
   - id: "TASK-0014"
     title: "Product Detail & Catalog Interactions: Portal Lightbox, Mouse Drag Swipe, In-Card Image Swipe & Back Button"
-    status: "in_progress"
+    status: "done"
     owner: "fullstack"
     type: "feature"
     affected_areas:
