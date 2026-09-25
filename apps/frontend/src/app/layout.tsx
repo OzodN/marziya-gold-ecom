@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { SelectionSheet } from "@/components/selection/SelectionSheet";
-import { InquiryModal } from "@/components/selection/InquiryModal";
+import { StorefrontShell } from "@/components/layout/StorefrontShell";
 
 const playfair = Playfair_Display({
   subsets: ["latin", "cyrillic"],
@@ -41,16 +38,9 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${playfair.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-noir-950 font-sans text-noir-100 antialiased selection:bg-gold-500 selection:text-noir-950">
-        <div className="relative flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-
-        {/* Global Drawers & Modals for Selection */}
-        <SelectionSheet />
-        <InquiryModal />
+        <StorefrontShell>{children}</StorefrontShell>
       </body>
     </html>
   );
 }
+

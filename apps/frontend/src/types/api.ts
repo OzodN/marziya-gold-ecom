@@ -178,3 +178,21 @@ export interface ProductSaveRequestDto {
     characteristics?: CharacteristicEntryDto[];
   }[];
 }
+
+export interface AdminUserDto {
+  id?: number;
+  username: string;
+  role: string;
+  createdAt?: string;
+}
+
+export interface AdminLoginRequestDto {
+  username: string;
+  password: string;
+}
+
+export interface NewInquiriesCountDto {
+  count?: number;
+  newCount: number;
+}
+
