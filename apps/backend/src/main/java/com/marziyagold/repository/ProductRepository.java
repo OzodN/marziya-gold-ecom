@@ -37,6 +37,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     boolean existsBySlugAndIdNot(String slug, Long id);
 
+    boolean existsByCategoryId(Long categoryId);
+
     @Query("SELECT DISTINCT p FROM Product p " +
            "LEFT JOIN p.stones s " +
            "WHERE p.isVisible = true " +

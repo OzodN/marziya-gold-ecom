@@ -1,6 +1,6 @@
 id: "TASK-0017"
 title: "Admin Reference Dictionaries and Site Settings REST API"
-status: "in_progress"
+status: "completed"
 owner: "backend"
 contributors: []
 type: "feature"
@@ -9,6 +9,7 @@ dependencies:
 
 affected_areas:
   - "apps/backend/**"
+  - "docs/api/openapi.yaml"
 
 branch: "feat/TASK-0017-admin-dictionaries"
 worktree: ".worktrees/TASK-0017-admin-dictionaries"
@@ -26,4 +27,4 @@ acceptance_criteria:
 required_reviews:
   - "code_review_gate"
 
-validation_status: "in_progress"
+validation_status: "passed"

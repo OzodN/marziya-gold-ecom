@@ -12,7 +12,11 @@ public interface CharacteristicKeyRepository extends JpaRepository<Characteristi
 
     List<CharacteristicKey> findByIsFilterableTrueOrderBySortOrderAsc();
 
+    List<CharacteristicKey> findAllByOrderBySortOrderAsc();
+
     Optional<CharacteristicKey> findByName(String name);
 
     boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
 }

@@ -416,6 +416,205 @@ paths:
                   url: { type: string }
                   publicId: { type: string }
 
+  # ==========================================
+  # ADMIN REFERENCE DICTIONARIES & SETTINGS
+  # ==========================================
+  /admin/categories:
+    get:
+      summary: List all categories for admin (including invisible, ordered by sortOrder)
+      tags: [Admin Categories]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryAdminResponse'
+    post:
+      summary: Create new category
+      tags: [Admin Categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryAdminSaveRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryAdminResponse'
+        '400':
+          description: Invalid request or duplicate name/slug
+
+  /admin/categories/{id}:
+    put:
+      summary: Update existing category
+      tags: [Admin Categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryAdminSaveRequest'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryAdminResponse'
+        '400':
+          description: Invalid request or duplicate name/slug
+        '404':
+          description: Category not found
+    delete:
+      summary: Delete category
+      tags: [Admin Categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Category deleted
+        '400':
+          description: Category has linked products
+        '404':
+          description: Category not found
+
+  /admin/characteristic-keys:
+    get:
+      summary: List all characteristic keys ordered by sortOrder
+      tags: [Admin Characteristics]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharacteristicKey'
+    post:
+      summary: Create new characteristic key
+      tags: [Admin Characteristics]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CharacteristicKeySaveRequest'
+      responses:
+        '201':
+          description: Characteristic key created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacteristicKey'
+        '400':
+          description: Duplicate key name
+
+  /admin/characteristic-keys/{id}:
+    delete:
+      summary: Delete characteristic key
+      tags: [Admin Characteristics]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Characteristic key deleted
+        '404':
+          description: Characteristic key not found
+
+  /admin/stone-types:
+    get:
+      summary: List all gemstone types (including inactive)
+      tags: [Admin Stone Types]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StoneType'
+    post:
+      summary: Create new stone type
+      tags: [Admin Stone Types]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoneTypeSaveRequest'
+      responses:
+        '201':
+          description: Stone type created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoneType'
+        '400':
+          description: Duplicate stone type name
+
+  /admin/stone-types/{id}:
+    delete:
+      summary: Delete stone type
+      tags: [Admin Stone Types]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Stone type deleted
+        '400':
+          description: Stone type is used in products
+        '404':
+          description: Stone type not found
+
+  /admin/settings:
+    get:
+      summary: Get all site and contact settings
+      tags: [Admin Settings]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: { type: string }
+    put:
+      summary: Update contact settings (phone, telegramUsername, aboutMaster)
+      tags: [Admin Settings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactSettingsUpdateRequest'
+      responses:
+        '200':
+          description: Settings updated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: { type: string }
+
 components:
   schemas:
     CharacteristicEntry:
@@ -633,3 +832,59 @@ components:
       required: [isVisible]
       properties:
         isVisible: { type: boolean }
+
+    CategoryAdminSaveRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: "Кольца" }
+        slug: { type: string, example: "koltsa" }
+        sortOrder: { type: integer, example: 1 }
+        isVisible: { type: boolean, example: true }
+
+    CategoryAdminResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        sortOrder: { type: integer }
+        isVisible: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    CharacteristicKeySaveRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: "Металл" }
+        sortOrder: { type: integer, example: 1 }
+        isFilterable: { type: boolean, example: true }
+
+    CharacteristicKey:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string, example: "Металл" }
+        sortOrder: { type: integer, example: 1 }
+        isFilterable: { type: boolean, example: true }
+
+    StoneTypeSaveRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: "Бриллиант" }
+        isActive: { type: boolean, example: true }
+
+    StoneType:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string, example: "Бриллиант" }
+        isActive: { type: boolean, example: true }
+
+    ContactSettingsUpdateRequest:
+      type: object
+      properties:
+        phone: { type: string, example: "+998 90 123 45 67" }
+        telegramUsername: { type: string, example: "marziyagold" }
+        aboutMaster: { type: string, example: "Авторская ювелирная мастерская..." }

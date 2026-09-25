@@ -12,7 +12,11 @@ public interface StoneTypeRepository extends JpaRepository<StoneType, Long> {
 
     List<StoneType> findByIsActiveTrue();
 
+    List<StoneType> findAllByOrderByIdAsc();
+
     Optional<StoneType> findByName(String name);
 
     boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
 }
