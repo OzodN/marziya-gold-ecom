@@ -12,9 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0017"
-  - "TASK-0020"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -200,7 +198,7 @@ tasks:
 
   - id: "TASK-0017"
     title: "Admin Reference Dictionaries and Site Settings REST API"
-    status: "in_progress"
+    status: "done"
     owner: "backend"
     type: "feature"
     affected_areas:
@@ -211,7 +209,7 @@ tasks:
 
   - id: "TASK-0020"
     title: "Admin Inquiries Management UI with Historical Snapshot and Status Audit"
-    status: "in_progress"
+    status: "done"
     owner: "frontend"
     type: "feature"
     affected_areas:
