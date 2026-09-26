@@ -1,0 +1,21 @@
+id: "TASK-0024"
+title: "Temporary Universal Origin and Ngrok Tunnel Support for Admin Login and API"
+status: "done"
+owner: "fullstack"
+type: "feature"
+created_at: "2026-09-26T21:15:00Z"
+dependencies:
+  - "TASK-0023"
+affected_areas:
+  - "apps/backend/src/main/java/com/marziyagold/security/SecurityConfig.java"
+  - "apps/backend/src/main/java/com/marziyagold/service/AdminAuthService.java"
+  - "apps/backend/src/main/java/com/marziyagold/dto/AdminUserDto.java"
+  - "apps/backend/src/main/resources/application.yml"
+  - "apps/frontend/next.config.ts"
+  - "apps/frontend/src/lib/admin-api.ts"
+  - "apps/frontend/src/lib/api.ts"
+acceptance_criteria:
+  - "Spring Boot CORS permits any origin pattern (*) with credentials so ngrok tunnels and external origins work seamlessly."
+  - "AdminAuthService exposes Authorization header and includes token in AdminUserDto for seamless cross-origin and tunnel authentication."
+  - "Next.js configuration includes reverse proxy rewrites for /api/backend/:path* to prevent HTTPS Mixed Content errors when tunneling via ngrok."
+  - "Frontend API clients gracefully proxy through Next.js rewrite when accessed over HTTPS tunnel without NEXT_PUBLIC_API_URL."
