@@ -49,7 +49,7 @@ class SecurityConfigCorsTest {
     }
 
     @Test
-    @DisplayName("CORS configuration should reject untrusted origins")
+    @DisplayName("CORS configuration should reject untrusted origins when specific origins configured")
     void shouldRejectUntrustedOrigins() {
         CorsConfigurationSource source = securityConfig.corsConfigurationSource();
         MockHttpServletRequest request = new MockHttpServletRequest("OPTIONS", "/api/v1/admin/auth/login");
@@ -58,5 +58,20 @@ class SecurityConfigCorsTest {
         assertThat(config).isNotNull();
         assertThat(config.checkOrigin("http://malicious-site.com")).isNull();
         assertThat(config.checkOrigin("http://fake-localhost.com")).isNull();
+    }
+
+    @Test
+    @DisplayName("CORS configuration should allow any origin including ngrok tunnels when configured with *")
+    void shouldAllowAnyOriginWithWildcard() {
+        securityConfig.setAllowedOrigins("*");
+        CorsConfigurationSource source = securityConfig.corsConfigurationSource();
+        MockHttpServletRequest request = new MockHttpServletRequest("OPTIONS", "/api/v1/admin/auth/login");
+        CorsConfiguration config = source.getCorsConfiguration(request);
+
+        assertThat(config).isNotNull();
+        assertThat(config.getAllowCredentials()).isTrue();
+        assertThat(config.checkOrigin("https://abc123-ngrok-free.app")).isEqualTo("https://abc123-ngrok-free.app");
+        assertThat(config.checkOrigin("https://tunnel.ngrok.io")).isEqualTo("https://tunnel.ngrok.io");
+        assertThat(config.checkOrigin("http://192.168.1.50:3000")).isEqualTo("http://192.168.1.50:3000");
     }
 }

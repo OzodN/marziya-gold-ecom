@@ -9,18 +9,62 @@ import type {
   NewInquiriesCountDto,
 } from "@/types/api";
 
+const ADMIN_TOKEN_KEY = "mg_admin_token";
+
+export function getAdminAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAdminAuthToken(token: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (token) {
+      sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+    } else {
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    }
+  } catch {
+    // storage not available
+  }
+}
+
+function getAuthHeaders(additional?: HeadersInit): HeadersInit {
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+  };
+  const token = getAdminAuthToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  return { ...headers, ...additional };
+}
+
 const getApiBaseUrl = (): string => {
   if (typeof window !== "undefined") {
     if (process.env.NEXT_PUBLIC_API_URL) {
       return process.env.NEXT_PUBLIC_API_URL;
     }
     const host = window.location.hostname || "localhost";
+    const isLocal =
+      host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+
+    // When accessed through ngrok/HTTPS tunnel or external IP, route via Next.js reverse rewrite
+    // to prevent Mixed Content (HTTPS page calling HTTP backend) and cross-site cookie restrictions
+    if (!isLocal || window.location.protocol === "https:") {
+      return "/api/backend/v1";
+    }
+
     return `http://${host}:8080/api/v1`;
   }
   return (
     process.env.INTERNAL_API_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:8080/api/v1"
+    "http://127.0.0.1:8080/api/v1"
   );
 };
 
@@ -517,6 +561,9 @@ export async function adminLogin(
 
   if (res.ok) {
     const user: AdminUserDto = await res.json();
+    if (user.token) {
+      setAdminAuthToken(user.token);
+    }
     return user;
   }
 
@@ -532,15 +579,14 @@ export async function adminLogin(
  * Terminate master session and clear HttpOnly cookie on backend.
  */
 export async function adminLogout(): Promise<void> {
+  setAdminAuthToken(null);
   const baseUrl = getApiBaseUrl();
   const url = `${baseUrl}/admin/auth/logout`;
 
   try {
     await fetch(url, {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: getAuthHeaders(),
       credentials: "include",
     });
   } catch {
@@ -562,9 +608,7 @@ export async function getAdminMe(): Promise<AdminUserDto | null> {
 
     const res = await fetch(url, {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: getAuthHeaders(),
       credentials: "include",
       signal: controller.signal,
     });
@@ -596,9 +640,7 @@ export async function getNewInquiriesCount(): Promise<NewInquiriesCountDto> {
 
     const res = await fetch(url, {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: getAuthHeaders(),
       credentials: "include",
       signal: controller.signal,
     });
@@ -651,9 +693,7 @@ export async function getAdminInquiries(
 
     const res = await fetch(url, {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: getAuthHeaders(),
       credentials: "include",
       signal: controller.signal,
     });
@@ -710,9 +750,7 @@ export async function getAdminInquiryById(
 
     const res = await fetch(url, {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: getAuthHeaders(),
       credentials: "include",
       signal: controller.signal,
     });
@@ -761,10 +799,9 @@ export async function updateAdminInquiryStatus(
 
     const res = await fetch(url, {
       method: "PUT",
-      headers: {
+      headers: getAuthHeaders({
         "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      }),
       credentials: "include",
       body: JSON.stringify({ status }),
       signal: controller.signal,

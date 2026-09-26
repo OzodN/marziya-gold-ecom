@@ -14,12 +14,25 @@ import type {
 
 const getApiBaseUrl = (): string => {
   if (typeof window !== "undefined") {
-    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL;
+    }
+    const host = window.location.hostname || "localhost";
+    const isLocal =
+      host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+
+    // When accessed through ngrok/HTTPS tunnel or external IP, route via Next.js reverse rewrite
+    // to prevent Mixed Content (HTTPS page calling HTTP backend)
+    if (!isLocal || window.location.protocol === "https:") {
+      return "/api/backend/v1";
+    }
+
+    return `http://${host}:8080/api/v1`;
   }
   return (
     process.env.INTERNAL_API_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:8080/api/v1"
+    "http://127.0.0.1:8080/api/v1"
   );
 };
 
