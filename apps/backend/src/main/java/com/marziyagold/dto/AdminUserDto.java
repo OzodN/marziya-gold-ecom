@@ -16,4 +16,5 @@ public class AdminUserDto {
     private String username;
     private String role;
     private LocalDateTime createdAt;
+    private String token;
 }

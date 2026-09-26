@@ -202,6 +202,7 @@ export interface AdminUserDto {
   username: string;
   role: string;
   createdAt?: string;
+  token?: string;
 }
 
 export interface AdminLoginRequestDto {

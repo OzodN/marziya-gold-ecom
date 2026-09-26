@@ -75,6 +75,7 @@ public class AdminAuthService {
                     .maxAge(Duration.ofMillis(jwtTokenProvider.getExpirationMs()))
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         }
 
         String roleName = adminUser.getRole() != null ? adminUser.getRole() : "ADMIN";
@@ -91,6 +92,7 @@ public class AdminAuthService {
                 .username(adminUser.getUsername())
                 .role(adminUser.getRole())
                 .createdAt(adminUser.getCreatedAt())
+                .token(token)
                 .build();
     }
 

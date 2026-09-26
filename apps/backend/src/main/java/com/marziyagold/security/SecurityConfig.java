@@ -30,7 +30,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${application.security.cors.allowed-origins:http://localhost:3000}")
+    @Value("${application.security.cors.allowed-origins:*}")
     private String allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -88,20 +88,25 @@ public class SecurityConfig {
                 .toList();
 
         List<String> originPatterns = new ArrayList<>(origins);
-        List<String> defaultPatterns = List.of(
-                "http://localhost:[*]",
-                "http://127.0.0.1:[*]",
-                "http://[::1]:[*]",
-                "http://localhost",
-                "http://127.0.0.1"
-        );
-        for (String pattern : defaultPatterns) {
-            if (!originPatterns.contains(pattern)) {
-                originPatterns.add(pattern);
+        // Universal origin matching: allows ngrok tunnels, arbitrary dev origins, local network devices
+        if (originPatterns.contains("*") || originPatterns.isEmpty() || "*".equals(allowedOrigins.trim())) {
+            configuration.setAllowedOriginPatterns(List.of("*"));
+        } else {
+            List<String> defaultPatterns = List.of(
+                    "http://localhost:[*]",
+                    "http://127.0.0.1:[*]",
+                    "http://[::1]:[*]",
+                    "http://localhost",
+                    "http://127.0.0.1"
+            );
+            for (String pattern : defaultPatterns) {
+                if (!originPatterns.contains(pattern)) {
+                    originPatterns.add(pattern);
+                }
             }
+            configuration.setAllowedOriginPatterns(originPatterns);
         }
 
-        configuration.setAllowedOriginPatterns(originPatterns);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition", "Set-Cookie"));
