@@ -11,7 +11,11 @@ import type {
 
 const getApiBaseUrl = (): string => {
   if (typeof window !== "undefined") {
-    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL;
+    }
+    const host = window.location.hostname || "localhost";
+    return `http://${host}:8080/api/v1`;
   }
   return (
     process.env.INTERNAL_API_URL ||
@@ -497,11 +501,17 @@ export async function adminLogin(
 
     clearTimeout(timeoutId);
   } catch (err: unknown) {
-    if (err instanceof Error && err.name === "AbortError") {
-      throw new Error("Превышено время ожидания ответа сервера авторизации.");
+    console.error("[Admin API] Ошибка при обращении к серверу авторизации:", err);
+    if (err instanceof Error) {
+      if (err.name === "AbortError") {
+        throw new Error("Превышено время ожидания ответа сервера авторизации.");
+      }
+      throw new Error(
+        `Сервер авторизации недоступен (${err.message}). Пожалуйста, убедитесь, что бэкенд запущен на порту 8080.`
+      );
     }
     throw new Error(
-      "Сервер авторизации недоступен. Пожалуйста, убедитесь, что бэкенд запущен."
+      "Сервер авторизации недоступен. Пожалуйста, убедитесь, что бэкенд запущен на порту 8080."
     );
   }
 

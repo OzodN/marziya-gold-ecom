@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -34,6 +35,10 @@ public class SecurityConfig {
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    public void setAllowedOrigins(String allowedOrigins) {
+        this.allowedOrigins = allowedOrigins;
     }
 
     @Bean
@@ -82,9 +87,24 @@ public class SecurityConfig {
                 .filter(Predicate.not(String::isEmpty))
                 .toList();
 
-        configuration.setAllowedOrigins(origins);
+        List<String> originPatterns = new ArrayList<>(origins);
+        List<String> defaultPatterns = List.of(
+                "http://localhost:[*]",
+                "http://127.0.0.1:[*]",
+                "http://[::1]:[*]",
+                "http://localhost",
+                "http://127.0.0.1"
+        );
+        for (String pattern : defaultPatterns) {
+            if (!originPatterns.contains(pattern)) {
+                originPatterns.add(pattern);
+            }
+        }
+
+        configuration.setAllowedOriginPatterns(originPatterns);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition", "Set-Cookie"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
