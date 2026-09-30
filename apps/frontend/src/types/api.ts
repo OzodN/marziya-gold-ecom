@@ -215,3 +215,50 @@ export interface NewInquiriesCountDto {
   newCount: number;
 }
 
+export interface CategoryAdminDto {
+  id: number;
+  name: string;
+  slug: string;
+  sortOrder: number;
+  isVisible: boolean;
+  productCount?: number;
+}
+
+export interface CategorySaveDto {
+  name: string;
+  slug?: string;
+  sortOrder?: number;
+  isVisible?: boolean;
+}
+
+export interface CharacteristicKeyDto {
+  id: number;
+  name: string;
+  unit?: string;
+  sortOrder?: number;
+  isFilterable?: boolean;
+}
+
+export interface CharacteristicKeySaveDto {
+  name: string;
+  unit?: string;
+  sortOrder?: number;
+  isFilterable?: boolean;
+}
+
+export interface StoneTypeAdminDto {
+  id: number;
+  name: string;
+  isActive: boolean;
+}
+
+export interface StoneTypeSaveDto {
+  name: string;
+  isActive?: boolean;
+}
+
+export interface ContactSettingsUpdateDto {
+  telegramUsername?: string;
+  phoneNumber?: string;
+  masterBio?: string;
+}
