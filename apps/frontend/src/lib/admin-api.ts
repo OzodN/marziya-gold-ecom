@@ -876,3 +876,351 @@ export function playInquiryNotificationChime(): void {
     // Silently continue if audio context is blocked by browser autoplay policy
   }
 }
+import {
+  CategoryAdminDto,
+  CategorySaveDto,
+  CharacteristicKeyDto,
+  CharacteristicKeySaveDto,
+  StoneTypeAdminDto,
+  StoneTypeSaveDto,
+  ContactSettingsUpdateDto,
+} from "@/types/api";
+
+const DEMO_CATEGORIES_KEY = "mg_demo_categories";
+const DEMO_CHAR_KEYS_KEY = "mg_demo_char_keys";
+const DEMO_STONE_TYPES_KEY = "mg_demo_stone_types";
+const DEMO_SETTINGS_KEY = "mg_demo_settings";
+
+// --- Categories ---
+
+export async function getAdminCategories(): Promise<CategoryAdminDto[]> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/categories`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.info("[Admin API] Backend categories unreachable, using demo data fallback");
+  }
+
+  // Fallback
+  if (typeof window !== "undefined") {
+    const data = sessionStorage.getItem(DEMO_CATEGORIES_KEY);
+    if (data) return JSON.parse(data);
+  }
+  return [];
+}
+
+export async function createAdminCategory(data: CategorySaveDto): Promise<CategoryAdminDto> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/categories`, {
+      method: "POST",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Ошибка при создании категории");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    console.info("[Admin API] Fallback create category");
+    const newItem: CategoryAdminDto = {
+      id: Date.now(),
+      name: data.name,
+      slug: data.slug || "demo-cat",
+      sortOrder: data.sortOrder || 0,
+      isVisible: data.isVisible !== false,
+      productCount: 0,
+    };
+    if (typeof window !== "undefined") {
+      const list = JSON.parse(sessionStorage.getItem(DEMO_CATEGORIES_KEY) || "[]");
+      list.push(newItem);
+      sessionStorage.setItem(DEMO_CATEGORIES_KEY, JSON.stringify(list));
+    }
+    return newItem;
+  }
+}
+
+export async function updateAdminCategory(id: number, data: CategorySaveDto): Promise<CategoryAdminDto> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/categories/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Ошибка при обновлении категории");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    console.info("[Admin API] Fallback update category");
+    let updated: CategoryAdminDto | null = null;
+    if (typeof window !== "undefined") {
+      const list = JSON.parse(sessionStorage.getItem(DEMO_CATEGORIES_KEY) || "[]") as CategoryAdminDto[];
+      const idx = list.findIndex(c => c.id === id);
+      if (idx !== -1) {
+        list[idx] = { ...list[idx], ...data, slug: data.slug || list[idx].slug };
+        updated = list[idx];
+        sessionStorage.setItem(DEMO_CATEGORIES_KEY, JSON.stringify(list));
+      }
+    }
+    if (!updated) throw new Error("Not found in demo data");
+    return updated;
+  }
+}
+
+export async function deleteAdminCategory(id: number): Promise<void> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/categories/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok || res.status === 204) return;
+    throw new Error("Ошибка при удалении категории");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    if (typeof window !== "undefined") {
+      const list = JSON.parse(sessionStorage.getItem(DEMO_CATEGORIES_KEY) || "[]") as CategoryAdminDto[];
+      sessionStorage.setItem(DEMO_CATEGORIES_KEY, JSON.stringify(list.filter(c => c.id !== id)));
+    }
+  }
+}
+
+// --- Characteristics ---
+
+export async function getAdminCharacteristicKeys(): Promise<CharacteristicKeyDto[]> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/characteristic-keys`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+  } catch (err) {
+    // fallback
+  }
+  if (typeof window !== "undefined") {
+    const data = sessionStorage.getItem(DEMO_CHAR_KEYS_KEY);
+    if (data) return JSON.parse(data);
+  }
+  return [];
+}
+
+export async function createAdminCharacteristicKey(data: CharacteristicKeySaveDto): Promise<CharacteristicKeyDto> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/characteristic-keys`, {
+      method: "POST",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Ошибка при создании ключа");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    const newItem: CharacteristicKeyDto = {
+      id: Date.now(),
+      name: data.name,
+      unit: data.unit,
+      sortOrder: data.sortOrder || 0,
+      isFilterable: data.isFilterable || false,
+    };
+    if (typeof window !== "undefined") {
+      const list = JSON.parse(sessionStorage.getItem(DEMO_CHAR_KEYS_KEY) || "[]");
+      list.push(newItem);
+      sessionStorage.setItem(DEMO_CHAR_KEYS_KEY, JSON.stringify(list));
+    }
+    return newItem;
+  }
+}
+
+export async function deleteAdminCharacteristicKey(id: number): Promise<void> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/characteristic-keys/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok || res.status === 204) return;
+    throw new Error("Ошибка при удалении ключа");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    if (typeof window !== "undefined") {
+      const list = JSON.parse(sessionStorage.getItem(DEMO_CHAR_KEYS_KEY) || "[]") as CharacteristicKeyDto[];
+      sessionStorage.setItem(DEMO_CHAR_KEYS_KEY, JSON.stringify(list.filter(c => c.id !== id)));
+    }
+  }
+}
+
+// --- Stone Types ---
+
+export async function getAdminStoneTypes(): Promise<StoneTypeAdminDto[]> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/stone-types`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+  } catch (err) {
+    // fallback
+  }
+  if (typeof window !== "undefined") {
+    const data = sessionStorage.getItem(DEMO_STONE_TYPES_KEY);
+    if (data) return JSON.parse(data);
+  }
+  return [];
+}
+
+export async function createAdminStoneType(data: StoneTypeSaveDto): Promise<StoneTypeAdminDto> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/stone-types`, {
+      method: "POST",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Ошибка при создании типа камня");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    const newItem: StoneTypeAdminDto = {
+      id: Date.now(),
+      name: data.name,
+      isActive: data.isActive !== false,
+    };
+    if (typeof window !== "undefined") {
+      const list = JSON.parse(sessionStorage.getItem(DEMO_STONE_TYPES_KEY) || "[]");
+      list.push(newItem);
+      sessionStorage.setItem(DEMO_STONE_TYPES_KEY, JSON.stringify(list));
+    }
+    return newItem;
+  }
+}
+
+export async function deleteAdminStoneType(id: number): Promise<void> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/stone-types/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok || res.status === 204) return;
+    throw new Error("Ошибка при удалении");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    if (typeof window !== "undefined") {
+      const list = JSON.parse(sessionStorage.getItem(DEMO_STONE_TYPES_KEY) || "[]") as StoneTypeAdminDto[];
+      sessionStorage.setItem(DEMO_STONE_TYPES_KEY, JSON.stringify(list.filter(c => c.id !== id)));
+    }
+  }
+}
+
+// --- Settings ---
+
+export async function getAdminSettings(): Promise<Record<string, string>> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/settings`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+  } catch (err) {
+    // fallback
+  }
+  if (typeof window !== "undefined") {
+    const data = sessionStorage.getItem(DEMO_SETTINGS_KEY);
+    if (data) return JSON.parse(data);
+  }
+  return {
+    telegramUsername: "marziya_gold",
+    phoneNumber: "+998 90 123 45 67",
+    masterBio: "Мастер с 20-летним опытом",
+  };
+}
+
+export async function updateAdminSettings(data: ContactSettingsUpdateDto): Promise<Record<string, string>> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${baseUrl}/admin/settings`, {
+      method: "PUT",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Ошибка при обновлении настроек");
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Ошибка")) throw err;
+    if (typeof window !== "undefined") {
+      const old = JSON.parse(sessionStorage.getItem(DEMO_SETTINGS_KEY) || "{}");
+      const updated = { ...old, ...data };
+      sessionStorage.setItem(DEMO_SETTINGS_KEY, JSON.stringify(updated));
+      return updated;
+    }
+    return data as Record<string, string>;
+  }
+}
