@@ -34,3 +34,8 @@ application:
       capacity: 5
       refill-tokens: 5
       refill-duration-minutes: 1
+  cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:demo}
+    api-key: ${CLOUDINARY_API_KEY:}
+    api-secret: ${CLOUDINARY_API_SECRET:}
+    upload-folder: ${CLOUDINARY_FOLDER:marziya-gold}
