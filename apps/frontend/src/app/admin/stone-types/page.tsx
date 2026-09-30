@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Gem, Plus, Trash2, X, Save, ArrowLeft } from "lucide-react";
+import { Gem, Plus, Trash2, X, Save, ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 import {
   getAdminStoneTypes,
@@ -14,9 +14,11 @@ export default function StoneTypesPage() {
   const [types, setTypes] = useState<StoneTypeAdminDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Form state
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     name: "",
     isActive: true,
@@ -39,7 +41,25 @@ export default function StoneTypesPage() {
     fetchTypes();
   }, []);
 
+  // Global escape key listener
+  useEffect(() => {
+    if (!isFormOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleCloseForm();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFormOpen]);
+
+  const showSuccess = (msg: string) => {
+    setSuccessMsg(msg);
+    setTimeout(() => setSuccessMsg(null), 3000);
+  };
+
   const handleOpenForm = () => {
+    setFormErrors({});
     setFormData({
       name: "",
       isActive: true,
@@ -49,12 +69,18 @@ export default function StoneTypesPage() {
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
+    setFormErrors({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name.trim()) {
+      setFormErrors({ name: "Название обязательно" });
+      return;
+    }
     try {
       await createAdminStoneType(formData);
+      showSuccess("Тип камня создан");
       handleCloseForm();
       fetchTypes();
     } catch (err) {
@@ -66,6 +92,7 @@ export default function StoneTypesPage() {
     if (confirm("Вы уверены, что хотите удалить этот тип камня?")) {
       try {
         await deleteAdminStoneType(id);
+        showSuccess("Тип камня удален");
         fetchTypes();
       } catch (err) {
         alert(err instanceof Error ? err.message : "Ошибка удаления");
@@ -88,6 +115,7 @@ export default function StoneTypesPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/characteristics"
+            aria-label="Назад к справочникам"
             className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl border border-noir-800 bg-noir-900 text-noir-300 hover:border-gold-500/40 hover:text-gold-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
             title="Назад к справочникам"
           >
@@ -106,6 +134,13 @@ export default function StoneTypesPage() {
           <span>Новый тип</span>
         </button>
       </div>
+
+      {successMsg && (
+        <div className="p-4 rounded-xl bg-green-950/50 border border-green-900 text-green-400 flex items-center gap-2 animate-in fade-in">
+          <Check className="h-5 w-5" />
+          <span>{successMsg}</span>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 rounded-xl bg-red-950/50 border border-red-900 text-red-200 flex items-center justify-between">
@@ -145,6 +180,7 @@ export default function StoneTypesPage() {
                     <td className="px-6 py-4 text-right space-x-2">
                       <button
                         onClick={() => handleDelete(item.id)}
+                        aria-label="Удалить тип камня"
                         className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl hover:bg-red-950/50 text-red-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                         title="Удалить"
                       >
@@ -161,7 +197,12 @@ export default function StoneTypesPage() {
 
       {/* Modal Form */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onKeyDown={(e) => e.key === 'Escape' && handleCloseForm()}>
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          role="dialog" 
+          aria-modal="true" 
+          aria-label="Новый тип камня"
+        >
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={handleCloseForm} />
           <div className="relative w-full max-w-md rounded-2xl border border-noir-800 bg-noir-950 p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
@@ -170,6 +211,7 @@ export default function StoneTypesPage() {
               </h2>
               <button
                 onClick={handleCloseForm}
+                aria-label="Закрыть"
                 className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl hover:bg-noir-900 text-noir-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
               >
                 <X className="h-5 w-5" />
@@ -184,10 +226,16 @@ export default function StoneTypesPage() {
                   type="text"
                   required
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full min-h-[44px] rounded-xl border border-noir-800 bg-noir-900 px-4 py-2 text-noir-100 placeholder:text-noir-600 focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500"
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    if (formErrors.name) setFormErrors({ ...formErrors, name: "" });
+                  }}
+                  className={`w-full min-h-[44px] rounded-xl border ${formErrors.name ? 'border-red-500' : 'border-noir-800'} bg-noir-900 px-4 py-2 text-noir-100 placeholder:text-noir-600 focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500`}
                   placeholder="Например: Бриллиант"
                 />
+                {formErrors.name && (
+                  <p className="text-sm text-red-500">{formErrors.name}</p>
+                )}
               </div>
 
               <label className="flex items-center gap-3 cursor-pointer group min-h-[44px]">
