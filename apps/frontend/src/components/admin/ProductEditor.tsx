@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, X, Plus, Trash2, ArrowLeft, GripVertical, Image as ImageIcon } from "lucide-react";
+import { UploadCloud, X, Plus, Trash2, ArrowLeft, ArrowLeft as MoveLeft, ArrowRight as MoveRight } from "lucide-react";
 import Link from "next/link";
 import {
   createAdminProduct,
@@ -56,6 +56,9 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
     }))
   );
 
+  // Validation State
+  const [validationErrors, setValidationErrors] = useState<{ sku?: string; name?: string; categoryId?: string }>({});
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -95,16 +98,37 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
+    if (window.confirm("Удалить это фото?")) {
+      setImages(images.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleMoveImage = (index: number, direction: -1 | 1) => {
+    if (index + direction < 0 || index + direction >= images.length) return;
+    const newImages = [...images];
+    const temp = newImages[index];
+    newImages[index] = newImages[index + direction];
+    newImages[index + direction] = temp;
+    setImages(newImages);
   };
 
   const handleSave = async () => {
-    if (!sku || !name || categoryId === "") {
-      setError("Пожалуйста, заполните обязательные поля (Артикул, Название, Категория)");
+    // Validation
+    const errors: { sku?: string; name?: string; categoryId?: string } = {};
+    if (!sku.trim()) errors.sku = "Артикул обязателен";
+    if (!name.trim()) errors.name = "Название обязательно";
+    if (categoryId === "") errors.categoryId = "Выберите категорию";
+    
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      setError("Пожалуйста, исправьте ошибки заполнения формы");
       return;
     }
+
     setLoading(true);
     setError(null);
+    setValidationErrors({});
+
     try {
       const payload: ProductSaveRequestDto = {
         sku,
@@ -139,7 +163,11 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
     <div className="space-y-6 max-w-4xl pb-20">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/admin/products" className="p-2 hover:bg-noir-800 rounded-xl transition-colors text-noir-400 hover:text-gold-200">
+          <Link 
+            href="/admin/products" 
+            aria-label="Назад"
+            className="flex items-center justify-center min-w-[44px] min-h-[44px] hover:bg-noir-800 rounded-xl transition-colors text-noir-400 hover:text-gold-200"
+          >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="font-serif text-2xl font-bold text-gold-200 tracking-wide">
@@ -149,14 +177,14 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
         <div className="flex gap-3">
           <button
             onClick={() => router.push("/admin/products")}
-            className="px-4 py-2 rounded-xl text-noir-300 hover:text-white transition-colors"
+            className="px-4 py-2 rounded-xl text-noir-300 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             Отмена
           </button>
           <button
             onClick={handleSave}
             disabled={loading}
-            className="px-6 py-2 rounded-xl bg-gold-500 text-noir-950 font-medium hover:bg-gold-400 transition-colors disabled:opacity-50 min-h-[44px]"
+            className="px-6 py-2 rounded-xl bg-gold-500 text-noir-950 font-medium hover:bg-gold-400 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             {loading ? "Сохранение..." : "Сохранить изделие"}
           </button>
@@ -178,41 +206,53 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
             <input
               type="text"
               value={sku}
-              onChange={(e) => setSku(e.target.value)}
-              className="w-full bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors min-h-[44px]"
+              onChange={(e) => {
+                setSku(e.target.value);
+                if (validationErrors.sku) setValidationErrors(prev => ({ ...prev, sku: undefined }));
+              }}
+              className={`w-full bg-noir-950 border ${validationErrors.sku ? 'border-red-500' : 'border-noir-700'} text-white rounded-xl px-4 py-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 transition-colors min-h-[44px]`}
               placeholder="Например: R-1234"
             />
+            {validationErrors.sku && <p className="text-sm text-red-500">{validationErrors.sku}</p>}
           </div>
           <div className="space-y-2">
             <label className="text-sm text-noir-300">Название *</label>
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors min-h-[44px]"
+              onChange={(e) => {
+                setName(e.target.value);
+                if (validationErrors.name) setValidationErrors(prev => ({ ...prev, name: undefined }));
+              }}
+              className={`w-full bg-noir-950 border ${validationErrors.name ? 'border-red-500' : 'border-noir-700'} text-white rounded-xl px-4 py-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 transition-colors min-h-[44px]`}
               placeholder="Кольцо с бриллиантом"
             />
+            {validationErrors.name && <p className="text-sm text-red-500">{validationErrors.name}</p>}
           </div>
           <div className="space-y-2">
             <label className="text-sm text-noir-300">Категория *</label>
             <select
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
-              className="w-full bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors min-h-[44px]"
+              onChange={(e) => {
+                setCategoryId(e.target.value ? Number(e.target.value) : "");
+                if (validationErrors.categoryId) setValidationErrors(prev => ({ ...prev, categoryId: undefined }));
+              }}
+              className={`w-full bg-noir-950 border ${validationErrors.categoryId ? 'border-red-500' : 'border-noir-700'} text-white rounded-xl px-4 py-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 transition-colors min-h-[44px]`}
             >
               <option value="">Выберите категорию</option>
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+            {validationErrors.categoryId && <p className="text-sm text-red-500">{validationErrors.categoryId}</p>}
           </div>
           <div className="space-y-2 flex flex-col justify-center">
-            <label className="flex items-center gap-3 cursor-pointer mt-6">
+            <label className="flex items-center gap-3 cursor-pointer mt-6 min-h-[44px]">
               <input
                 type="checkbox"
                 checked={isVisible}
                 onChange={(e) => setIsVisible(e.target.checked)}
-                className="w-5 h-5 rounded border-noir-700 text-gold-500 focus:ring-gold-500 bg-noir-950"
+                className="w-5 h-5 rounded border-noir-700 text-gold-500 focus-visible:ring-2 focus-visible:ring-gold-400 focus:outline-none bg-noir-950"
               />
               <span className="text-noir-200">Видимость на сайте</span>
             </label>
@@ -224,7 +264,7 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className="w-full bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+            className="w-full bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 transition-colors"
           />
         </div>
       </div>
@@ -236,16 +276,41 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
           {images.map((img, i) => (
             <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-noir-700 group bg-noir-950">
               <img src={img.url} alt="" className="w-full h-full object-cover" />
+              
+              {/* Top Right: Delete */}
               <button
                 type="button"
+                aria-label="Удалить фото"
                 onClick={() => handleRemoveImage(i)}
-                className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-red-500/80 hover:bg-red-500 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
+
+              {/* Bottom: Reorder */}
+              <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  type="button"
+                  aria-label="Сдвинуть влево"
+                  disabled={i === 0}
+                  onClick={() => handleMoveImage(i, -1)}
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-noir-950/80 hover:bg-noir-800 text-white rounded-xl disabled:opacity-50"
+                >
+                  <MoveLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Сдвинуть вправо"
+                  disabled={i === images.length - 1}
+                  onClick={() => handleMoveImage(i, 1)}
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-noir-950/80 hover:bg-noir-800 text-white rounded-xl disabled:opacity-50"
+                >
+                  <MoveRight className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           ))}
-          <label className="aspect-square rounded-xl border-2 border-dashed border-noir-700 hover:border-gold-500 bg-noir-950/50 flex flex-col items-center justify-center cursor-pointer transition-colors text-noir-400 hover:text-gold-200 group">
+          <label className="aspect-square rounded-xl border-2 border-dashed border-noir-700 hover:border-gold-500 bg-noir-950/50 flex flex-col items-center justify-center cursor-pointer transition-colors text-noir-400 hover:text-gold-200 group min-h-[120px]">
             <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} disabled={loading} />
             <UploadCloud className="w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-sm text-center px-2">Загрузить фото</span>
@@ -260,7 +325,7 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
           <button
             type="button"
             onClick={() => setCharacteristics([...characteristics, { name: "", value: "" }])}
-            className="flex items-center gap-2 text-sm text-gold-400 hover:text-gold-300 transition-colors min-h-[44px] px-3"
+            className="flex items-center justify-center gap-2 text-sm text-gold-400 hover:text-gold-300 transition-colors min-h-[44px] px-3 rounded-xl hover:bg-noir-800"
           >
             <Plus className="w-4 h-4" />
             Добавить характеристику
@@ -284,7 +349,7 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
                     newChars[i].name = e.target.value;
                     setCharacteristics(newChars);
                   }}
-                  className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus:border-gold-500 min-h-[44px]"
+                  className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
                   list="char-keys-list"
                 />
                 <input
@@ -296,12 +361,13 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
                     newChars[i].value = e.target.value;
                     setCharacteristics(newChars);
                   }}
-                  className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus:border-gold-500 min-h-[44px]"
+                  className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
                 />
                 <button
                   type="button"
+                  aria-label="Удалить характеристику"
                   onClick={() => setCharacteristics(characteristics.filter((_, idx) => idx !== i))}
-                  className="p-3 text-noir-400 hover:text-red-400 transition-colors bg-noir-950 border border-noir-700 rounded-xl"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-noir-400 hover:text-red-400 transition-colors bg-noir-950 border border-noir-700 rounded-xl"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -323,7 +389,7 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
           <button
             type="button"
             onClick={() => setStones([...stones, { characteristics: [] }])}
-            className="flex items-center gap-2 text-sm text-gold-400 hover:text-gold-300 transition-colors min-h-[44px] px-3"
+            className="flex items-center justify-center gap-2 text-sm text-gold-400 hover:text-gold-300 transition-colors min-h-[44px] px-3 rounded-xl hover:bg-noir-800"
           >
             <Plus className="w-4 h-4" />
             Добавить камень
@@ -346,7 +412,7 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
                       newStones[si].stoneTypeId = e.target.value ? Number(e.target.value) : undefined;
                       setStones(newStones);
                     }}
-                    className="w-[300px] bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus:border-gold-500 min-h-[44px]"
+                    className="flex-1 max-w-[300px] bg-noir-950 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
                   >
                     <option value="">Выберите тип камня</option>
                     {stoneTypes.map(st => (
@@ -355,8 +421,9 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
                   </select>
                   <button
                     type="button"
+                    aria-label="Удалить камень"
                     onClick={() => setStones(stones.filter((_, idx) => idx !== si))}
-                    className="p-2 text-noir-400 hover:text-red-400 transition-colors"
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-center text-noir-400 hover:text-red-400 transition-colors rounded-xl hover:bg-noir-900"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -372,7 +439,7 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
                         newStones[si].characteristics.push({ name: "", value: "" });
                         setStones(newStones);
                       }}
-                      className="text-xs text-gold-500 hover:text-gold-400 transition-colors"
+                      className="text-xs text-gold-500 hover:text-gold-400 transition-colors min-h-[44px] px-3 rounded-xl hover:bg-noir-900 flex items-center justify-center"
                     >
                       + Добавить
                     </button>
@@ -388,7 +455,7 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
                           newStones[si].characteristics[ci].name = e.target.value;
                           setStones(newStones);
                         }}
-                        className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gold-500 min-h-[36px]"
+                        className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
                       />
                       <input
                         type="text"
@@ -399,18 +466,19 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
                           newStones[si].characteristics[ci].value = e.target.value;
                           setStones(newStones);
                         }}
-                        className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gold-500 min-h-[36px]"
+                        className="flex-1 bg-noir-950 border border-noir-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
                       />
                       <button
                         type="button"
+                        aria-label="Удалить характеристику камня"
                         onClick={() => {
                           const newStones = [...stones];
                           newStones[si].characteristics = newStones[si].characteristics.filter((_, idx) => idx !== ci);
                           setStones(newStones);
                         }}
-                        className="p-2 text-noir-500 hover:text-red-400 transition-colors"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center text-noir-500 hover:text-red-400 transition-colors rounded-lg hover:bg-noir-900"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-5 h-5" />
                       </button>
                     </div>
                   ))}

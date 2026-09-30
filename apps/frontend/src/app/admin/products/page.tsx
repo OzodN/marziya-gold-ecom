@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Plus, Search, Filter, Eye, EyeOff, Edit, Trash2 } from "lucide-react";
 import { getAdminProducts, toggleAdminProductVisibility, getAdminCategories, deleteAdminProduct } from "@/lib/admin-api";
-import type { ProductSummaryDto, CategoryAdminDto, PageResponseProductSummaryDto } from "@/types/api";
+import type { ProductSummaryDto, CategoryAdminDto } from "@/types/api";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductSummaryDto[]>([]);
@@ -14,9 +14,12 @@ export default function AdminProductsPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [q, setQ] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // debounced
+  const [searchQuery, setSearchQuery] = useState("");
   const [categoryId, setCategoryId] = useState<number | "">("");
   const [isVisible, setIsVisible] = useState<boolean | "">("");
+
+  // Delete confirmation modal state
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
   useEffect(() => {
     getAdminCategories().then(setCategories).catch(console.error);
@@ -53,21 +56,33 @@ export default function AdminProductsPage() {
     loadProducts();
   }, [loadProducts]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setDeleteConfirmId(null);
+      }
+    };
+    if (deleteConfirmId !== null) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [deleteConfirmId]);
+
   const handleToggleVisibility = async (id: number, current: boolean) => {
     try {
       setProducts(products.map(p => p.id === id ? { ...p, isVisible: !current } : p));
       await toggleAdminProductVisibility(id, !current);
     } catch (err) {
       console.error(err);
-      // Revert on error
       setProducts(products.map(p => p.id === id ? { ...p, isVisible: current } : p));
     }
   };
   
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Удалить изделие?")) return;
+  const handleDelete = async () => {
+    if (deleteConfirmId === null) return;
     try {
-      await deleteAdminProduct(id);
+      await deleteAdminProduct(deleteConfirmId);
+      setDeleteConfirmId(null);
       loadProducts();
     } catch (err) {
       console.error(err);
@@ -83,7 +98,7 @@ export default function AdminProductsPage() {
         </h1>
         <Link
           href="/admin/products/new"
-          className="inline-flex items-center justify-center gap-2 px-6 py-2 rounded-xl bg-gold-500 text-noir-950 font-medium hover:bg-gold-400 transition-colors min-h-[44px]"
+          className="inline-flex items-center justify-center gap-2 px-6 py-2 rounded-xl bg-gold-500 text-noir-950 font-medium hover:bg-gold-400 transition-colors min-h-[44px] min-w-[44px]"
         >
           <Plus className="w-5 h-5" />
           Новое изделие
@@ -98,13 +113,13 @@ export default function AdminProductsPage() {
             placeholder="Поиск по названию или артикулу..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-noir-900 border border-noir-700 text-white rounded-xl focus:outline-none focus:border-gold-500 min-h-[44px]"
+            className="w-full pl-10 pr-4 py-2 bg-noir-900 border border-noir-700 text-white rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
           />
         </div>
         <select
           value={categoryId}
           onChange={(e) => { setCategoryId(e.target.value ? Number(e.target.value) : ""); setPage(0); }}
-          className="bg-noir-900 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus:border-gold-500 min-h-[44px]"
+          className="bg-noir-900 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
         >
           <option value="">Все категории</option>
           {categories.map(c => (
@@ -118,7 +133,7 @@ export default function AdminProductsPage() {
             setIsVisible(val === "" ? "" : val === "true");
             setPage(0);
           }}
-          className="bg-noir-900 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus:border-gold-500 min-h-[44px]"
+          className="bg-noir-900 border border-noir-700 text-white rounded-xl px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 min-h-[44px]"
         >
           <option value="">Все статусы</option>
           <option value="true">Видимые</option>
@@ -137,8 +152,8 @@ export default function AdminProductsPage() {
           <p>Изделия не найдены</p>
         </div>
       ) : (
-        <div className="bg-noir-900/80 rounded-2xl border border-noir-800 overflow-hidden">
-          <table className="w-full text-left border-collapse">
+        <div className="bg-noir-900/80 rounded-2xl border border-noir-800 overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
               <tr className="border-b border-noir-800 text-noir-300 text-sm">
                 <th className="p-4 font-medium">Фото</th>
@@ -167,7 +182,7 @@ export default function AdminProductsPage() {
                   <td className="p-4">
                     <button
                       onClick={() => handleToggleVisibility(product.id, product.isVisible)}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors min-h-[36px] ${
+                      className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl text-sm transition-colors min-h-[44px] min-w-[44px] ${
                         product.isVisible 
                           ? "bg-green-500/10 text-green-400 hover:bg-green-500/20" 
                           : "bg-noir-800 text-noir-400 hover:bg-noir-700"
@@ -180,13 +195,15 @@ export default function AdminProductsPage() {
                   <td className="p-4 text-right space-x-2">
                     <Link
                       href={`/admin/products/${product.id}`}
-                      className="inline-flex p-2 text-gold-500 hover:text-gold-400 transition-colors bg-noir-950 border border-noir-700 rounded-xl"
+                      aria-label="Редактировать"
+                      className="inline-flex items-center justify-center w-11 h-11 text-gold-500 hover:text-gold-400 transition-colors bg-noir-950 border border-noir-700 rounded-xl min-w-[44px] min-h-[44px]"
                     >
                       <Edit className="w-5 h-5" />
                     </Link>
                     <button
-                      onClick={() => handleDelete(product.id)}
-                      className="inline-flex p-2 text-red-500 hover:text-red-400 transition-colors bg-noir-950 border border-noir-700 rounded-xl"
+                      onClick={() => setDeleteConfirmId(product.id)}
+                      aria-label="Удалить"
+                      className="inline-flex items-center justify-center w-11 h-11 text-red-500 hover:text-red-400 transition-colors bg-noir-950 border border-noir-700 rounded-xl min-w-[44px] min-h-[44px]"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
@@ -204,7 +221,7 @@ export default function AdminProductsPage() {
             <button
               key={i}
               onClick={() => setPage(i)}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+              className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors ${
                 page === i
                   ? "bg-gold-500 text-noir-950 font-medium"
                   : "bg-noir-900 border border-noir-700 text-noir-300 hover:text-gold-200"
@@ -213,6 +230,41 @@ export default function AdminProductsPage() {
               {i + 1}
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId !== null && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-noir-950/80 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Подтверждение удаления"
+          onClick={() => setDeleteConfirmId(null)}
+        >
+          <div 
+            className="bg-noir-900 border border-noir-800 rounded-2xl p-6 max-w-sm w-full space-y-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-serif text-white">Удалить изделие?</h3>
+            <p className="text-noir-300">
+              Вы уверены, что хотите удалить это изделие? Это действие нельзя отменить.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="px-4 py-2 bg-noir-800 hover:bg-noir-700 text-white rounded-xl transition-colors min-h-[44px] min-w-[44px]"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors min-h-[44px] min-w-[44px]"
+              >
+                Удалить
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
