@@ -1224,3 +1224,154 @@ export async function updateAdminSettings(data: ContactSettingsUpdateDto): Promi
     return data as Record<string, string>;
   }
 }
+
+// --- Products ---
+
+export async function getAdminProducts(params: { page?: number; size?: number; q?: string; categoryId?: number; isVisible?: boolean }) {
+  const baseUrl = getApiBaseUrl();
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set("page", params.page.toString());
+  if (params.size !== undefined) searchParams.set("size", params.size.toString());
+  if (params.q) searchParams.set("q", params.q);
+  if (params.categoryId !== undefined) searchParams.set("categoryId", params.categoryId.toString());
+  if (params.isVisible !== undefined) searchParams.set("isVisible", params.isVisible.toString());
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${baseUrl}/admin/products?${searchParams.toString()}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Failed to fetch products");
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function getAdminProductById(id: number) {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${baseUrl}/admin/products/${id}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Failed to fetch product");
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function createAdminProduct(data: any) {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${baseUrl}/admin/products`, {
+      method: "POST",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Failed to create product");
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function updateAdminProduct(id: number, data: any) {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${baseUrl}/admin/products/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Failed to update product");
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function deleteAdminProduct(id: number): Promise<void> {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${baseUrl}/admin/products/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok || res.status === 204) return;
+    throw new Error("Failed to delete product");
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function toggleAdminProductVisibility(id: number, isVisible: boolean) {
+  const baseUrl = getApiBaseUrl();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${baseUrl}/admin/products/${id}/visibility`, {
+      method: "PATCH",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
+      body: JSON.stringify({ isVisible }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Failed to toggle visibility");
+  } catch (err) {
+    throw err;
+  }
+}
+
+// --- Media ---
+
+export async function uploadMedia(file: File): Promise<{ url: string; publicId: string }> {
+  const baseUrl = getApiBaseUrl();
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const res = await fetch(`${baseUrl}/admin/media/upload`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: formData,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) return await res.json();
+    throw new Error("Failed to upload media");
+  } catch (err) {
+    throw err;
+  }
+}
