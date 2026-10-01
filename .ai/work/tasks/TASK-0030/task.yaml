@@ -1,0 +1,20 @@
+id: "TASK-0030"
+title: "Frontend Automated Testing Infrastructure and Core Component Test Suite"
+status: "in_progress"
+owner: "frontend"
+type: "feature"
+created_at: "2026-10-02T02:00:00Z"
+dependencies:
+  - "TASK-0027"
+affected_areas:
+  - "apps/frontend/package.json"
+  - "apps/frontend/vitest.config.ts"
+  - "apps/frontend/src/setupTests.ts"
+  - "apps/frontend/src/**/__tests__/**"
+acceptance_criteria:
+  - "Test runner (Vitest + @testing-library/react + jsdom) configured in apps/frontend."
+  - "npm test script executes tests without error."
+  - "ProductCard test covers rendering product name, category, image fallback and selection toggle."
+  - "SelectionSheet test covers empty state, items listing, quantity increment/decrement, and checkout button action."
+  - "InquiryModal test covers validation on empty name/phone, submission and success screen state."
+  - "All unit tests pass and npm run build continues to compile without regressions."

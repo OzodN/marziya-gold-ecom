@@ -1,0 +1,22 @@
+id: "TASK-0031"
+title: "Production Containerization and Railway PaaS Monorepo Deployment Configuration"
+status: "in_progress"
+owner: "devops"
+type: "infrastructure"
+created_at: "2026-10-02T02:00:00Z"
+dependencies:
+  - "TASK-0027"
+affected_areas:
+  - "apps/backend/Dockerfile"
+  - "apps/frontend/Dockerfile"
+  - "railway.toml"
+  - ".dockerignore"
+  - "infra/railway-deployment.md"
+  - ".env.production.example"
+acceptance_criteria:
+  - "Multi-stage Dockerfile for apps/backend with Eclipse Temurin Java 21, non-root user and cgroups/memory tuning."
+  - "Multi-stage Dockerfile for apps/frontend with Node.js 20/22, Next.js standalone output and non-root runner."
+  - ".dockerignore prevents node_modules, target, .worktrees, and sensitive files from entering image context."
+  - "railway.toml provides declarative mono-repo service config for Railway PaaS."
+  - ".env.production.example documents all required runtime environment variables."
+  - "infra/railway-deployment.md describes the 1-click / CLI setup process under the Zero-Maintenance model."
