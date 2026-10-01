@@ -1,5 +1,5 @@
 version: "1.0"
-updated_at: "2026-09-24T15:30:00Z"
+updated_at: "2026-10-02T02:00:00Z"
 description: "Master registry of all project tasks across AI agents."
 
 allowed_states:
@@ -262,3 +262,116 @@ tasks:
     dependencies:
       - "TASK-0023"
     created_at: "2026-09-26T21:15:00Z"
+
+  - id: "TASK-0025"
+    title: "Admin Media Upload Endpoint and Storage Integration"
+    status: "done"
+    owner: "backend"
+    type: "feature"
+    affected_areas:
+      - "apps/backend/pom.xml"
+      - "apps/backend/src/main/java/com/marziyagold/controller/admin/AdminMediaController.java"
+      - "apps/backend/src/main/java/com/marziyagold/dto/MediaUploadResponse.java"
+      - "apps/backend/src/main/java/com/marziyagold/service/CloudinaryService.java"
+      - "apps/backend/src/main/resources/application.yml"
+    dependencies:
+      - "TASK-0024"
+    created_at: "2026-09-30T23:40:00Z"
+
+  - id: "TASK-0026"
+    title: "Admin Reference Dictionaries and Site Settings Management UI"
+    status: "done"
+    owner: "frontend"
+    type: "feature"
+    affected_areas:
+      - "apps/frontend/src/app/admin/categories/**"
+      - "apps/frontend/src/app/admin/characteristics/**"
+      - "apps/frontend/src/app/admin/settings/**"
+      - "apps/frontend/src/app/admin/stone-types/**"
+      - "apps/frontend/src/lib/admin-api.ts"
+    dependencies:
+      - "TASK-0020"
+    created_at: "2026-09-30T23:40:21Z"
+
+  - id: "TASK-0027"
+    title: "Admin Product Management UI and Unified Product Editor"
+    status: "done"
+    owner: "frontend"
+    type: "feature"
+    affected_areas:
+      - "apps/frontend/src/app/admin/products/**"
+      - "apps/frontend/src/components/admin/ProductEditor.tsx"
+      - "apps/frontend/src/lib/admin-api.ts"
+    dependencies:
+      - "TASK-0025"
+      - "TASK-0026"
+    created_at: "2026-09-30T23:43:34Z"
+
+  - id: "TASK-0028"
+    title: "Cloudflare R2 S3-Compatible Media Presigned Upload REST API"
+    status: "ready"
+    owner: "backend"
+    type: "feature"
+    affected_areas:
+      - "apps/backend/pom.xml"
+      - "apps/backend/src/main/java/com/marziyagold/**"
+      - "apps/backend/src/main/resources/application.yml"
+      - "docs/api/openapi.yaml"
+    dependencies:
+      - "TASK-0025"
+    created_at: "2026-10-02T02:00:00Z"
+
+  - id: "TASK-0029"
+    title: "Direct Cloudflare R2 Media Upload and Custom Image Loader Integration"
+    status: "blocked"
+    owner: "frontend"
+    type: "feature"
+    affected_areas:
+      - "apps/frontend/next.config.ts"
+      - "apps/frontend/src/imageLoader.ts"
+      - "apps/frontend/src/components/admin/ProductEditor.tsx"
+      - "apps/frontend/src/lib/admin-api.ts"
+    dependencies:
+      - "TASK-0028"
+      - "TASK-0027"
+    created_at: "2026-10-02T02:00:00Z"
+
+  - id: "TASK-0030"
+    title: "Frontend Automated Testing Infrastructure and Core Component Test Suite"
+    status: "ready"
+    owner: "frontend"
+    type: "feature"
+    affected_areas:
+      - "apps/frontend/package.json"
+      - "apps/frontend/src/**/__tests__/**"
+    dependencies:
+      - "TASK-0027"
+    created_at: "2026-10-02T02:00:00Z"
+
+  - id: "TASK-0031"
+    title: "Production Containerization and Railway PaaS Monorepo Deployment Configuration"
+    status: "ready"
+    owner: "devops"
+    type: "infrastructure"
+    affected_areas:
+      - "apps/backend/Dockerfile"
+      - "apps/frontend/Dockerfile"
+      - "railway.toml"
+      - "infra/**"
+    dependencies:
+      - "TASK-0027"
+    created_at: "2026-10-02T02:00:00Z"
+
+  - id: "TASK-0032"
+    title: "Production Security Hardening, Zero-Maintenance Seeding and Handover Documentation"
+    status: "blocked"
+    owner: "orchestrator"
+    type: "infrastructure"
+    affected_areas:
+      - "apps/backend/src/main/resources/application-prod.yml"
+      - "docs/**"
+      - "infra/**"
+    dependencies:
+      - "TASK-0029"
+      - "TASK-0031"
+    created_at: "2026-10-02T02:00:00Z"

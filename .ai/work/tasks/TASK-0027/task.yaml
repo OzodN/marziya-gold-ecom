@@ -1,0 +1,22 @@
+id: "TASK-0027"
+title: "Admin Product Management UI and Unified Product Editor"
+status: "done"
+owner: "frontend"
+type: "feature"
+created_at: "2026-09-30T23:43:34Z"
+dependencies:
+  - "TASK-0025"
+  - "TASK-0026"
+affected_areas:
+  - "apps/frontend/src/app/admin/products/page.tsx"
+  - "apps/frontend/src/app/admin/products/new/page.tsx"
+  - "apps/frontend/src/app/admin/products/[id]/page.tsx"
+  - "apps/frontend/src/components/admin/ProductEditor.tsx"
+  - "apps/frontend/src/lib/admin-api.ts"
+acceptance_criteria:
+  - "Admin products table (/admin/products) supports search by name/SKU, category filter, visibility toggle, edit and delete actions."
+  - "Unified ProductEditor (/admin/products/new, /admin/products/[id]) allows configuring main details, media uploads, dynamic characteristics and stone blocks."
+  - "Dynamic characteristics pull available keys from characteristic-keys API without manual typing errors."
+  - "Dynamic stones allow choosing stone types from dictionary and setting attributes (weight, color, clarity, shape)."
+  - "Media upload features drag-and-drop file upload, thumbnail previews, removal and ordering."
+  - "UX remediation DEF-001 through DEF-008 resolved (sticky save bar, unsaved changes prompt, robust image error fallbacks, accessible form controls)."

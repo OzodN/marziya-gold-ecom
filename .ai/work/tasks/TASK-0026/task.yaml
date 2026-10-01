@@ -1,0 +1,21 @@
+id: "TASK-0026"
+title: "Admin Reference Dictionaries and Site Settings Management UI"
+status: "done"
+owner: "frontend"
+type: "feature"
+created_at: "2026-09-30T23:40:21Z"
+dependencies:
+  - "TASK-0020"
+affected_areas:
+  - "apps/frontend/src/app/admin/categories/page.tsx"
+  - "apps/frontend/src/app/admin/characteristics/page.tsx"
+  - "apps/frontend/src/app/admin/settings/page.tsx"
+  - "apps/frontend/src/app/admin/stone-types/page.tsx"
+  - "apps/frontend/src/lib/admin-api.ts"
+  - "apps/frontend/src/types/api.ts"
+acceptance_criteria:
+  - "Admin UI provides comprehensive management of categories (/admin/categories) with create, update, visibility toggle and sorting."
+  - "Admin UI provides management of global characteristic keys (/admin/characteristics) with validation and sorting."
+  - "Admin UI provides stone types management (/admin/stone-types) with active status toggle."
+  - "Admin UI provides master contacts and site settings editor (/admin/settings)."
+  - "UX audit defects DEF-01 to DEF-05 are remediated (loading skeletons, confirmation dialogs, inline error feedback, toast notifications)."

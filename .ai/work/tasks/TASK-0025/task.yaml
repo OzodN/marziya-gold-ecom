@@ -1,0 +1,20 @@
+id: "TASK-0025"
+title: "Admin Media Upload Endpoint and Storage Integration"
+status: "done"
+owner: "backend"
+type: "feature"
+created_at: "2026-09-30T23:40:00Z"
+dependencies:
+  - "TASK-0024"
+affected_areas:
+  - "apps/backend/pom.xml"
+  - "apps/backend/src/main/java/com/marziyagold/controller/admin/AdminMediaController.java"
+  - "apps/backend/src/main/java/com/marziyagold/dto/MediaUploadResponse.java"
+  - "apps/backend/src/main/java/com/marziyagold/service/CloudinaryService.java"
+  - "apps/backend/src/main/resources/application.yml"
+  - "apps/backend/src/test/java/com/marziyagold/controller/admin/AdminMediaControllerTest.java"
+  - "apps/backend/src/test/java/com/marziyagold/service/CloudinaryServiceTest.java"
+acceptance_criteria:
+  - "Admin endpoint POST /api/v1/admin/media/upload is available under Spring Security HttpOnly cookie authentication."
+  - "File upload service receives MultipartFile, uploads to media storage and returns url and publicId."
+  - "Unit and slice tests verify controller authorization, error handling for empty files and service upload mocking."
