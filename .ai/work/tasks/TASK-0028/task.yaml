@@ -1,6 +1,6 @@
 id: "TASK-0028"
 title: "Cloudflare R2 S3-Compatible Media Presigned Upload REST API"
-status: "review"
+status: "done"
 owner: "backend"
 type: "feature"
 created_at: "2026-10-02T02:00:00Z"

@@ -12,10 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0028"
-  - "TASK-0030"
-  - "TASK-0031"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -312,7 +309,7 @@ tasks:
 
   - id: "TASK-0028"
     title: "Cloudflare R2 S3-Compatible Media Presigned Upload REST API"
-    status: "review"
+    status: "done"
     owner: "backend"
     type: "feature"
     affected_areas:
@@ -326,7 +323,7 @@ tasks:
 
   - id: "TASK-0029"
     title: "Direct Cloudflare R2 Media Upload and Custom Image Loader Integration"
-    status: "blocked"
+    status: "ready"
     owner: "frontend"
     type: "feature"
     affected_areas:
@@ -341,7 +338,7 @@ tasks:
 
   - id: "TASK-0030"
     title: "Frontend Automated Testing Infrastructure and Core Component Test Suite"
-    status: "in_progress"
+    status: "done"
     owner: "frontend"
     type: "feature"
     affected_areas:
@@ -353,7 +350,7 @@ tasks:
 
   - id: "TASK-0031"
     title: "Production Containerization and Railway PaaS Monorepo Deployment Configuration"
-    status: "in_progress"
+    status: "done"
     owner: "devops"
     type: "infrastructure"
     affected_areas:
