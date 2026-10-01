@@ -1,10 +1,14 @@
 package com.marziyagold.controller.admin;
 
 import com.marziyagold.dto.MediaUploadResponse;
-import com.marziyagold.service.CloudinaryService;
+import com.marziyagold.dto.PresignedUploadRequest;
+import com.marziyagold.dto.PresignedUploadResponse;
+import com.marziyagold.service.MediaStorageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,11 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AdminMediaController {
 
-    private final CloudinaryService cloudinaryService;
+    private final MediaStorageService mediaStorageService;
+
+    @PostMapping("/presign-upload")
+    public ResponseEntity<PresignedUploadResponse> presignUpload(@Valid @RequestBody PresignedUploadRequest request) {
+        PresignedUploadResponse response = mediaStorageService.generatePresignedUploadUrl(request);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<MediaUploadResponse> uploadMedia(@RequestParam("file") MultipartFile file) {
-        MediaUploadResponse response = cloudinaryService.upload(file);
+        MediaUploadResponse response = mediaStorageService.upload(file);
         return ResponseEntity.ok(response);
     }
 }

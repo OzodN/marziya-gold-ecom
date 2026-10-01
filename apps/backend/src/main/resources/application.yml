@@ -34,8 +34,12 @@ application:
       capacity: 5
       refill-tokens: 5
       refill-duration-minutes: 1
-  cloudinary:
-    cloud-name: ${CLOUDINARY_CLOUD_NAME:demo}
-    api-key: ${CLOUDINARY_API_KEY:}
-    api-secret: ${CLOUDINARY_API_SECRET:}
-    upload-folder: ${CLOUDINARY_FOLDER:marziya-gold}
+app:
+  r2:
+    endpoint: ${R2_ENDPOINT:https://example.r2.cloudflarestorage.com}
+    access-key-id: ${R2_ACCESS_KEY_ID:test-key}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:test-secret}
+    bucket: ${R2_BUCKET:marziya-media}
+    region: ${R2_REGION:auto}
+    public-url: ${NEXT_PUBLIC_MEDIA_URL:https://media.marziyagold.uz}
+
