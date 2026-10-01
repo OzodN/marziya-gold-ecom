@@ -1,6 +1,6 @@
 id: "TASK-0031"
 title: "Production Containerization and Railway PaaS Monorepo Deployment Configuration"
-status: "in_progress"
+status: "review"
 owner: "devops"
 type: "infrastructure"
 created_at: "2026-10-02T02:00:00Z"

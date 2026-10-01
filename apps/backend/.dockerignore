@@ -1,0 +1,27 @@
+# Build output
+target/
+build/
+*.jar
+*.war
+
+# Git & Worktrees
+.git
+.gitignore
+.worktrees
+
+# IDE & OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Secrets & Environment
+.env
+.env.*
+
+# Documentation
+*.md
