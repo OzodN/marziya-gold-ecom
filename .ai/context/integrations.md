@@ -20,11 +20,14 @@
   - Кнопка `[Telegram]`: прямая ссылка `https://t.me/<master_username>` (параметр берется из настроек `SiteSetting`).
   - Кнопка `[Позвонить]`: нативная ссылка `tel:<phone_number>`.
 
-## 3. Managed PostgreSQL (Neon / Supabase / Render)
+## 3. Managed PostgreSQL (Railway / Neon / Supabase)
 - **Назначение:** Хранилище реляционных данных и JSONB-снапшотов.
 - **Требования:** Версия PostgreSQL 16+, включенное расширение `pg_trgm`, автоматическое создание ежедневных бэкапов.
 
 ## 4. Хостинг и CI/CD
-- **Frontend:** Vercel (деплой из Git, автоматический HTTPS, Edge Network).
-- **Backend:** Render / Railway (PaaS-контейнер со Spring Boot, автоматический рестарт при сбоях).
-- **CI/CD:** GitHub Actions (автоматический запуск юнит/интеграционных тестов, линтинг, проверка контрактов).
+- **Платформа хостинга:** Единый проект на **Railway (PaaS)** для монорепозитория:
+  - **Frontend:** Сервис `apps/frontend` (Next.js 15, Always-on Node.js контейнер).
+  - **Backend:** Сервис `apps/backend` (Spring Boot 4.1.1, Java 21). При SSR фронтенд обращается к бэкенду по внутренней приватной сети Railway (`backend.railway.internal`) с минимальной задержкой.
+  - **Database:** Managed PostgreSQL сервис внутри того же проекта Railway.
+  - **DNS & CDN:** Cloudflare (домены `marziyagold.uz` и `api.marziyagold.uz`, автоматический SSL, WAF).
+- **CI/CD:** GitHub Actions (автоматический запуск юнит/интеграционных тестов, линтинг, проверка контрактов) + автоматический деплой Railway с разделением по Watch Paths (`apps/frontend/**`, `apps/backend/**`).

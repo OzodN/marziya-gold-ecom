@@ -5,10 +5,11 @@
 
 ## Парадигма
 - **Zero-Maintenance ("Сдал и забыл"):**
-  - Frontend: Vercel.
-  - Backend: Render / Railway.
-  - Database: Managed PostgreSQL (Neon / Supabase).
+  - Frontend: Railway (Next.js 15).
+  - Backend: Railway (Spring Boot).
+  - Database: Railway Managed PostgreSQL (или Neon/Supabase).
   - Media: Cloudflare R2 (S3-хранилище, $0 egress) + Cloudflare Image Transformations (ресайз на edge).
+  - DNS & CDN: Cloudflare.
   - Никаких серверов на ручном администрировании.
 
 Локальные правила агента: [AGENTS.md](AGENTS.md).

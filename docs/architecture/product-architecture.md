@@ -298,7 +298,7 @@ erDiagram
 - **Backend**: Spring Security на базе **Java 21 + Spring Boot 4.1.1**.
 - **Хранение JWT**: Токен администратора хранится исключительно в защищенной **`HttpOnly` Cookie** (`SameSite=Strict`, `Secure=true`). JavaScript на клиенте не имеет доступа к токену, что исключает его компрометацию через XSS.
 - **Хэширование паролей**: `BCryptPasswordEncoder` с высоким фактором сложности.
-- **CORS**: Строго ограничен доверенным доменом витрины Vercel.
+- **CORS**: Строго ограничен доверенным доменом витрины под Cloudflare DNS.
 - **Защита от спама**: Rate Limiting (Bucket4j) на публичный эндпоинт отправки заявок `POST /api/v1/inquiries` по IP-адресу.
 - **Защита от атак**: Отсутствие личных кабинетов покупателей сводит к минимуму поверхность атак на персональные данные.
 
@@ -348,7 +348,7 @@ erDiagram
 | Риск | Вероятность | Влияние | Решение / Митигация |
 |---|---|---|---|
 | **Переполнение диска сервера медиафайлами** | Высокая | Критическое | Использование Cloudflare R2 (managed S3-хранилище с $0 egress); бэкенд-сервер не хранит файлы на диске. |
-| **Падение SSL / сбои операционной системы** | Средняя | Критическое | Отказ от самостоятельного VPS. Хостинг на Vercel + Render с автоматическими SSL и автоперезапуском. |
+| **Падение SSL / сбои операционной системы** | Средняя | Критическое | Отказ от самостоятельного VPS. Хостинг на едином PaaS (Railway) с автоматическими SSL и автоперезапуском под защитой Cloudflare. |
 | **Рассинхрон фильтров из-за опечаток мастера** | Высокая | Среднее | Глобальный справочник ключей (`characteristic_key`). Мастер выбирает параметры из выпадающего списка. |
 | **Потеря исторической точности заявки** | Высокая | Высокое | Полный JSON-снапшот изделия в `inquiry_item` в момент отправки заявки. |
 | **Случайное удаление товаров из локальной подборки** | Средняя | Низкое | Хранение в `localStorage` (Zustand Persist) + тихая валидация статуса без внезапного удаления. |
@@ -368,7 +368,7 @@ erDiagram
 8. **Безопасность сессии админа**: JWT в защищенной `HttpOnly` Cookie.
 9. **UX редактора товара**: Единая страница с мгновенной предзагрузкой фото и финальным сохранением по кнопке.
 10. **SEO**: Автоматическая генерация мета-тегов по шаблону из контента товара.
-11. **Инфраструктура Zero-Maintenance**: Vercel (Frontend) + Render/Railway (Backend) + Managed PostgreSQL (Neon/Supabase).
+11. **Инфраструктура Zero-Maintenance**: Единый проект на Railway для монорепозитория (Frontend Next.js + Backend Spring Boot + PostgreSQL) + Cloudflare (DNS, CDN, SSL, R2).
 
 ---
 
@@ -379,6 +379,5 @@ erDiagram
 - **Database**: Managed PostgreSQL 16+ (расширение `pg_trgm`, индексация JSONB GIN).
 - **Media & Image Processing**: Cloudflare R2 (S3-хранилище, $0 egress) + Cloudflare Image Transformations (ресайз на edge) + Cloudflare CDN.
 - **Deployment Platform**:
-  - **Frontend**: Vercel.
-  - **Backend**: Render / Railway (PaaS).
-  - **Database**: Neon.tech / Supabase (Managed Postgres с автоматическими ежедневными бекапами).
+  - **Единый проект Railway (PaaS)**: Frontend (`apps/frontend`), Backend (`apps/backend`) с внутренней приватной сетью, Managed PostgreSQL.
+  - **Cloudflare**: DNS, CDN, автоматический SSL, WAF, R2 Storage.

@@ -14,4 +14,4 @@
 - **Серверная часть (Backend):** Java 21, Spring Boot 4.1.1, Spring Data JPA, Spring Security (JWT в HttpOnly Cookie), Flyway.
 - **База данных:** PostgreSQL 16+ (расширение `pg_trgm`, индексация JSONB).
 - **Медиа-сервис:** Cloudflare R2 (S3-хранилище оригиналов, $0 egress) + Cloudflare Image Transformations (динамический ресайз и конвертация WebP/AVIF на edge). Полностью managed. См. ADR-0002.
-- **Хостинг:** Managed PaaS (Vercel для фронтенда, Render/Railway для бэкенда, Neon/Supabase для БД).
+- **Хостинг:** Managed PaaS (единый проект на Railway: Frontend Next.js + Backend Spring Boot + PostgreSQL, под единым Cloudflare DNS).
