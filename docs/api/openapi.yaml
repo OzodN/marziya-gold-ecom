@@ -405,9 +405,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProductDetailResponse'
 
+  /admin/media/presign-upload:
+    post:
+      summary: Generate presigned PUT URL for Cloudflare R2 direct client upload
+      tags: [Admin Media]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresignedUploadRequest'
+      responses:
+        '200':
+          description: Presigned upload URL generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresignedUploadResponse'
+
   /admin/media/upload:
     post:
-      summary: Generate presigned upload URL for Cloudflare R2 and return R2 object key
+      summary: Direct multipart media upload to Cloudflare R2 (Legacy / fallback)
       tags: [Admin Media]
       requestBody:
         required: true
@@ -901,3 +919,33 @@ components:
         phone: { type: string, example: "+998 90 123 45 67" }
         telegramUsername: { type: string, example: "marziyagold" }
         aboutMaster: { type: string, example: "Авторская ювелирная мастерская..." }
+
+    PresignedUploadRequest:
+      type: object
+      required: [fileName, contentType]
+      properties:
+        fileName:
+          type: string
+          example: ring-front.jpg
+        contentType:
+          type: string
+          example: image/jpeg
+          enum: [image/jpeg, image/png, image/webp, image/avif, video/mp4]
+
+    PresignedUploadResponse:
+      type: object
+      required: [uploadUrl, objectKey, publicUrl]
+      properties:
+        uploadUrl:
+          type: string
+          description: Presigned S3/R2 PUT URL with 15-minute expiration
+          example: https://example.r2.cloudflarestorage.com/marziya-media/products/uuid.jpg?X-Amz-Signature=xxx
+        objectKey:
+          type: string
+          description: Unique storage key for the object in R2
+          example: products/550e8400-e29b-41d4-a716-446655440000.jpg
+        publicUrl:
+          type: string
+          description: Public CDN/domain URL to access the uploaded file
+          example: https://media.marziyagold.uz/products/550e8400-e29b-41d4-a716-446655440000.jpg
+

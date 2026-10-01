@@ -312,7 +312,7 @@ tasks:
 
   - id: "TASK-0028"
     title: "Cloudflare R2 S3-Compatible Media Presigned Upload REST API"
-    status: "in_progress"
+    status: "review"
     owner: "backend"
     type: "feature"
     affected_areas:
