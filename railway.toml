@@ -1,0 +1,55 @@
+# Railway PaaS Monorepo Configuration
+# Docs: https://docs.railway.com/reference/config-as-code
+"$schema" = "https://railway.com/railway.schema.json"
+
+[build]
+builder = "DOCKERFILE"
+
+# ==============================================================================
+# Backend Service (Spring Boot 4.x / Java 21)
+# ==============================================================================
+[services.backend]
+name = "backend"
+rootDirectory = "apps/backend"
+dockerfilePath = "apps/backend/Dockerfile"
+
+[services.backend.build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+watchPatterns = [
+  "apps/backend/src/**",
+  "apps/backend/pom.xml",
+  "apps/backend/Dockerfile"
+]
+
+[services.backend.deploy]
+healthcheckPath = "/api/v1/categories"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+# ==============================================================================
+# Frontend Service (Next.js 15 / Node.js 22)
+# ==============================================================================
+[services.frontend]
+name = "frontend"
+rootDirectory = "apps/frontend"
+dockerfilePath = "apps/frontend/Dockerfile"
+
+[services.frontend.build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+watchPatterns = [
+  "apps/frontend/src/**",
+  "apps/frontend/public/**",
+  "apps/frontend/next.config.ts",
+  "apps/frontend/package.json",
+  "apps/frontend/package-lock.json",
+  "apps/frontend/Dockerfile"
+]
+
+[services.frontend.deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
