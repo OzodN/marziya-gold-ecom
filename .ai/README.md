@@ -20,7 +20,7 @@
 │   ├── terminology.md         # Обязательный словарь терминов UI ("Моя подборка")
 │   ├── constraints.md         # Технические ограничения и Zero-Maintenance
 │   ├── non-goals.md           # Запрещенная функциональность (нет цен/оплаты/склада)
-│   └── integrations.md        # Внешние сервисы (Cloudinary, Telegram, PaaS)
+│   └── integrations.md        # Внешние сервисы (Cloudflare R2, Image Transformations, Telegram, PaaS)
 ├── stack/                     # Стек инструментов и навыков
 │   └── aas-stack.json         # Манифест привязки глобальных навыков к ролям
 ├── agents/                    # Профили ролей проектных субагентов

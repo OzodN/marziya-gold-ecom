@@ -10,9 +10,9 @@
     - Frontend: Vercel.
     - Backend: Render / Railway.
     - Database: Managed PostgreSQL (Neon / Supabase) с автоматическими ежедневными бекапами.
-    - Media: Cloudinary CDN.
+    - Media: Cloudflare R2 (S3-хранилище, $0 egress) + Cloudflare Image Transformations (ресайз на edge).
 - **Управление переменными окружения:**
-  - Все секретные параметры (пароли к БД, секреты JWT, ключи Cloudinary) передаются через Environment Variables платформы.
+  - Все секретные параметры (пароли к БД, секреты JWT, ключи Cloudflare R2) передаются через Environment Variables платформы.
   - В репозитории хранятся только `.env.example` файлы.
 - **Запреты:**
   - Запрещено менять код бизнес-логики в `apps/`.

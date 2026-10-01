@@ -407,7 +407,7 @@ paths:
 
   /admin/media/upload:
     post:
-      summary: Upload image to Cloudinary and return CDN URL and public_id
+      summary: Generate presigned upload URL for Cloudflare R2 and return R2 object key
       tags: [Admin Media]
       requestBody:
         required: true

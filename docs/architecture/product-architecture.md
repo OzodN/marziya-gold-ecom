@@ -39,7 +39,7 @@
    - Нажатие кнопки **"Сохранить изменения"** (статус фиксируется в БД с записью в историю изменений).
 4. **Управление каталогом**:
    - Ведение справочника названий характеристик (добавление/удаление глобальных ключей).
-   - Создание/редактирование товара через единую форму: мгновенный drag-and-drop аплоад фото в Cloudinary, выбор характеристик из справочника, добавление блоков камней.
+   - Создание/редактирование товара через единую форму: мгновенный drag-and-drop аплоад фото в Cloudflare R2 (напрямую из браузера через presigned URL), выбор характеристик из справочника, добавление блоков камней.
    - Сохранение товара одной кнопкой.
 
 ---
@@ -51,7 +51,7 @@
 - **Управление состоянием подборки**: **Zustand** с middleware `persist` (`localStorage`).
   - Данные подборки сохраняются при перезагрузке, закрытии вкладки или браузера на мобильном.
   - **Тихая валидация (Silent Validation)**: При открытии страницы подборки клиент делает легкий запрос на бэкенд для проверки актуальности `product_id`. Если товар скрыт или удален, он отображается приглушенным с плашкой *"Изделие больше недоступно"* (с возможностью только удалить его из подборки).
-- **Оптимизация изображений**: Использование компонента `next/image` в связке с Cloudinary CDN (автоматический выбор формата WebP/AVIF, responsive srcset, ленивая загрузка).
+- **Оптимизация изображений**: Использование компонента `next/image` с custom loader для Cloudflare Image Transformations (автоматический выбор формата WebP/AVIF, responsive srcset, ленивая загрузка). Оригиналы хранятся в Cloudflare R2.
 
 ---
 
@@ -59,7 +59,7 @@
 - **Архитектура**: Встроена в проект Next.js по маршруту `/admin/*` с использованием Client-Side Rendering (CSR). Изолированный лейаут, закрытый middleware-проверкой авторизации.
 - **Product Editor UX (Единая форма)**:
   - Единая страница редактирования без многошаговых мастеров (wizard).
-  - Фотографии загружаются в облако Cloudinary асинхронно сразу при drop'е файла (появляется превью, доступна drag-and-drop сортировка порядка).
+  - Фотографии загружаются в Cloudflare R2 асинхронно сразу при drop'е файла через presigned URL (появляется превью, доступна drag-and-drop сортировка порядка).
   - Сам товар, его характеристики и камни сохраняются транзакционно по нажатию кнопки **"Сохранить товар"**.
 - **Realtime-уведомления о заявках**: Фоновый **Polling (опрос) раз в 30 секунд** (`GET /api/admin/inquiries/new-count`). Если есть новые заявки — на иконке заявок и во вкладке браузера обновляется бейдж. Нулевая нагрузка на сервер, отсутствие хрупких постоянных соединений (WebSockets/SSE).
 
@@ -97,7 +97,7 @@
 - **Category**: `id`, `name`, `slug`, `sort_order`, `is_visible`, `created_at`.
 - **CharacteristicKey**: `id`, `name` (уникальное название характеристики, например, "Проба"), `sort_order`, `is_filterable`.
 - **Product**: `id`, `sku`, `name`, `slug`, `description`, `category_id`, `is_visible`, `characteristics` (JSONB), `created_at`, `updated_at`.
-- **ProductImage**: `id`, `product_id`, `url`, `public_id` (Cloudinary ID), `sort_order`.
+- **ProductImage**: `id`, `product_id`, `url`, `public_id` (R2 object key), `sort_order`.
 - **StoneType**: `id`, `name`, `is_active`.
 - **ProductStone**: `id`, `product_id`, `stone_type_id`, `sort_order`, `characteristics` (JSONB).
 - **Inquiry**: `id`, `client_name`, `client_phone`, `comment`, `status`, `created_at`, `updated_at`.
@@ -239,7 +239,7 @@ erDiagram
      "product_id": 42,
      "sku": "GLD-0052-ULX",
      "name": "Кольцо Multibrand",
-     "main_image_url": "https://res.cloudinary.com/.../ring.webp",
+     "main_image_url": "https://media.marziyagold.uz/cdn-cgi/image/width=600,format=auto/products/42/ring.jpg",
      "characteristics": [
        {"name": "Проба", "value": "585"},
        {"name": "Вес", "value": "2.20 г"}
@@ -285,7 +285,7 @@ erDiagram
 - `PUT /api/v1/admin/inquiries/{id}/status` — сохранение нового статуса.
 - `GET /api/v1/admin/inquiries/new-count` — легковесный эндпоинт для 30-секундного polling'а.
 - `CRUD /api/v1/admin/products` — создание, редактирование, удаление, смена видимости.
-- `POST /api/v1/admin/media/upload` — загрузка фото (проксирование в Cloudinary).
+- `POST /api/v1/admin/media/upload` — генерация presigned URL для загрузки фото в Cloudflare R2.
 - `PUT /api/v1/admin/products/{id}/images/order` — обновление порядка фото (drag-and-drop).
 - `CRUD /api/v1/admin/categories` — управление категориями.
 - `CRUD /api/v1/admin/characteristic-keys` — управление глобальным справочником характеристик.
@@ -304,14 +304,16 @@ erDiagram
 
 ---
 
-## 16. File & Image Storage (Cloudinary Image CDN)
-- Оригиналы фото загружаются через админку в **Cloudinary** (Managed Media Platform).
-- База данных хранит только защищенные URL и `public_id`.
-- На клиенте и в каталоге используются динамические трансформации Cloudinary:
-  - Автоматическая конвертация в WebP/AVIF в зависимости от браузера клиента.
-  - Нарезка нужных разрешений "на лету" (миниатюра 120x120 для подборки, 600x600 для каталога, 1600px для зума).
-  - Глобальная раздача через CDN.
-- **Преимущество для Zero-Maintenance**: На сервере приложений не забивается диск, не расходуется CPU на обработку тяжелых изображений, нет риска падения JVM по OutOfMemoryError.
+## 16. File & Image Storage (Cloudflare R2 + Image Transformations)
+- Оригиналы фото и видео загружаются через админку напрямую в **Cloudflare R2** (S3-совместимое хранилище, $0 egress) через presigned PUT URL.
+- Динамическая обработка изображений выполняется **Cloudflare Image Transformations** на edge-серверах:
+  - Автоматическая конвертация в WebP/AVIF в зависимости от браузера клиента (`format=auto`).
+  - Нарезка нужных разрешений "на лету" (миниатюра 120px для подборки, 400px для каталога, 800px для карточки, 1600px для зума).
+  - Фронтенд использует custom loader для `next/image`, генерирующий URL вида `/cdn-cgi/image/width=W,format=auto/PATH`.
+- База данных хранит только R2 object path и metadata. Полный URL с трансформацией формируется на фронтенде.
+- Видео отдаётся напрямую из R2 без трансформаций.
+- **Причина выбора:** Cloudinary недоступен на территории Республики Узбекистан. Подробнее: ADR-0002.
+- **Преимущество для Zero-Maintenance**: Полностью managed-сервис. Нет VPS, Docker, сертификатов, мониторинга. На бэкенд-сервере не забивается диск, не расходуется CPU на обработку изображений.
 
 ---
 
@@ -345,7 +347,7 @@ erDiagram
 
 | Риск | Вероятность | Влияние | Решение / Митигация |
 |---|---|---|---|
-| **Переполнение диска сервера медиафайлами** | Высокая | Критическое | Использование внешнего Cloudinary; сервер не хранит файлы на диске. |
+| **Переполнение диска сервера медиафайлами** | Высокая | Критическое | Использование Cloudflare R2 (managed S3-хранилище с $0 egress); бэкенд-сервер не хранит файлы на диске. |
 | **Падение SSL / сбои операционной системы** | Средняя | Критическое | Отказ от самостоятельного VPS. Хостинг на Vercel + Render с автоматическими SSL и автоперезапуском. |
 | **Рассинхрон фильтров из-за опечаток мастера** | Высокая | Среднее | Глобальный справочник ключей (`characteristic_key`). Мастер выбирает параметры из выпадающего списка. |
 | **Потеря исторической точности заявки** | Высокая | Высокое | Полный JSON-снапшот изделия в `inquiry_item` в момент отправки заявки. |
@@ -358,7 +360,7 @@ erDiagram
 
 1. **Динамические характеристики**: Гибридная модель. Глобальный справочник названий (управляется мастером) + хранение массива пар `name: value` в JSONB. Тип значений — только String.
 2. **Снапшот заявки**: Полный JSON-слепок всех полей, характеристик, камней и главного фото товара в момент отправки заявки.
-3. **Хранилище медиа**: Cloudinary (Image CDN) — автоформат WebP/AVIF, трансформация на лету, нулевое обслуживание хранилища.
+3. **Хранилище медиа**: Cloudflare R2 (S3-хранилище, $0 egress) + Cloudflare Image Transformations (ресайз и автоформат WebP/AVIF на edge). Полностью managed, zero-ops. См. ADR-0002.
 4. **Терминология клиентского флоу**: "Моя подборка" / "В подборку" / "Отправить запрос". Никаких намеков на корзину и онлайн-магазин.
 5. **Realtime в админке**: Фоновый HTTP Polling раз в 30 секунд.
 6. **Клиентский стек**: Next.js (App Router) + TailwindCSS + `shadcn/ui` + Zustand (`localStorage` persist).
@@ -375,7 +377,7 @@ erDiagram
 - **Frontend**: Next.js 15+ (App Router), React 19, TypeScript, TailwindCSS, `shadcn/ui`, Zustand.
 - **Backend**: Java 21, Spring Boot 4.1.1, Spring Data JPA, Spring Security, Flyway, Bucket4j.
 - **Database**: Managed PostgreSQL 16+ (расширение `pg_trgm`, индексация JSONB GIN).
-- **Media & CDN**: Cloudinary.
+- **Media & Image Processing**: Cloudflare R2 (S3-хранилище, $0 egress) + Cloudflare Image Transformations (ресайз на edge) + Cloudflare CDN.
 - **Deployment Platform**:
   - **Frontend**: Vercel.
   - **Backend**: Render / Railway (PaaS).

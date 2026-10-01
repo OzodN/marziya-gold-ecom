@@ -64,8 +64,8 @@
 ### 2.6. `product_image`
 - `id` (BIGSERIAL PK)
 - `product_id` (BIGINT NOT NULL REFERENCES product(id) ON DELETE CASCADE)
-- `url` (VARCHAR(1000) NOT NULL) — Cloudinary URL
-- `public_id` (VARCHAR(255)) — Cloudinary public_id
+- `url` (VARCHAR(1000) NOT NULL) — R2 object path (используется фронтендом для формирования CF Image Transformation URL)
+- `public_id` (VARCHAR(255)) — R2 object key
 - `sort_order` (INT NOT NULL DEFAULT 0)
 
 ### 2.7. `product_stone`
