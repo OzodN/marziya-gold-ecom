@@ -63,11 +63,16 @@ const getApiBaseUrl = (): string => {
 
     return `http://${host}:8080/api/v1`;
   }
-  return (
-    process.env.INTERNAL_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://127.0.0.1:8080/api/v1"
-  );
+  const internal = process.env.INTERNAL_API_URL || process.env.BACKEND_URL;
+  if (internal) {
+    const clean = internal.replace(/\/+$/, "");
+    return clean.endsWith("/api/v1")
+      ? clean
+      : clean.endsWith("/api")
+      ? `${clean}/v1`
+      : `${clean}/api/v1`;
+  }
+  return "http://127.0.0.1:8080/api/v1";
 };
 
 const DEMO_INQUIRIES_STORAGE_KEY = "mg_demo_admin_inquiries";
