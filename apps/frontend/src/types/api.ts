@@ -262,3 +262,14 @@ export interface ContactSettingsUpdateDto {
   phoneNumber?: string;
   masterBio?: string;
 }
+
+export interface PresignedUploadRequestDto {
+  fileName: string;
+  contentType: string;
+}
+
+export interface PresignedUploadResponseDto {
+  uploadUrl: string;
+  objectKey: string;
+  publicUrl: string;
+}
