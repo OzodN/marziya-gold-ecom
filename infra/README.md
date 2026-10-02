@@ -4,7 +4,7 @@
 Дескрипторы развертывания, переменные окружения и манифесты облачных сервисов.
 
 ## Парадигма
-- **Zero-Maintenance ("Сдал и забыл"):**
+- **Zero-Maintenance:**
   - Frontend: Railway (Next.js 15).
   - Backend: Railway (Spring Boot).
   - Database: Railway Managed PostgreSQL (или Neon/Supabase).

@@ -1,6 +1,6 @@
 # Руководство по развертыванию на Railway PaaS (Zero-Maintenance)
 
-Данный документ описывает регламент и пошаговый процесс развертывания проекта **Marziya Gold Jewelry E-Commerce** на платформе **Railway PaaS** в соответствии с парадигмой **Zero-Maintenance («Сдал и забыл»)**.
+Данный документ описывает регламент и пошаговый процесс развертывания проекта **Marziya Gold Jewelry E-Commerce** на платформе **Railway PaaS** в соответствии с парадигмой **Zero-Maintenance**.
 
 ---
 

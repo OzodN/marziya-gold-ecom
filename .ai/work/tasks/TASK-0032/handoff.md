@@ -10,7 +10,7 @@
 - [x] Создан боевой профиль конфигурации бэкенда `apps/backend/src/main/resources/application-prod.yml` (HikariCP connection pool, Flyway auto-migrate, strict CORS, graceful shutdown, production logging).
 - [x] Обновлены `apps/backend/src/main/resources/application.yml` и `application.yml.example` с поддержкой стандартных цепочек fallback для PaaS-окружения (`SPRING_DATASOURCE_*`, `JDBC_DATABASE_URL`, `DB_*`) и блока Cloudflare R2.
 - [x] Подготовлен эталонный идемпотентный SQL-скрипт сидирования `database/seed-production.sql` (расширение `pg_trgm`, категории, типы камней, ключи характеристик, контакты мастера, демонстрационные изделия с R2/Unsplash fallback, выравнивание последовательностей).
-- [x] Написано корневое руководство по сдаче проекта `HANDOVER.md` (архитектура «Сдал и забыл», пошаговый запуск в 3 клика, переменные окружения, первый логин и ротация пароля, бэкапы).
+- [x] Написано корневое руководство по сдаче проекта `HANDOVER.md` (архитектура «Zero-Maintenance», пошаговый запуск в 3 клика, переменные окружения, первый логин и ротация пароля, бэкапы).
 - [x] Написано детальное руководство оператора `docs/operations/zero-maintenance-guide.md` (матрица переменных окружения, Cloudflare DNS/SSL/R2 CORS, runbook мастера, траблшутинг экстренных ситуаций, калькуляция затрат ~$6–15/мес).
 - [x] Выполнена валидация всех тестовых сюит: 157 бэкенд-тестов и 29 фронтенд-тестов пройдены успешно.
 

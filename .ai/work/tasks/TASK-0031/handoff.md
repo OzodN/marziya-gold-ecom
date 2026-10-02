@@ -24,7 +24,7 @@
   - Экспонирован порт 3000, установлены `PORT=3000` и `HOSTNAME="0.0.0.0"`.
 - [x] Создан манифест `railway.toml` в корне репозитория (а также локальные манифесты `apps/backend/railway.toml` и `apps/frontend/railway.toml`), декларирующий сервисы `backend` и `frontend` для Railway PaaS.
 - [x] Создан эталонный файл переменных окружения `.env.production.example` с документированием всех параметров (PostgreSQL, Cloudflare R2, Cloudinary, JWT, CORS, Next.js Public & Internal URLs).
-- [x] Написано детальное руководство по развертыванию `infra/railway-deployment.md` в рамках модели Zero-Maintenance ("Сдал и забыл").
+- [x] Написано детальное руководство по развертыванию `infra/railway-deployment.md` в рамках модели Zero-Maintenance.
 
 ---
 
