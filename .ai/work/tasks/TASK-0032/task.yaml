@@ -1,0 +1,20 @@
+id: "TASK-0032"
+title: "Production Security Hardening, Zero-Maintenance Seeding and Handover Documentation"
+status: "in_progress"
+owner: "orchestrator"
+type: "infrastructure"
+created_at: "2026-10-02T11:35:00Z"
+dependencies:
+  - "TASK-0029"
+  - "TASK-0031"
+affected_areas:
+  - "apps/backend/src/main/resources/application-prod.yml"
+  - "apps/backend/src/main/resources/application.yml"
+  - "docs/**"
+  - "infra/**"
+acceptance_criteria:
+  - "Production configuration profile application-prod.yml is created and hardened (HikariCP connection pool, Flyway auto-migrate, strict CORS, Spring Actuator health probes, Cloudflare R2 S3 settings, production logging)."
+  - "Seed data and initialization script (database/seed.sql or infra/seed-data.sql) is prepared with full master catalogue and admin credentials instructions for zero-maintenance bootstrap."
+  - "Zero-Maintenance Handover Guide (HANDOVER.md and docs/operations/zero-maintenance-guide.md) is written, detailing turn-key handover: Railway PaaS 1-click deployment, Cloudflare DNS & SSL routing, Cloudflare R2 bucket setup & CORS rules, initial login & password rotation, backups and monitoring."
+  - "All backend tests (mvn test) and frontend tests (npm test) pass cleanly without any regression."
+  - "Project status and registry are updated, finalizing the development milestone."

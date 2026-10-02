@@ -4,10 +4,12 @@ server:
 spring:
   application:
     name: marziya-gold-backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:default}
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/marziya_gold}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${JDBC_DATABASE_URL:${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/marziya_gold}}
+    username: ${DB_USERNAME:${SPRING_DATASOURCE_USERNAME:postgres}}
+    password: ${DB_PASSWORD:${SPRING_DATASOURCE_PASSWORD:postgres}}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

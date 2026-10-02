@@ -1,0 +1,79 @@
+# ==============================================================================
+# Production Profile Configuration for Marziya Gold Backend (Zero-Maintenance)
+# ==============================================================================
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+spring:
+  application:
+    name: marziya-gold-backend
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+  datasource:
+    url: ${JDBC_DATABASE_URL:${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/marziya_gold}}
+    username: ${DB_USERNAME:${SPRING_DATASOURCE_USERNAME:postgres}}
+    password: ${DB_PASSWORD:${SPRING_DATASOURCE_PASSWORD:postgres}}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: MarziyaHikariCP-Prod
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+      idle-timeout: 300000       # 5 minutes
+      max-lifetime: 1800000       # 30 minutes
+      connection-timeout: 20000   # 20 seconds
+      leak-detection-threshold: 30000 # 30 seconds
+      validation-timeout: 5000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 25
+          order_inserts: true
+          order_updates: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+application:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration-ms: ${JWT_EXPIRATION_MS:86400000} # 24 hours
+      cookie-name: access_token
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS:https://marziyagold.uz,https://www.marziyagold.uz,https://admin.marziyagold.uz}
+  rate-limiting:
+    inquiries:
+      capacity: ${RATE_LIMIT_CAPACITY:5}
+      refill-tokens: ${RATE_LIMIT_REFILL_TOKENS:5}
+      refill-duration-minutes: ${RATE_LIMIT_REFILL_MINUTES:1}
+
+app:
+  r2:
+    endpoint: ${R2_ENDPOINT}
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    bucket: ${R2_BUCKET:marziya-media}
+    region: ${R2_REGION:auto}
+    public-url: ${NEXT_PUBLIC_MEDIA_URL:https://media.marziyagold.uz}
+
+logging:
+  level:
+    root: INFO
+    com.marziyagold: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate: WARN
+    org.flywaydb: INFO
+    com.zaxxer.hikari: INFO
