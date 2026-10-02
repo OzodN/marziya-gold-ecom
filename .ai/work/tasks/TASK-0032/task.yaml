@@ -1,6 +1,6 @@
 id: "TASK-0032"
 title: "Production Security Hardening, Zero-Maintenance Seeding and Handover Documentation"
-status: "in_progress"
+status: "done"
 owner: "orchestrator"
 type: "infrastructure"
 created_at: "2026-10-02T11:35:00Z"
