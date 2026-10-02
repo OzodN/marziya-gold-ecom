@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, X, Plus, Trash2, ArrowLeft, ArrowLeft as MoveLeft, ArrowRight as MoveRight } from "lucide-react";
+import { UploadCloud, X, Plus, Trash2, ArrowLeft, ArrowLeft as MoveLeft, ArrowRight as MoveRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import {
   createAdminProduct,
@@ -28,6 +28,8 @@ interface ProductEditorProps {
 export default function ProductEditor({ initialData }: ProductEditorProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [categories, setCategories] = useState<CategoryAdminDto[]>([]);
@@ -79,20 +81,24 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
-    setLoading(true);
+    const fileList = Array.from(e.target.files);
+    setUploading(true);
+    setError(null);
     try {
       const newImages = [...images];
-      for (let i = 0; i < e.target.files.length; i++) {
-        const file = e.target.files[i];
+      for (let i = 0; i < fileList.length; i++) {
+        setUploadProgress(`Загрузка ${i + 1}/${fileList.length}...`);
+        const file = fileList[i];
         const res = await uploadMedia(file);
         newImages.push(res);
       }
       setImages(newImages);
     } catch (err) {
-      console.error(err);
-      setError("Ошибка загрузки изображения");
+      console.error("Image upload failed", err);
+      setError("Ошибка загрузки изображения в Cloudflare R2");
     } finally {
-      setLoading(false);
+      setUploading(false);
+      setUploadProgress(null);
       if (e.target) e.target.value = "";
     }
   };
@@ -183,10 +189,10 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
           </button>
           <button
             onClick={handleSave}
-            disabled={loading}
+            disabled={loading || uploading}
             className="px-6 py-2 rounded-xl bg-gold-500 text-noir-950 font-medium hover:bg-gold-400 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            {loading ? "Сохранение..." : "Сохранить изделие"}
+            {loading ? "Сохранение..." : uploading ? "Загрузка фото..." : "Сохранить изделие"}
           </button>
         </div>
       </div>
@@ -310,10 +316,19 @@ export default function ProductEditor({ initialData }: ProductEditorProps) {
               </div>
             </div>
           ))}
-          <label className="aspect-square rounded-xl border-2 border-dashed border-noir-700 hover:border-gold-500 bg-noir-950/50 flex flex-col items-center justify-center cursor-pointer transition-colors text-noir-400 hover:text-gold-200 group min-h-[120px]">
-            <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} disabled={loading} />
-            <UploadCloud className="w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-sm text-center px-2">Загрузить фото</span>
+          <label className={`aspect-square rounded-xl border-2 border-dashed ${uploading ? 'border-gold-500 bg-gold-950/20' : 'border-noir-700 hover:border-gold-500 bg-noir-950/50'} flex flex-col items-center justify-center cursor-pointer transition-colors text-noir-400 hover:text-gold-200 group min-h-[120px]`}>
+            <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} disabled={loading || uploading} />
+            {uploading ? (
+              <div className="flex flex-col items-center gap-2 p-2 text-center animate-pulse">
+                <Loader2 className="w-8 h-8 animate-spin text-gold-400" />
+                <span className="text-xs text-gold-300 font-medium">{uploadProgress || "Загрузка в R2..."}</span>
+              </div>
+            ) : (
+              <>
+                <UploadCloud className="w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
+                <span className="text-sm text-center px-2">Загрузить фото</span>
+              </>
+            )}
           </label>
         </div>
       </div>

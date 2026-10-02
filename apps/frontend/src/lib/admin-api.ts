@@ -7,6 +7,8 @@ import type {
   InquiryStatusHistoryDto,
   InquirySummaryDto,
   NewInquiriesCountDto,
+  PresignedUploadRequestDto,
+  PresignedUploadResponseDto,
 } from "@/types/api";
 
 const ADMIN_TOKEN_KEY = "mg_admin_token";
@@ -1353,14 +1355,45 @@ export async function toggleAdminProductVisibility(id: number, isVisible: boolea
 
 // --- Media ---
 
-export async function uploadMedia(file: File): Promise<{ url: string; publicId: string }> {
+export async function requestPresignedUpload(
+  request: PresignedUploadRequestDto
+): Promise<PresignedUploadResponseDto> {
+  const baseUrl = getApiBaseUrl();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const res = await fetch(`${baseUrl}/admin/media/presign-upload`, {
+      method: "POST",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json",
+      }),
+      credentials: "include",
+      body: JSON.stringify(request),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`Failed to get presigned upload URL: ${res.status} ${errText}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
+  }
+}
+
+export async function fallbackServerUpload(file: File): Promise<{ url: string; publicId: string }> {
   const baseUrl = getApiBaseUrl();
   const formData = new FormData();
   formData.append("file", file);
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
     const res = await fetch(`${baseUrl}/admin/media/upload`, {
       method: "POST",
       headers: getAuthHeaders(),
@@ -1370,8 +1403,53 @@ export async function uploadMedia(file: File): Promise<{ url: string; publicId: 
     });
     clearTimeout(timeoutId);
     if (res.ok) return await res.json();
-    throw new Error("Failed to upload media");
+    throw new Error(`Failed to upload media via server fallback: ${res.status}`);
   } catch (err) {
+    clearTimeout(timeoutId);
     throw err;
   }
+}
+
+/**
+ * Uploads media file to storage.
+ * Primary strategy: direct browser-to-R2 upload using presigned PUT URL.
+ * Fallback strategy: legacy backend proxy upload (/admin/media/upload).
+ */
+export async function uploadMedia(file: File): Promise<{ url: string; publicId: string }> {
+  const contentType = file.type || "image/jpeg";
+
+  try {
+    // 1. Obtain presigned PUT URL from backend
+    const presign = await requestPresignedUpload({
+      fileName: file.name,
+      contentType,
+    });
+
+    // 2. Direct PUT to Cloudflare R2 bucket
+    const r2Controller = new AbortController();
+    const r2TimeoutId = setTimeout(() => r2Controller.abort(), 60000);
+
+    const putRes = await fetch(presign.uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": contentType,
+      },
+      body: file,
+      signal: r2Controller.signal,
+    });
+    clearTimeout(r2TimeoutId);
+
+    if (putRes.ok) {
+      return {
+        url: presign.publicUrl,
+        publicId: presign.objectKey,
+      };
+    }
+    console.warn("Direct R2 PUT failed with status", putRes.status, "Falling back to server upload.");
+  } catch (directErr) {
+    console.warn("Direct R2 upload encountered error, falling back to server upload:", directErr);
+  }
+
+  // 3. Fallback: upload through backend proxy
+  return await fallbackServerUpload(file);
 }

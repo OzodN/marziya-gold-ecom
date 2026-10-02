@@ -9,10 +9,12 @@ const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
   images: {
+    loader: "custom",
+    loaderFile: "./src/imageLoader.ts",
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "res.cloudinary.com",
+        hostname: "media.marziyagold.uz",
       },
       {
         protocol: "https",
