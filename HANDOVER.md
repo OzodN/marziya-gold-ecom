@@ -73,9 +73,11 @@
 ### Шаг 2. Развертывание в Railway PaaS
 1. Зарегистрируйтесь на [Railway.app](https://railway.app) и создайте **New Project** -> **Deploy from GitHub repo** (`marziya-gold_ecom`).
 2. Добавьте базу данных: нажмите **+ New** -> **Database** -> **Add PostgreSQL**.
-3. Создайте сервис **Backend** (из корня репозитория, монорепо-путь `apps/backend`):
-   - Railway автоматически подхватит multi-stage `Dockerfile`.
-   - В разделе **Variables** задайте переменные окружения:
+3. Настройте сервис **Backend**:
+   - Откройте сервис бэкенда -> перейдите во вкладку **Settings** -> раздел **General**.
+   - **ОБЯЗАТЕЛЬНО:** В поле **Root Directory** укажите `/apps/backend` (или `apps/backend`) и нажмите Save.
+   - Railway автоматически обнаружит `apps/backend/Dockerfile` и `apps/backend/railway.toml`.
+   - Во вкладке **Variables** задайте переменные окружения:
 
 | Переменная | Значение / Формат | Описание |
 |---|---|---|
@@ -91,9 +93,12 @@
 | `R2_BUCKET` | `marziya-media` | Имя бакета R2 |
 | `NEXT_PUBLIC_MEDIA_URL` | `https://media.marziyagold.uz` | Публичный CDN-домен медиа |
 
-4. Создайте сервис **Frontend** (монорепо-путь `apps/frontend`):
-   - Railway автоматически подхватит Next.js `Dockerfile`.
-   - В разделе **Variables** задайте:
+4. Создайте и настройте сервис **Frontend**:
+   - Нажмите **+ New** -> **GitHub Repo** -> выберите репозиторий `marziya-gold_ecom`.
+   - Откройте созданный сервис -> перейдите во вкладку **Settings** -> раздел **General**.
+   - **ОБЯЗАТЕЛЬНО:** В поле **Root Directory** укажите `/apps/frontend` (или `apps/frontend`) и нажмите Save.
+   - Railway автоматически обнаружит `apps/frontend/Dockerfile` и `apps/frontend/railway.toml`.
+   - Во вкладке **Variables** задайте:
 
 | Переменная | Значение | Описание |
 |---|---|---|
