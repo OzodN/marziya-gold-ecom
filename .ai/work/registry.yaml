@@ -12,8 +12,7 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks:
-  - "TASK-0029"
+active_tasks: []
 
 tasks:
   - id: "TASK-0001"
@@ -324,7 +323,7 @@ tasks:
 
   - id: "TASK-0029"
     title: "Direct Cloudflare R2 Media Upload and Custom Image Loader Integration"
-    status: "in_progress"
+    status: "done"
     owner: "frontend"
     type: "feature"
     affected_areas:
@@ -365,7 +364,7 @@ tasks:
 
   - id: "TASK-0032"
     title: "Production Security Hardening, Zero-Maintenance Seeding and Handover Documentation"
-    status: "blocked"
+    status: "ready"
     owner: "orchestrator"
     type: "infrastructure"
     affected_areas:
