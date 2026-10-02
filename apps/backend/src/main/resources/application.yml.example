@@ -34,3 +34,13 @@ application:
       capacity: 5
       refill-tokens: 5
       refill-duration-minutes: 1
+
+app:
+  r2:
+    endpoint: ${R2_ENDPOINT:https://<ACCOUNT_ID>.r2.cloudflarestorage.com}
+    access-key-id: ${R2_ACCESS_KEY_ID:your-r2-access-key-id}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:your-r2-secret-access-key}
+    bucket: ${R2_BUCKET:marziya-media}
+    region: ${R2_REGION:auto}
+    public-url: ${NEXT_PUBLIC_MEDIA_URL:https://media.marziyagold.uz}
+

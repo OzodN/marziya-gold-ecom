@@ -12,7 +12,8 @@ allowed_states:
   - done
   - cancelled
 
-active_tasks: []
+active_tasks:
+  - "TASK-0032"
 
 tasks:
   - id: "TASK-0001"
@@ -364,7 +365,7 @@ tasks:
 
   - id: "TASK-0032"
     title: "Production Security Hardening, Zero-Maintenance Seeding and Handover Documentation"
-    status: "ready"
+    status: "in_progress"
     owner: "orchestrator"
     type: "infrastructure"
     affected_areas:
