@@ -63,8 +63,16 @@ const getApiBaseUrl = (): string => {
 
     return `http://${host}:8080/api/v1`;
   }
-  const internal = process.env.INTERNAL_API_URL || process.env.BACKEND_URL;
+  let internal = process.env.INTERNAL_API_URL || process.env.BACKEND_URL;
   if (internal) {
+    if (
+      internal.startsWith("https://") &&
+      (internal.includes(".railway.internal") ||
+        internal.includes("localhost") ||
+        internal.includes("127.0.0.1"))
+    ) {
+      internal = internal.replace(/^https:\/\//i, "http://");
+    }
     const clean = internal.replace(/\/+$/, "");
     return clean.endsWith("/api/v1")
       ? clean

@@ -3,10 +3,24 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 function getBackendBaseUrl(): string {
-  const raw =
+  let raw =
     process.env.INTERNAL_API_URL ||
     process.env.BACKEND_URL ||
     "http://127.0.0.1:8080";
+
+  // Auto-correct: .railway.internal and localhost do not use TLS/HTTPS; they speak plain HTTP
+  if (
+    raw.startsWith("https://") &&
+    (raw.includes(".railway.internal") ||
+      raw.includes("localhost") ||
+      raw.includes("127.0.0.1"))
+  ) {
+    raw = raw.replace(/^https:\/\//i, "http://");
+  }
+
+  if (!raw.startsWith("http://") && !raw.startsWith("https://")) {
+    raw = `http://${raw}`;
+  }
 
   return raw.replace(/\/api(\/v1)?\/?$/, "").replace(/\/+$/, "");
 }
@@ -92,13 +106,19 @@ async function handleProxy(
       headers: responseHeaders,
     });
   } catch (error) {
-    const err = error as Error;
-    console.error(`[Reverse Proxy Error] Failed to reach backend at ${targetUrl}:`, err.message);
+    const err = error as Error & { cause?: Error | string };
+    const causeText = err.cause
+      ? typeof err.cause === "object"
+        ? err.cause.message || JSON.stringify(err.cause)
+        : String(err.cause)
+      : "";
+    const detail = causeText ? ` (${causeText})` : "";
+    console.error(`[Reverse Proxy Error] Failed to reach backend at ${targetUrl}:`, err.message, detail);
 
     return NextResponse.json(
       {
         error: "Bad Gateway",
-        message: `Не удалось связаться с сервером бэкенда по адресу ${targetUrl}. Проверьте переменную INTERNAL_API_URL и статус контейнера backend. Ошибка: ${err.message}`,
+        message: `Не удалось связаться с сервером бэкенда по адресу ${targetUrl}: ${err.message}${detail}. Проверьте доступность контейнера backend и порт.`,
         targetUrl,
       },
       { status: 502 }
