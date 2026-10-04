@@ -9,6 +9,7 @@
  * - Data URLs and Blobs (data:*, blob:*)
  * - Vector images (.svg)
  * - External 3rd party URLs (e.g. Unsplash demo seeds)
+ * - Cloudflare R2 development bucket URLs (*.r2.dev), which do not support /cdn-cgi/image edge transformations
  */
 
 export interface ImageLoaderProps {
@@ -25,6 +26,26 @@ export function getMediaBaseUrl(): string {
     return envUrl.replace(/\/+$/, "");
   }
   return DEFAULT_MEDIA_BASE_URL;
+}
+
+/**
+ * Checks if a hostname belongs to a Cloudflare R2 development bucket domain (*.r2.dev).
+ * Cloudflare Image Transformations (/cdn-cgi/image/...) are NOT supported on raw *.r2.dev domains.
+ * They are only supported on custom proxied domains (e.g. media.marziyagold.uz).
+ */
+export function isR2DevDomain(hostname: string): boolean {
+  const lower = hostname.toLowerCase();
+  return lower.endsWith(".r2.dev") || lower === "r2.dev";
+}
+
+export function stripCdnCgiPrefix(pathname: string): string {
+  let clean = pathname.replace(/^\/+/, "");
+  if (clean.startsWith("cdn-cgi/image/")) {
+    const parts = clean.split("/");
+    // Format: cdn-cgi/image/<options>/<actual-path...>
+    clean = parts.slice(3).join("/");
+  }
+  return clean;
 }
 
 export default function cloudflareLoader({
@@ -61,19 +82,22 @@ export default function cloudflareLoader({
       const url = new URL(src);
       const host = url.hostname.toLowerCase();
 
+      // Cloudflare R2 dev domains (*.r2.dev) do NOT support /cdn-cgi/image/ transformations
+      if (isR2DevDomain(host)) {
+        const cleanPath = stripCdnCgiPrefix(url.pathname);
+        return `${url.origin}/${cleanPath}${url.search}`;
+      }
+
       // If URL is not hosted on our Cloudflare media domain, preserve as-is (e.g. Unsplash demo seeds)
       if (host !== mediaHost) {
         return src;
       }
 
       // If it is our media host, extract the clean object path
-      let pathname = url.pathname.replace(/^\/+/, "");
+      const pathname = stripCdnCgiPrefix(url.pathname);
 
-      // If URL was already transformed with /cdn-cgi/image/..., strip the old prefix
-      if (pathname.startsWith("cdn-cgi/image/")) {
-        const parts = pathname.split("/");
-        // Format: cdn-cgi/image/<options>/<actual-path...>
-        pathname = parts.slice(3).join("/");
+      if (isR2DevDomain(mediaHost)) {
+        return `${baseUrl}/${pathname}${url.search}`;
       }
 
       if (isSvg) {
@@ -87,7 +111,11 @@ export default function cloudflareLoader({
   }
 
   // 4. Handle relative paths (e.g. "products/1/ring.jpg" or "/products/1/ring.jpg")
-  const cleanPath = src.replace(/^\/+/, "");
+  const cleanPath = stripCdnCgiPrefix(src);
+
+  if (isR2DevDomain(mediaHost)) {
+    return `${baseUrl}/${cleanPath}`;
+  }
 
   if (isSvg) {
     return `${baseUrl}/${cleanPath}`;

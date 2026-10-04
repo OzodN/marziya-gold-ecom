@@ -124,4 +124,53 @@ describe("cloudflareLoader", () => {
     });
     expect(result).toBe("https://media.marziyagold.uz/products/icons/gold-stamp.svg");
   });
+
+  describe("Cloudflare R2 development bucket domain (*.r2.dev)", () => {
+    const r2DirectUrl =
+      "https://pub-2654004d07744e199ddd02d0ac964199.r2.dev/products/a1ace904-00b0-437f-86ea-839718f6b67b.jpg";
+
+    it("serves direct raw URL for *.r2.dev without unsupported /cdn-cgi/image/ transformation", () => {
+      const result = cloudflareLoader({
+        src: r2DirectUrl,
+        width: 1080,
+        quality: 80,
+      });
+      expect(result).toBe(r2DirectUrl);
+    });
+
+    it("serves direct raw URL even when NEXT_PUBLIC_MEDIA_URL matches the *.r2.dev domain", () => {
+      process.env.NEXT_PUBLIC_MEDIA_URL =
+        "https://pub-2654004d07744e199ddd02d0ac964199.r2.dev";
+      const result = cloudflareLoader({
+        src: r2DirectUrl,
+        width: 800,
+      });
+      expect(result).toBe(r2DirectUrl);
+    });
+
+    it("strips errant /cdn-cgi/image/ prefix if present on *.r2.dev domain", () => {
+      const errantUrl =
+        "https://pub-2654004d07744e199ddd02d0ac964199.r2.dev/cdn-cgi/image/width=600,quality=80,format=auto/products/item.png";
+      const result = cloudflareLoader({
+        src: errantUrl,
+        width: 600,
+      });
+      expect(result).toBe(
+        "https://pub-2654004d07744e199ddd02d0ac964199.r2.dev/products/item.png"
+      );
+    });
+
+    it("does not apply /cdn-cgi/image/ to relative paths when NEXT_PUBLIC_MEDIA_URL is an *.r2.dev domain", () => {
+      process.env.NEXT_PUBLIC_MEDIA_URL =
+        "https://pub-2654004d07744e199ddd02d0ac964199.r2.dev";
+      const result = cloudflareLoader({
+        src: "/products/bracelet.jpg",
+        width: 800,
+      });
+      expect(result).toBe(
+        "https://pub-2654004d07744e199ddd02d0ac964199.r2.dev/products/bracelet.jpg"
+      );
+    });
+  });
 });
+
